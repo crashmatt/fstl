@@ -4,6 +4,7 @@
 #include <QtOpenGL>
 #include <QSurfaceFormat>
 #include <QOpenGLShaderProgram>
+#include <list>
 
 class GLMesh;
 class Mesh;
@@ -39,7 +40,7 @@ protected:
     void view_anim(float v);
 
 private:
-    void draw_mesh();
+    void draw_mesh(GLMesh *pmesh);
 
     QMatrix4x4 transform_matrix() const;
     QMatrix4x4 view_matrix() const;
@@ -47,7 +48,8 @@ private:
     QOpenGLShaderProgram mesh_shader;
 	QOpenGLShaderProgram quad_shader;
 
-    GLMesh* mesh;
+    std::list<GLMesh*> mesh_list;
+    GLMesh* m_mesh;
     Backdrop* backdrop;
 
     QVector3D center;

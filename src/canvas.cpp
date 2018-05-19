@@ -8,7 +8,7 @@
 #include "mesh.h"
 
 Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
-    : QOpenGLWidget(parent), mesh(nullptr),
+    : QOpenGLWidget(parent), m_mesh(nullptr),
       scale(1), zoom(1), tilt(90), yaw(0),
       perspective(0.25), anim(this, "perspective"), status(" ")
 {
@@ -23,7 +23,7 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
 Canvas::~Canvas()
 {
 	makeCurrent();
-	delete mesh;
+    delete m_mesh;
 	doneCurrent();
 }
 
@@ -46,7 +46,7 @@ void Canvas::view_perspective()
 
 void Canvas::load_mesh(Mesh* m, bool is_reload)
 {
-    mesh = new GLMesh(m);
+    GLMesh*new_mesh = new GLMesh(m);
 
     if (!is_reload)
     {
@@ -60,6 +60,8 @@ void Canvas::load_mesh(Mesh* m, bool is_reload)
         yaw = 0;
         tilt = 90;
     }
+
+    mesh_list.push_back(new_mesh);
 
     update();
 
@@ -103,7 +105,11 @@ void Canvas::paintGL()
 	glEnable(GL_DEPTH_TEST);
 
 	backdrop->draw();
-	if (mesh)  draw_mesh();
+    foreach(GLMesh* mesh, mesh_list){
+        if(mesh) draw_mesh(mesh);
+    }
+
+//    if (m_mesh)  draw_mesh(m_mesh);
 
 	if (status.isNull())  return;
 
@@ -112,7 +118,7 @@ void Canvas::paintGL()
 	painter.drawText(10, height() - 10, status);
 }
 
-void Canvas::draw_mesh()
+void Canvas::draw_mesh(GLMesh* mesh)
 {
     mesh_shader.bind();
 

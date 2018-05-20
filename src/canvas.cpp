@@ -1,11 +1,13 @@
 #include <QMouseEvent>
+#include <QColor>
 
 #include <cmath>
 
 #include "canvas.h"
 #include "backdrop.h"
-#include "glmesh.h"
 #include "mesh.h"
+#include "glmesh.h"
+#include "globject.h"
 
 
 Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
@@ -77,10 +79,10 @@ void Canvas::load_mesh(Mesh* m, const QString& shader, const QColor& color)
     yaw = 0;
     tilt = 90;
 
-//    GLObject *newobj = new GLObject(new_mesh, &mesh_shader);
-//    obj_list.push_back(newobj);
+    GLObject *newobj = new GLObject(new_mesh, &mesh_shader, color);
+    obj_list.push_back(newobj);
 
-    mesh_list.push_back(new_mesh);
+//    mesh_list.push_back(new_mesh);
 
     update();
 
@@ -125,8 +127,13 @@ void Canvas::paintGL()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	backdrop->draw();
-    foreach(GLMesh* mesh, mesh_list){
-        if(mesh) draw_mesh(mesh, &mesh_shader);
+
+//    foreach(GLMesh* mesh, mesh_list){
+//        if(mesh) draw_mesh(mesh, &mesh_shader);
+//    }
+
+    foreach(GLObject* obj, obj_list){
+        if(obj) draw_mesh(obj->m_mesh, &mesh_shader, obj->m_color);
     }
 
 //    if (m_mesh)  draw_mesh(m_mesh);
@@ -138,7 +145,7 @@ void Canvas::paintGL()
 	painter.drawText(10, height() - 10, status);
 }
 
-void Canvas::draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader)
+void Canvas::draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader, const QColor& color)
 {
     shader->bind();
 
@@ -150,7 +157,8 @@ void Canvas::draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader)
                 shader->uniformLocation("view_matrix"),
                 1, GL_FALSE, view_matrix().data());
 
-    shader->setUniformValue("color", QColor(200,50,50,128));
+//    shader->setUniformValue("color", QColor(200,50,50,128));
+    shader->setUniformValue("color", color);
 
     // Compensate for z-flattening when zooming
     glUniform1f(shader->uniformLocation("zoom"), 1/zoom);

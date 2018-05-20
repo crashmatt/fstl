@@ -3,7 +3,7 @@
 #include "loader.h"
 #include "vertex.h"
 
-Loader::Loader(QObject* parent, const QString& filename, const QString& frag_shader, QColor color)
+Loader::Loader(QObject* parent, const QString& filename, const QString& frag_shader, const QColor& color)
     : QThread(parent)
     , filename(filename)
     , frag_shader(frag_shader)

@@ -9,8 +9,8 @@
 class GLMesh;
 class Mesh;
 class Backdrop;
-
-#include "globject.h"
+class GLObject;
+class QColor;
 
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -42,7 +42,7 @@ protected:
     void view_anim(float v);
 
 private:
-    void draw_mesh(GLMesh *pmesh, QOpenGLShaderProgram* shader);
+    void draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader, const QColor& color);
 
     QMatrix4x4 transform_matrix() const;
     QMatrix4x4 view_matrix() const;

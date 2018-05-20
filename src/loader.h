@@ -10,7 +10,7 @@ class Loader : public QThread
 {
     Q_OBJECT
 public:
-    explicit Loader(QObject* parent, const QString& filename, const QString& frag_shader, QColor color);
+    explicit Loader(QObject* parent, const QString& filename, const QString& frag_shader, const QColor &color);
     void run();
 
 protected:

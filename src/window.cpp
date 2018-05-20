@@ -98,12 +98,13 @@ Window::Window(QWidget *parent) :
 
 void Window::on_open()
 {
-    QString filename = QFileDialog::getOpenFileName(
-                this, "Load .stl file", QString(), "*.stl");
-    if (!filename.isNull())
-    {
-        load_stl(filename, "mesh", QColor(250,50,50,128) );
-    }
+//    QString filename = QFileDialog::getOpenFileName(
+//                this, "Load .stl file", QString(), "*.stl");
+//    if (!filename.isNull())
+//    {
+//        const QColor color = QColor(50,250,50,128);
+//        load_stl(filename, "mesh",  color);
+//    }
 }
 
 void Window::on_about()

@@ -40,13 +40,15 @@ protected:
     void view_anim(float v);
 
 private:
-    void draw_mesh(GLMesh *pmesh);
+    void draw_mesh(GLMesh *pmesh, QOpenGLShaderProgram* shader);
 
     QMatrix4x4 transform_matrix() const;
     QMatrix4x4 view_matrix() const;
 
     QOpenGLShaderProgram mesh_shader;
-	QOpenGLShaderProgram quad_shader;
+    QOpenGLShaderProgram quad_shader;
+    QOpenGLShaderProgram solid_shader;
+    QOpenGLShaderProgram translucent_shader;
 
     std::list<GLMesh*> mesh_list;
     GLMesh* m_mesh;

@@ -106,7 +106,7 @@ void Canvas::paintGL()
 
 	backdrop->draw();
     foreach(GLMesh* mesh, mesh_list){
-        if(mesh) draw_mesh(mesh);
+        if(mesh) draw_mesh(mesh, &mesh_shader);
     }
 
 //    if (m_mesh)  draw_mesh(m_mesh);
@@ -118,23 +118,23 @@ void Canvas::paintGL()
 	painter.drawText(10, height() - 10, status);
 }
 
-void Canvas::draw_mesh(GLMesh* mesh)
+void Canvas::draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader)
 {
-    mesh_shader.bind();
+    shader->bind();
 
     // Load the transform and view matrices into the shader
     glUniformMatrix4fv(
-                mesh_shader.uniformLocation("transform_matrix"),
+                shader->uniformLocation("transform_matrix"),
                 1, GL_FALSE, transform_matrix().data());
     glUniformMatrix4fv(
-                mesh_shader.uniformLocation("view_matrix"),
+                shader->uniformLocation("view_matrix"),
                 1, GL_FALSE, view_matrix().data());
 
     // Compensate for z-flattening when zooming
-    glUniform1f(mesh_shader.uniformLocation("zoom"), 1/zoom);
+    glUniform1f(shader->uniformLocation("zoom"), 1/zoom);
 
     // Find and enable the attribute location for vertex position
-    const GLuint vp = mesh_shader.attributeLocation("vertex_position");
+    const GLuint vp = shader->attributeLocation("vertex_position");
     glEnableVertexAttribArray(vp);
 
     // Then draw the mesh with that vertex position
@@ -142,7 +142,7 @@ void Canvas::draw_mesh(GLMesh* mesh)
 
     // Clean up state machine
     glDisableVertexAttribArray(vp);
-    mesh_shader.release();
+    shader->release();
 }
 
 QMatrix4x4 Canvas::transform_matrix() const

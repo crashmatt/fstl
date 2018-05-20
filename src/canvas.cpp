@@ -67,8 +67,10 @@ void Canvas::load_mesh(Mesh* m, const QString& shader, const QColor& color)
 
     QVector3D lower(m->xmin(), m->ymin(), m->zmin());
     QVector3D upper(m->xmax(), m->ymax(), m->zmax());
-    center = (lower + upper) / 2;
-    scale = 2 / (upper - lower).length();
+    center = QVector3D(0.0, 0.0, 0.0);
+
+    double new_scale = 2 / (upper - lower).length();
+    if(new_scale > scale) scale = new_scale;
 
     // Reset other camera parameters
     zoom = 1;
@@ -146,6 +148,8 @@ void Canvas::draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader)
     glUniformMatrix4fv(
                 shader->uniformLocation("view_matrix"),
                 1, GL_FALSE, view_matrix().data());
+
+    shader->setUniformValue("color", QColor(200,50,50,128));
 
     // Compensate for z-flattening when zooming
     glUniform1f(shader->uniformLocation("zoom"), 1/zoom);

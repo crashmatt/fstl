@@ -12,7 +12,7 @@ class Window : public QMainWindow
     Q_OBJECT
 public:
     explicit Window(QWidget* parent=0);
-    bool load_stl(const QString& filename, bool is_reload=false);
+    bool load_stl(const QString& filename, const QString& shader_name, const QColor& base_color);
 
 protected:
     void dragEnterEvent(QDragEnterEvent* event) override;

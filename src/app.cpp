@@ -8,13 +8,10 @@ App::App(int& argc, char *argv[]) :
     QApplication(argc, argv), window(new Window())
 {
     QCoreApplication::setOrganizationName("crashmatt");
-    QCoreApplication::setOrganizationDomain("https://github.com/mkeeter/fstl");
+    QCoreApplication::setOrganizationDomain("https://github.com/crashmatt/fstl");
     QCoreApplication::setApplicationName("fstl-antenna");
 
-    if (argc > 1)
-        window->load_stl(argv[1]);
-    else
-        window->load_stl(":gl/sphere.stl");
+    window->load_stl(":gl/sphere.stl", "mesh", QColor(128,128,128,128));
 
     window->show();
 }
@@ -28,8 +25,8 @@ bool App::event(QEvent* e)
 {
     if (e->type() == QEvent::FileOpen)
     {
-        window->load_stl(static_cast<QFileOpenEvent*>(e)->file());
-        return true;
+//        window->load_stl(static_cast<QFileOpenEvent*>(e)->file());
+        return false;
     }
     else
     {

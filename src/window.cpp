@@ -102,7 +102,7 @@ void Window::on_open()
                 this, "Load .stl file", QString(), "*.stl");
     if (!filename.isNull())
     {
-        load_stl(filename);
+        load_stl(filename, "mesh", QColor(250,50,50,128) );
     }
 }
 
@@ -194,18 +194,18 @@ void Window::on_projection(QAction* proj)
 
 void Window::on_watched_change(const QString& filename)
 {
-    if (autoreload_action->isChecked())
-    {
-        load_stl(filename, true);
-    }
+//    if (autoreload_action->isChecked())
+//    {
+//        load_stl(filename, true);
+//    }
 }
 
 void Window::on_autoreload_triggered(bool b)
 {
-    if (b)
-    {
-        on_reload();
-    }
+//    if (b)
+//    {
+//        on_reload();
+//    }
 }
 
 void Window::on_clear_recent()
@@ -217,7 +217,7 @@ void Window::on_clear_recent()
 
 void Window::on_load_recent(QAction* a)
 {
-    load_stl(a->data().toString());
+//    load_stl(a->data().toString());
 }
 
 void Window::rebuild_recent_files()
@@ -251,20 +251,20 @@ void Window::rebuild_recent_files()
 
 void Window::on_reload()
 {
-    auto fs = watcher->files();
-    if (fs.size() == 1)
-    {
-        load_stl(fs[0], true);
-    }
+//    auto fs = watcher->files();
+//    if (fs.size() == 1)
+//    {
+//        load_stl(fs[0], true);
+//    }
 }
 
-bool Window::load_stl(const QString& filename, bool is_reload)
+bool Window::load_stl(const QString& filename, const QString& shader_name, const QColor& base_color)
 {
     if (!open_action->isEnabled())  return false;
 
     canvas->set_status("Loading " + filename);
 
-    Loader* loader = new Loader(this, filename, is_reload);
+    Loader* loader = new Loader(this, filename, shader_name, base_color);
     connect(loader, &Loader::started,
               this, &Window::disable_open);
 
@@ -312,5 +312,5 @@ void Window::dragEnterEvent(QDragEnterEvent *event)
 
 void Window::dropEvent(QDropEvent *event)
 {
-    load_stl(event->mimeData()->urls().front().toLocalFile());
+//    load_stl(event->mimeData()->urls().front().toLocalFile());
 }

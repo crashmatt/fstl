@@ -7,10 +7,16 @@
 #include "glmesh.h"
 #include "mesh.h"
 
+
 Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
-    : QOpenGLWidget(parent), m_mesh(nullptr),
-      scale(1), zoom(1), tilt(90), yaw(0),
-      perspective(0.25), anim(this, "perspective"), status(" ")
+    : QOpenGLWidget(parent)
+    ,scale(1)
+    , zoom(1)
+    , tilt(90)
+    , yaw(0)
+    , perspective(0.25)
+    , anim(this, "perspective")
+    , status(" ")
 {
 	setFormat(format);
     QFile styleFile(":/qt/style.qss");
@@ -22,8 +28,19 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
 
 Canvas::~Canvas()
 {
-	makeCurrent();
-    delete m_mesh;
+    makeCurrent();
+
+    foreach(GLMesh* mesh, mesh_list){
+        if(mesh != NULL) delete mesh;
+    }
+    mesh_list.clear();
+
+//    foreach(GLObject* obj, obj_list){
+//        if(obj != NULL) delete obj;
+//    }
+//    obj_list.clear();
+
+
 	doneCurrent();
 }
 
@@ -44,22 +61,22 @@ void Canvas::view_perspective()
     view_anim(0.25);
 }
 
-void Canvas::load_mesh(Mesh* m, bool is_reload)
+void Canvas::load_mesh(Mesh* m, const QString& shader, const QColor& color)
 {
-    GLMesh*new_mesh = new GLMesh(m);
+    GLMesh *new_mesh = new GLMesh(m);
 
-    if (!is_reload)
-    {
-        QVector3D lower(m->xmin(), m->ymin(), m->zmin());
-        QVector3D upper(m->xmax(), m->ymax(), m->zmax());
-        center = (lower + upper) / 2;
-        scale = 2 / (upper - lower).length();
+    QVector3D lower(m->xmin(), m->ymin(), m->zmin());
+    QVector3D upper(m->xmax(), m->ymax(), m->zmax());
+    center = (lower + upper) / 2;
+    scale = 2 / (upper - lower).length();
 
-        // Reset other camera parameters
-        zoom = 1;
-        yaw = 0;
-        tilt = 90;
-    }
+    // Reset other camera parameters
+    zoom = 1;
+    yaw = 0;
+    tilt = 90;
+
+//    GLObject *newobj = new GLObject(new_mesh, &mesh_shader);
+//    obj_list.push_back(newobj);
 
     mesh_list.push_back(new_mesh);
 

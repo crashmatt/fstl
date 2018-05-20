@@ -10,6 +10,8 @@ class GLMesh;
 class Mesh;
 class Backdrop;
 
+#include "globject.h"
+
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
@@ -24,7 +26,7 @@ public:
 public slots:
     void set_status(const QString& s);
     void clear_status();
-    void load_mesh(Mesh* m, bool is_reload);
+    void load_mesh(Mesh* m, const QString& shader, const QColor& color);
 
 protected:
 	void paintGL() override;
@@ -50,8 +52,10 @@ private:
     QOpenGLShaderProgram solid_shader;
     QOpenGLShaderProgram translucent_shader;
 
+    std::list<GLObject*> obj_list;
+
     std::list<GLMesh*> mesh_list;
-    GLMesh* m_mesh;
+//    GLMesh* m_mesh;
     Backdrop* backdrop;
 
     QVector3D center;

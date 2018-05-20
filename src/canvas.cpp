@@ -32,15 +32,10 @@ Canvas::~Canvas()
 {
     makeCurrent();
 
-    foreach(GLMesh* mesh, mesh_list){
-        if(mesh != NULL) delete mesh;
+    foreach(GLObject* obj, obj_list){
+        if(obj != NULL) delete obj;
     }
-    mesh_list.clear();
-
-//    foreach(GLObject* obj, obj_list){
-//        if(obj != NULL) delete obj;
-//    }
-//    obj_list.clear();
+    obj_list.clear();
 
 
 	doneCurrent();
@@ -63,7 +58,7 @@ void Canvas::view_perspective()
     view_anim(0.25);
 }
 
-void Canvas::load_mesh(Mesh* m, const QString& shader, const QColor& color)
+void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color)
 {
     GLMesh *new_mesh = new GLMesh(m);
 
@@ -79,10 +74,14 @@ void Canvas::load_mesh(Mesh* m, const QString& shader, const QColor& color)
     yaw = 0;
     tilt = 90;
 
-    GLObject *newobj = new GLObject(new_mesh, &mesh_shader, color);
-    obj_list.push_back(newobj);
+    QOpenGLShaderProgram* shader = shader_map.value(shader_name, NULL);
 
-//    mesh_list.push_back(new_mesh);
+    if(shader != NULL){
+        GLObject *newobj = new GLObject(new_mesh, shader, color);
+        obj_list.push_back(newobj);
+    } else {
+        delete(new_mesh);
+    }
 
     update();
 
@@ -114,6 +113,12 @@ void Canvas::initializeGL()
     mesh_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/mesh.vert");
     mesh_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh.frag");
     mesh_shader.link();
+    shader_map["mesh"] = &mesh_shader;
+
+    solid_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/mesh.vert");
+    solid_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/solid.frag");
+    solid_shader.link();
+    shader_map["solid"] =  &solid_shader;
 
     backdrop = new Backdrop();
 }
@@ -128,15 +133,9 @@ void Canvas::paintGL()
 
 	backdrop->draw();
 
-//    foreach(GLMesh* mesh, mesh_list){
-//        if(mesh) draw_mesh(mesh, &mesh_shader);
-//    }
-
     foreach(GLObject* obj, obj_list){
-        if(obj) draw_mesh(obj->m_mesh, &mesh_shader, obj->m_color);
+        if(obj) draw_mesh(obj->m_mesh, obj->m_shaderprog, obj->m_color);
     }
-
-//    if (m_mesh)  draw_mesh(m_mesh);
 
 	if (status.isNull())  return;
 

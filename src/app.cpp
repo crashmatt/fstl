@@ -11,7 +11,9 @@ App::App(int& argc, char *argv[]) :
     QCoreApplication::setOrganizationDomain("https://github.com/crashmatt/fstl");
     QCoreApplication::setApplicationName("fstl-antenna");
 
-    window->load_stl(":gl/sphere.stl", "mesh", QColor(50,200,50,128));
+    window->load_stl("../models/transparent.stl", "mesh", QColor(50,50,100,50));
+    window->load_stl("../models/solid.stl", "solid", QColor(200,50,50,200));
+    window->load_stl(":gl/sphere.stl", "mesh", QColor(50,200,50,50));
 
     window->show();
 }

@@ -42,7 +42,7 @@ protected:
     void view_anim(float v);
 
 private:
-    void draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader, const QColor& color);
+    void draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader_name, const QColor& color);
 
     QMatrix4x4 transform_matrix() const;
     QMatrix4x4 view_matrix() const;
@@ -52,10 +52,9 @@ private:
     QOpenGLShaderProgram solid_shader;
     QOpenGLShaderProgram translucent_shader;
 
+    QMap<QString, QOpenGLShaderProgram*> shader_map;
     std::list<GLObject*> obj_list;
 
-    std::list<GLMesh*> mesh_list;
-//    GLMesh* m_mesh;
     Backdrop* backdrop;
 
     QVector3D center;

@@ -26,7 +26,7 @@ public:
 public slots:
     void set_status(const QString& s);
     void clear_status();
-    void load_mesh(Mesh* m, const QString& shader, const QColor& color);
+    void load_mesh(Mesh* m, const QString& shader, const QColor& color, const int show_order);
 
 protected:
 	void paintGL() override;
@@ -50,10 +50,10 @@ private:
     QOpenGLShaderProgram mesh_shader;
     QOpenGLShaderProgram quad_shader;
     QOpenGLShaderProgram solid_shader;
-    QOpenGLShaderProgram translucent_shader;
+    QOpenGLShaderProgram antenna_shader;
 
+    QMap<int, GLObject*> obj_map;
     QMap<QString, QOpenGLShaderProgram*> shader_map;
-    std::list<GLObject*> obj_list;
 
     Backdrop* backdrop;
 

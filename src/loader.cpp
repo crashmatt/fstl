@@ -3,11 +3,12 @@
 #include "loader.h"
 #include "vertex.h"
 
-Loader::Loader(QObject* parent, const QString& filename, const QString& frag_shader, const QColor& color)
+Loader::Loader(QObject* parent, const QString& filename, const QString& frag_shader, const QColor& color, int order)
     : QThread(parent)
     , filename(filename)
     , frag_shader(frag_shader)
     , base_color(color)
+    , show_order(order)
 {
     // Nothing to do here
 }
@@ -24,7 +25,7 @@ void Loader::run()
         }
         else
         {
-            emit got_mesh(mesh, frag_shader, base_color);
+            emit got_mesh(mesh, frag_shader, base_color, show_order);
             emit loaded_file(filename);
         }
     }

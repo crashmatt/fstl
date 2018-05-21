@@ -10,7 +10,7 @@ class Loader : public QThread
 {
     Q_OBJECT
 public:
-    explicit Loader(QObject* parent, const QString& filename, const QString& frag_shader, const QColor &color);
+    explicit Loader(QObject* parent, const QString& filename, const QString& frag_shader, const QColor &color, int order);
     void run();
 
 protected:
@@ -23,7 +23,7 @@ protected:
 
 signals:
     void loaded_file(QString filename);
-    void got_mesh(Mesh* m, QString shader, QColor color);
+    void got_mesh(Mesh* m, QString shader, QColor color, int order);
 
     void error_bad_stl();
     void error_empty_mesh();
@@ -34,7 +34,7 @@ private:
     const QString filename;
     const QString frag_shader;
     const QColor  base_color;
-
+    const int     show_order;
     /*  Used to warn on binary STLs that begin with the word 'solid'" */
     bool confusing_stl;
 

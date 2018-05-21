@@ -6,5 +6,6 @@
         <file>quad.vert</file>
         <file>sphere.stl</file>
         <file>solid.frag</file>
+        <file>solid.vert</file>
     </qresource>
 </RCC>

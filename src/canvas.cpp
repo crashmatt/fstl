@@ -32,10 +32,10 @@ Canvas::~Canvas()
 {
     makeCurrent();
 
-    foreach(GLObject* obj, obj_list){
+    foreach(GLObject* obj, obj_map.values()){
         if(obj != NULL) delete obj;
     }
-    obj_list.clear();
+    obj_map.clear();
 
 
 	doneCurrent();
@@ -58,7 +58,7 @@ void Canvas::view_perspective()
     view_anim(0.25);
 }
 
-void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color)
+void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color, const int show_order)
 {
     GLMesh *new_mesh = new GLMesh(m);
 
@@ -67,7 +67,9 @@ void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color)
     center = QVector3D(0.0, 0.0, 0.0);
 
     double new_scale = 2 / (upper - lower).length();
-    if(new_scale > scale) scale = new_scale;
+    if(new_scale < scale){
+        scale = new_scale;
+    }
 
     // Reset other camera parameters
     zoom = 1;
@@ -76,9 +78,9 @@ void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color)
 
     QOpenGLShaderProgram* shader = shader_map.value(shader_name, NULL);
 
-    if(shader != NULL){
+    if( (shader != NULL) && !obj_map.contains(show_order) ){
         GLObject *newobj = new GLObject(new_mesh, shader, color);
-        obj_list.push_back(newobj);
+        obj_map[show_order] = newobj;
     } else {
         delete(new_mesh);
     }
@@ -115,10 +117,15 @@ void Canvas::initializeGL()
     mesh_shader.link();
     shader_map["mesh"] = &mesh_shader;
 
-    solid_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/mesh.vert");
+    solid_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/solid.vert");
     solid_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/solid.frag");
     solid_shader.link();
     shader_map["solid"] =  &solid_shader;
+
+    antenna_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/antenna.vert");
+    antenna_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/antenna.frag");
+    antenna_shader.link();
+    shader_map["antenna"] =  &antenna_shader;
 
     backdrop = new Backdrop();
 }
@@ -128,12 +135,16 @@ void Canvas::paintGL()
 {
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST | GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);                                //To make sure that both sides of faces are shows with transparency
+    glEnable(GL_BLEND);                                     //To support transparency
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);      //To support transparency
 
 	backdrop->draw();
 
-    foreach(GLObject* obj, obj_list){
+
+    foreach(int show_order, obj_map.keys()){
+        GLObject* obj = obj_map[show_order];
         if(obj) draw_mesh(obj->m_mesh, obj->m_shaderprog, obj->m_color);
     }
 

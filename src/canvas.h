@@ -26,7 +26,7 @@ public:
 public slots:
     void set_status(const QString& s);
     void clear_status();
-    void load_mesh(Mesh* m, const QString& shader, const QColor& color, const int show_order);
+    void load_mesh(Mesh* m, const QString& shader, const QColor& color, const int show_order, const QString& name);
 
 protected:
 	void paintGL() override;
@@ -42,9 +42,9 @@ protected:
     void view_anim(float v);
 
 private:
-    void draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader_name, const QColor& color);
+    void draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader_name, const QColor& color, QVector3D offset);
 
-    QMatrix4x4 transform_matrix() const;
+    QMatrix4x4 transform_matrix(QVector3D offset = QVector3D(0.0, 0.0, 0.0)) const;
     QMatrix4x4 view_matrix() const;
 
     QOpenGLShaderProgram mesh_shader;
@@ -53,6 +53,7 @@ private:
     QOpenGLShaderProgram antenna_shader;
 
     QMap<int, GLObject*> obj_map;
+    QMap<QString, GLObject*> obj_name_map;
     QMap<QString, QOpenGLShaderProgram*> shader_map;
 
     Backdrop* backdrop;

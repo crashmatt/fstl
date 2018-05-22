@@ -259,13 +259,13 @@ void Window::on_reload()
 //    }
 }
 
-bool Window::load_stl(const QString& filename, const QString& shader_name, const QColor& base_color, int order)
+bool Window::load_stl(const QString& filename, const QString& name, const QString& shader_name, const QColor& base_color, int order)
 {
     if (!open_action->isEnabled())  return false;
 
     canvas->set_status("Loading " + filename);
 
-    Loader* loader = new Loader(this, filename, shader_name, base_color, order);
+    Loader* loader = new Loader(this, filename, name, shader_name, base_color, order);
     connect(loader, &Loader::started,
               this, &Window::disable_open);
 

@@ -7,5 +7,6 @@
         <file>sphere.stl</file>
         <file>solid.frag</file>
         <file>solid.vert</file>
+        <file>antenna.vert</file>
     </qresource>
 </RCC>

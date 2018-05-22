@@ -5,6 +5,8 @@ uniform mat4 transform_matrix;
 uniform mat4 view_matrix;
 
 void main() {
-    gl_Position = transform_matrix*
+    mat4 view = view_matrix;
+    view.offset
+    gl_Position = view_matrix*transform_matrix*
         vec4(vertex_position, 1.0);
 }

@@ -14,14 +14,14 @@ App::App(int& argc, char *argv[]) :
     QCoreApplication::setApplicationName("fstl-antenna");
 
 #ifdef colored
-    window->load_stl("../models/solid.stl", "solid", QColor(200,0,0,200), 0);
-    window->load_stl("../models/transparent.stl", "solid", QColor(0,0,250,50), 1);
-    window->load_stl(":gl/sphere.stl", "solid", QColor(50,200,50,50), 2);
+    window->load_stl("../models/solid.stl", "solid", "solid", QColor(200,0,0,200), 0);
+    window->load_stl("../models/transparent.stl", "fuselage" "solid", QColor(0,0,250,50), 1);
+    window->load_stl(":gl/sphere.stl", "ball", "solid", QColor(50,200,50,50), 2);
 #else
-    window->load_stl("../models/antenna.stl", "solid", QColor(0,255,0,255), 0);
-    window->load_stl("../models/solid.stl", "solid", QColor(0,0,0,250), 1);
-    window->load_stl("../models/transparent.stl", "solid", QColor(0,0,0,50), 2);
-//    window->load_stl(":gl/sphere.stl", "solid", QColor(50,200,50,50), 3);
+    window->load_stl("../models/antenna.stl", "antenna", "solid", QColor(0,255,0,255), 0);
+    window->load_stl("../models/solid.stl", "solid", "solid", QColor(0,0,0,250), 1);
+    window->load_stl("../models/transparent.stl", "fuselage" , "solid", QColor(0,0,0,50), 2);
+//    window->load_stl(":gl/sphere.stl", "ball", "solid", QColor(50,200,50,50), 3);
 #endif
 
     window->show();

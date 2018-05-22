@@ -1,6 +1,6 @@
 #include <QMouseEvent>
 #include <QColor>
-
+#include <QVector3D>
 #include <cmath>
 
 #include "canvas.h"
@@ -58,7 +58,7 @@ void Canvas::view_perspective()
     view_anim(0.25);
 }
 
-void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color, const int show_order)
+void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color, const int show_order, const QString& name)
 {
     GLMesh *new_mesh = new GLMesh(m);
 
@@ -79,8 +79,10 @@ void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color,
     QOpenGLShaderProgram* shader = shader_map.value(shader_name, NULL);
 
     if( (shader != NULL) && !obj_map.contains(show_order) ){
-        GLObject *newobj = new GLObject(new_mesh, shader, color);
+        GLObject *newobj = new GLObject(new_mesh, shader, color, name);
         obj_map[show_order] = newobj;
+        obj_name_map[name] = newobj;
+        if(name == "antenna") newobj->m_offset = QVector3D(0.25, 0.25, 0.25);
     } else {
         delete(new_mesh);
     }
@@ -145,7 +147,7 @@ void Canvas::paintGL()
 
     foreach(int show_order, obj_map.keys()){
         GLObject* obj = obj_map[show_order];
-        if(obj) draw_mesh(obj->m_mesh, obj->m_shaderprog, obj->m_color);
+        if(obj) draw_mesh(obj->m_mesh, obj->m_shaderprog, obj->m_color, obj->m_offset);
     }
 
 	if (status.isNull())  return;
@@ -155,19 +157,18 @@ void Canvas::paintGL()
 	painter.drawText(10, height() - 10, status);
 }
 
-void Canvas::draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader, const QColor& color)
+void Canvas::draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader, const QColor& color, QVector3D offset)
 {
     shader->bind();
 
     // Load the transform and view matrices into the shader
     glUniformMatrix4fv(
                 shader->uniformLocation("transform_matrix"),
-                1, GL_FALSE, transform_matrix().data());
+                1, GL_FALSE, transform_matrix(offset).data());
     glUniformMatrix4fv(
                 shader->uniformLocation("view_matrix"),
                 1, GL_FALSE, view_matrix().data());
 
-//    shader->setUniformValue("color", QColor(200,50,50,128));
     shader->setUniformValue("color", color);
 
     // Compensate for z-flattening when zooming
@@ -185,13 +186,13 @@ void Canvas::draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader, const QColor&
     shader->release();
 }
 
-QMatrix4x4 Canvas::transform_matrix() const
+QMatrix4x4 Canvas::transform_matrix(QVector3D offset) const
 {
     QMatrix4x4 m;
     m.rotate(tilt, QVector3D(1, 0, 0));
     m.rotate(yaw,  QVector3D(0, 0, 1));
     m.scale(-scale, scale, -scale);
-    m.translate(-center);
+    m.translate(-center + offset);
     return m;
 }
 

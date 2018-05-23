@@ -35,35 +35,37 @@ Window::Window(QWidget *parent) :
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
 
-    QObject::connect(watcher, &QFileSystemWatcher::fileChanged,
-                     this, &Window::on_watched_change);
+    QObject::connect(canvas, &Canvas::center_color, this, &Window::center_color);
 
-    open_action->setShortcut(QKeySequence::Open);
-    QObject::connect(open_action, &QAction::triggered,
-                     this, &Window::on_open);
+//    QObject::connect(watcher, &QFileSystemWatcher::fileChanged,
+//                     this, &Window::on_watched_change);
+
+//    open_action->setShortcut(QKeySequence::Open);
+//    QObject::connect(open_action, &QAction::triggered,
+//                     this, &Window::on_open);
 
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,
                      this, &Window::close);
 
-    autoreload_action->setCheckable(true);
-    autoreload_action->setChecked(true);
-    autoreload_action->setEnabled(false);
-    QObject::connect(autoreload_action, &QAction::triggered,
-            this, &Window::on_autoreload_triggered);
+//    autoreload_action->setCheckable(true);
+//    autoreload_action->setChecked(true);
+//    autoreload_action->setEnabled(false);
+//    QObject::connect(autoreload_action, &QAction::triggered,
+//            this, &Window::on_autoreload_triggered);
 
-    reload_action->setShortcut(QKeySequence::Refresh);
-    reload_action->setEnabled(false);
-    QObject::connect(reload_action, &QAction::triggered,
-                     this, &Window::on_reload);
+//    reload_action->setShortcut(QKeySequence::Refresh);
+//    reload_action->setEnabled(false);
+//    QObject::connect(reload_action, &QAction::triggered,
+//                     this, &Window::on_reload);
 
     QObject::connect(about_action, &QAction::triggered,
                      this, &Window::on_about);
 
-    QObject::connect(recent_files_clear_action, &QAction::triggered,
-                     this, &Window::on_clear_recent);
-    QObject::connect(recent_files_group, &QActionGroup::triggered,
-                     this, &Window::on_load_recent);
+//    QObject::connect(recent_files_clear_action, &QAction::triggered,
+//                     this, &Window::on_clear_recent);
+//    QObject::connect(recent_files_group, &QActionGroup::triggered,
+//                     this, &Window::on_load_recent);
 
     rebuild_recent_files();
 
@@ -179,6 +181,16 @@ void Window::set_watched(const QString& filename)
     }
     settings.setValue(RECENT_FILE_KEY, recent);
     rebuild_recent_files();
+}
+
+void Window::center_color(QColor color)
+{
+//    QStatusBar *sb = statusBar();
+//    if(qGreen(color) > 128){
+//        sb->showMessage(tr("Visible"));
+//    } else {
+//        sb->showMessage(tr("Not visible"));
+//    }
 }
 
 void Window::on_projection(QAction* proj)

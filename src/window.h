@@ -31,6 +31,8 @@ public slots:
 
     void set_watched(const QString& filename);
 
+    void center_color(QColor color);
+
 private slots:
     void on_projection(QAction* proj);
     void on_watched_change(const QString& filename);

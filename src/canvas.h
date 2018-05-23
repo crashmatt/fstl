@@ -4,6 +4,7 @@
 #include <QtOpenGL>
 #include <QSurfaceFormat>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLFramebufferObject>
 #include <list>
 
 class GLMesh;
@@ -27,6 +28,9 @@ public slots:
     void set_status(const QString& s);
     void clear_status();
     void load_mesh(Mesh* m, const QString& shader, const QColor& color, const int show_order, const QString& name);
+
+signals:
+    void center_color(QColor pixel);
 
 protected:
 	void paintGL() override;

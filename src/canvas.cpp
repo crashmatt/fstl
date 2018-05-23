@@ -12,11 +12,11 @@
 
 Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     : QOpenGLWidget(parent)
-    ,scale(1)
-    , zoom(1)
+    , scale(1)
+    , zoom(2.0)
     , tilt(90)
     , yaw(0)
-    , perspective(0.25)
+    , perspective(0.0)
     , anim(this, "perspective")
     , status(" ")
 {
@@ -72,9 +72,9 @@ void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color,
     }
 
     // Reset other camera parameters
-    zoom = 1;
-    yaw = 0;
-    tilt = 90;
+//    zoom = 1;
+//    yaw = 0;
+//    tilt = 90;
 
     QOpenGLShaderProgram* shader = shader_map.value(shader_name, NULL);
 
@@ -150,11 +150,20 @@ void Canvas::paintGL()
         if(obj) draw_mesh(obj->m_mesh, obj->m_shaderprog, obj->m_color, obj->m_offset);
     }
 
-	if (status.isNull())  return;
+    glFlush();      //Make sure rendering is done
+    glFinish();
+
+    unsigned char pick_col[3];
+    glReadPixels( width()/2, height()/2, 1, 1, GL_RGB , GL_UNSIGNED_BYTE , pick_col );
+
+    status = QString("R:%1 G:%2 B:%3").arg(pick_col[0]).arg(pick_col[1]).arg(pick_col[2]);
+
+    QColor color = QColor(pick_col[0], pick_col[1], pick_col[2]);
+    emit center_color(color);
 
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing);
-	painter.drawText(10, height() - 10, status);
+    painter.drawText(10, height() - 10, status);
 }
 
 void Canvas::draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader, const QColor& color, QVector3D offset)

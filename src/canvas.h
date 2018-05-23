@@ -28,9 +28,10 @@ public slots:
     void set_status(const QString& s);
     void clear_status();
     void load_mesh(Mesh* m, const QString& shader, const QColor& color, const int show_order, const QString& name);
+    void set_rotation(QVector3D rotation);
 
 signals:
-    void center_color(QColor pixel);
+    void center_color(QColor pixel, QVector3D rotation);
 
 protected:
 	void paintGL() override;
@@ -67,6 +68,7 @@ private:
     float zoom;
     float tilt;
     float yaw;
+    float roll;
 
     float perspective;
     Q_PROPERTY(float perspective WRITE set_perspective);

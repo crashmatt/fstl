@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QActionGroup>
 #include <QFileSystemWatcher>
+#include <QVector3D>
 
 class Canvas;
 
@@ -31,7 +32,10 @@ public slots:
 
     void set_watched(const QString& filename);
 
-    void center_color(QColor color);
+    void center_color(QColor color, QVector3D rotation);
+
+signals:
+    void set_rotation(QVector3D rotation);
 
 private slots:
     void on_projection(QAction* proj);

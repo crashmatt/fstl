@@ -37,6 +37,9 @@ Window::Window(QWidget *parent) :
 
     QObject::connect(canvas, &Canvas::center_color, this, &Window::center_color);
 
+    QObject::connect(this, &Window::set_rotation, canvas, &Canvas::set_rotation);
+
+
 //    QObject::connect(watcher, &QFileSystemWatcher::fileChanged,
 //                     this, &Window::on_watched_change);
 
@@ -183,14 +186,11 @@ void Window::set_watched(const QString& filename)
     rebuild_recent_files();
 }
 
-void Window::center_color(QColor color)
+void Window::center_color(QColor color, QVector3D rotation)
 {
-//    QStatusBar *sb = statusBar();
-//    if(qGreen(color) > 128){
-//        sb->showMessage(tr("Visible"));
-//    } else {
-//        sb->showMessage(tr("Not visible"));
-//    }
+    float yaw = fmod( rotation.z() + 1.0, 360.0);
+    rotation.setZ(yaw);
+    emit set_rotation(rotation);
 }
 
 void Window::on_projection(QAction* proj)

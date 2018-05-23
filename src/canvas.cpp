@@ -19,6 +19,7 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     , perspective(0.0)
     , anim(this, "perspective")
     , status(" ")
+    ,roll(0)
 {
 	setFormat(format);
     QFile styleFile(":/qt/style.qss");
@@ -92,6 +93,14 @@ void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color,
     delete m;
 }
 
+void Canvas::set_rotation(QVector3D rotation)
+{
+    tilt = rotation.x();
+    roll = rotation.y();
+    yaw = rotation.z();
+    update();
+}
+
 void Canvas::set_status(const QString &s)
 {
     status = s;
@@ -159,7 +168,8 @@ void Canvas::paintGL()
     status = QString("R:%1 G:%2 B:%3").arg(pick_col[0]).arg(pick_col[1]).arg(pick_col[2]);
 
     QColor color = QColor(pick_col[0], pick_col[1], pick_col[2]);
-    emit center_color(color);
+    QVector3D rotation = QVector3D(tilt, roll, yaw);
+    emit center_color(color, rotation);
 
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing);

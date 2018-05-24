@@ -5,21 +5,24 @@
 #include "loader.h"
 #include "testpattern.h"
 
-const QString Window::RECENT_FILE_KEY = "recentFiles";
+//const QString Window::RECENT_FILE_KEY = "recentFiles";
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
-    open_action(new QAction("Open", this)),
+//    open_action(new QAction("Open", this)),
     about_action(new QAction("About", this)),
     quit_action(new QAction("Quit", this)),
-    perspective_action(new QAction("Perspective", this)),
-    orthogonal_action(new QAction("Orthographic", this)),
-    reload_action(new QAction("Reload", this)),
-    autoreload_action(new QAction("Autoreload", this)),
-    recent_files(new QMenu("Open recent", this)),
-    recent_files_group(new QActionGroup(this)),
-    recent_files_clear_action(new QAction("Clear recent files", this)),
-    watcher(new QFileSystemWatcher(this)),
+//    perspective_action(new QAction("Perspective", this)),
+//    orthogonal_action(new QAction("Orthographic", this)),
+//    reload_action(new QAction("Reload", this)),
+//    autoreload_action(new QAction("Autoreload", this)),
+//    recent_files(new QMenu("Open recent", this)),
+//    recent_files_group(new QActionGroup(this)),
+//    recent_files_clear_action(new QAction("Clear recent files", this)),
+//    watcher(new QFileSystemWatcher(this)),
+    start_test(new QAction("Start test", this)),
+    pause_test(new QAction("Pause test", this)),
+    reset_test(new QAction("Reset test", this)),
     test_pattern(NULL)
 {
     setWindowTitle("fstl");
@@ -67,35 +70,50 @@ Window::Window(QWidget *parent) :
     QObject::connect(about_action, &QAction::triggered,
                      this, &Window::on_about);
 
+    QObject::connect(start_test, &QAction::triggered,
+                     test_pattern, &TestPattern::start_pattern);
+
+    QObject::connect(pause_test, &QAction::triggered,
+                     test_pattern, &TestPattern::stop_pattern);
+
+    QObject::connect(reset_test, &QAction::triggered,
+                     test_pattern, &TestPattern::reset_pattern);
+
 //    QObject::connect(recent_files_clear_action, &QAction::triggered,
 //                     this, &Window::on_clear_recent);
 //    QObject::connect(recent_files_group, &QActionGroup::triggered,
 //                     this, &Window::on_load_recent);
 
-    rebuild_recent_files();
+//    rebuild_recent_files();
 
     auto file_menu = menuBar()->addMenu("File");
-    file_menu->addAction(open_action);
-    file_menu->addMenu(recent_files);
-    file_menu->addSeparator();
-    file_menu->addAction(reload_action);
-    file_menu->addAction(autoreload_action);
+//    file_menu->addAction(open_action);
+//    file_menu->addMenu(recent_files);
+//    file_menu->addSeparator();
+//    file_menu->addAction(reload_action);
+//    file_menu->addAction(autoreload_action);
     file_menu->addAction(quit_action);
 
-    auto view_menu = menuBar()->addMenu("View");
-    auto projection_menu = view_menu->addMenu("Projection");
-    projection_menu->addAction(perspective_action);
-    projection_menu->addAction(orthogonal_action);
-    auto projections = new QActionGroup(projection_menu);
-    for (auto p : {perspective_action, orthogonal_action})
-    {
-        projections->addAction(p);
-        p->setCheckable(true);
-    }
-    perspective_action->setChecked(true);
-    projections->setExclusive(true);
-    QObject::connect(projections, &QActionGroup::triggered,
-                     this, &Window::on_projection);
+//    auto view_menu = menuBar()->addMenu("View");
+//    auto projection_menu = view_menu->addMenu("Projection");
+//    projection_menu->addAction(perspective_action);
+//    projection_menu->addAction(orthogonal_action);
+//    auto projections = new QActionGroup(projection_menu);
+//    for (auto p : {perspective_action, orthogonal_action})
+//    {
+//        projections->addAction(p);
+//        p->setCheckable(true);
+//    }
+//    perspective_action->setChecked(true);
+//    projections->setExclusive(true);
+//    QObject::connect(projections, &QActionGroup::triggered,
+//                     this, &Window::on_projection);
+
+    auto test_menu = menuBar()->addMenu("Test");
+    test_menu->addAction(start_test);
+    test_menu->addAction(pause_test);
+    test_menu->addSeparator();
+    test_menu->addAction(reset_test);
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
@@ -103,16 +121,16 @@ Window::Window(QWidget *parent) :
     resize(600, 400);
 }
 
-void Window::on_open()
-{
-//    QString filename = QFileDialog::getOpenFileName(
-//                this, "Load .stl file", QString(), "*.stl");
-//    if (!filename.isNull())
-//    {
-//        const QColor color = QColor(50,250,50,128);
-//        load_stl(filename, "mesh",  color);
-//    }
-}
+//void Window::on_open()
+//{
+////    QString filename = QFileDialog::getOpenFileName(
+////                this, "Load .stl file", QString(), "*.stl");
+////    if (!filename.isNull())
+////    {
+////        const QColor color = QColor(50,250,50,128);
+////        load_stl(filename, "mesh",  color);
+////    }
+//}
 
 void Window::on_about()
 {
@@ -156,125 +174,125 @@ void Window::on_missing_file()
                           "The target file is missing.<br>");
 }
 
-void Window::enable_open()
-{
-    open_action->setEnabled(true);
-}
+//void Window::enable_open()
+//{
+//    open_action->setEnabled(true);
+//}
 
-void Window::disable_open()
-{
-    open_action->setEnabled(false);
-}
+//void Window::disable_open()
+//{
+//    open_action->setEnabled(false);
+//}
 
-void Window::set_watched(const QString& filename)
-{
-    const auto files = watcher->files();
-    if (files.size())
-    {
-        watcher->removePaths(watcher->files());
-    }
-    watcher->addPath(filename);
-
-    QSettings settings;
-    auto recent = settings.value(RECENT_FILE_KEY).toStringList();
-    const auto f = QFileInfo(filename).absoluteFilePath();
-    recent.removeAll(f);
-    recent.prepend(f);
-    while (recent.size() > MAX_RECENT_FILES)
-    {
-        recent.pop_back();
-    }
-    settings.setValue(RECENT_FILE_KEY, recent);
-    rebuild_recent_files();
-}
-
-void Window::on_projection(QAction* proj)
-{
-    if (proj == perspective_action)
-    {
-        canvas->view_perspective();
-    }
-    else
-    {
-        canvas->view_orthographic();
-    }
-}
-
-void Window::on_watched_change(const QString& filename)
-{
-//    if (autoreload_action->isChecked())
+//void Window::set_watched(const QString& filename)
+//{
+//    const auto files = watcher->files();
+//    if (files.size())
 //    {
-//        load_stl(filename, true);
+//        watcher->removePaths(watcher->files());
 //    }
-}
+//    watcher->addPath(filename);
 
-void Window::on_autoreload_triggered(bool b)
-{
-//    if (b)
+//    QSettings settings;
+//    auto recent = settings.value(RECENT_FILE_KEY).toStringList();
+//    const auto f = QFileInfo(filename).absoluteFilePath();
+//    recent.removeAll(f);
+//    recent.prepend(f);
+//    while (recent.size() > MAX_RECENT_FILES)
 //    {
-//        on_reload();
+//        recent.pop_back();
 //    }
-}
+//    settings.setValue(RECENT_FILE_KEY, recent);
+//    rebuild_recent_files();
+//}
 
-void Window::on_clear_recent()
-{
-    QSettings settings;
-    settings.setValue(RECENT_FILE_KEY, QStringList());
-    rebuild_recent_files();
-}
-
-void Window::on_load_recent(QAction* a)
-{
-//    load_stl(a->data().toString());
-}
-
-void Window::rebuild_recent_files()
-{
-    QSettings settings;
-    QStringList files = settings.value(RECENT_FILE_KEY).toStringList();
-
-    const auto actions = recent_files_group->actions();
-    for (auto a : actions)
-    {
-        recent_files_group->removeAction(a);
-    }
-    recent_files->clear();
-
-    for (auto f : files)
-    {
-        const auto a = new QAction(f, recent_files);
-        a->setData(f);
-        recent_files_group->addAction(a);
-        recent_files->addAction(a);
-    }
-    if (files.size() == 0)
-    {
-        auto a = new QAction("No recent files", recent_files);
-        recent_files->addAction(a);
-        a->setEnabled(false);
-    }
-    recent_files->addSeparator();
-    recent_files->addAction(recent_files_clear_action);
-}
-
-void Window::on_reload()
-{
-//    auto fs = watcher->files();
-//    if (fs.size() == 1)
+//void Window::on_projection(QAction* proj)
+//{
+//    if (proj == perspective_action)
 //    {
-//        load_stl(fs[0], true);
+//        canvas->view_perspective();
 //    }
-}
+//    else
+//    {
+//        canvas->view_orthographic();
+//    }
+//}
+
+//void Window::on_watched_change(const QString& filename)
+//{
+////    if (autoreload_action->isChecked())
+////    {
+////        load_stl(filename, true);
+////    }
+//}
+
+//void Window::on_autoreload_triggered(bool b)
+//{
+////    if (b)
+////    {
+////        on_reload();
+////    }
+//}
+
+//void Window::on_clear_recent()
+//{
+//    QSettings settings;
+//    settings.setValue(RECENT_FILE_KEY, QStringList());
+//    rebuild_recent_files();
+//}
+
+//void Window::on_load_recent(QAction* a)
+//{
+////    load_stl(a->data().toString());
+//}
+
+//void Window::rebuild_recent_files()
+//{
+//    QSettings settings;
+//    QStringList files = settings.value(RECENT_FILE_KEY).toStringList();
+
+//    const auto actions = recent_files_group->actions();
+//    for (auto a : actions)
+//    {
+//        recent_files_group->removeAction(a);
+//    }
+//    recent_files->clear();
+
+//    for (auto f : files)
+//    {
+//        const auto a = new QAction(f, recent_files);
+//        a->setData(f);
+//        recent_files_group->addAction(a);
+//        recent_files->addAction(a);
+//    }
+//    if (files.size() == 0)
+//    {
+//        auto a = new QAction("No recent files", recent_files);
+//        recent_files->addAction(a);
+//        a->setEnabled(false);
+//    }
+//    recent_files->addSeparator();
+//    recent_files->addAction(recent_files_clear_action);
+//}
+
+//void Window::on_reload()
+//{
+////    auto fs = watcher->files();
+////    if (fs.size() == 1)
+////    {
+////        load_stl(fs[0], true);
+////    }
+//}
 
 bool Window::load_stl(const QString& filename, const QString& name, const QString& shader_name, const QColor& base_color, int order)
 {
-    if (!open_action->isEnabled())  return false;
+//    if (!open_action->isEnabled())  return false;
 
     canvas->set_status("Loading " + filename);
 
     Loader* loader = new Loader(this, filename, name, shader_name, base_color, order);
-    connect(loader, &Loader::started,
-              this, &Window::disable_open);
+//    connect(loader, &Loader::started,
+//              this, &Window::disable_open);
 
     connect(loader, &Loader::got_mesh,
             canvas, &Canvas::load_mesh);
@@ -289,20 +307,20 @@ bool Window::load_stl(const QString& filename, const QString& name, const QStrin
 
     connect(loader, &Loader::finished,
             loader, &Loader::deleteLater);
-    connect(loader, &Loader::finished,
-              this, &Window::enable_open);
+//    connect(loader, &Loader::finished,
+//              this, &Window::enable_open);
     connect(loader, &Loader::finished,
             canvas, &Canvas::clear_status);
 
-    if (filename[0] != ':')
-    {
-        connect(loader, &Loader::loaded_file,
-                  this, &Window::setWindowTitle);
-        connect(loader, &Loader::loaded_file,
-                  this, &Window::set_watched);
-        autoreload_action->setEnabled(true);
-        reload_action->setEnabled(true);
-    }
+//    if (filename[0] != ':')
+//    {
+//        connect(loader, &Loader::loaded_file,
+//                  this, &Window::setWindowTitle);
+//        connect(loader, &Loader::loaded_file,
+//                  this, &Window::set_watched);
+//        autoreload_action->setEnabled(true);
+//        reload_action->setEnabled(true);
+//    }
 
     loader->start();
     return true;

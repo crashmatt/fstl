@@ -27,7 +27,10 @@ void TestPattern::center_color(QColor color, QVector3D rotation)
 
 void TestPattern::reset_pattern(void)
 {
-    m_rotation = QVector3D(0.0, 0.0, 0.0);
+    if(!pattern_running){
+        m_rotation = QVector3D(0.0, 0.0, 0.0);
+        emit set_rotation(m_rotation);
+    }
 }
 
 void TestPattern::start_pattern(void)

@@ -16,7 +16,8 @@ SOURCES += \
     ../src/loader.cpp \
     ../src/window.cpp \
     ../src/backdrop.cpp \
-    ../src/globject.cpp
+    ../src/globject.cpp \
+    ../src/testpattern.cpp
 
 HEADERS  += \
     ../src/app.h\
@@ -26,7 +27,8 @@ HEADERS  += \
     ../src/loader.h \
     ../src/window.h \
     ../src/backdrop.h \
-    ../src/globject.h
+    ../src/globject.h \
+    ../src/testpattern.h
 
 CONFIG += c++11
 

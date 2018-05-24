@@ -7,6 +7,7 @@
 #include <QVector3D>
 
 class Canvas;
+class TestPattern;
 
 class Window : public QMainWindow
 {
@@ -31,11 +32,6 @@ public slots:
     void disable_open();
 
     void set_watched(const QString& filename);
-
-    void center_color(QColor color, QVector3D rotation);
-
-signals:
-    void set_rotation(QVector3D rotation);
 
 private slots:
     void on_projection(QAction* proj);
@@ -64,7 +60,8 @@ private:
 
     QFileSystemWatcher* watcher;
 
-    Canvas* canvas;
+    Canvas*        canvas;
+    TestPattern*   test_pattern;
 };
 
 #endif // WINDOW_H

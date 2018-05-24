@@ -3,6 +3,7 @@
 #include "window.h"
 #include "canvas.h"
 #include "loader.h"
+#include "testpattern.h"
 
 const QString Window::RECENT_FILE_KEY = "recentFiles";
 
@@ -18,8 +19,8 @@ Window::Window(QWidget *parent) :
     recent_files(new QMenu("Open recent", this)),
     recent_files_group(new QActionGroup(this)),
     recent_files_clear_action(new QAction("Clear recent files", this)),
-    watcher(new QFileSystemWatcher(this))
-
+    watcher(new QFileSystemWatcher(this)),
+    test_pattern(NULL)
 {
     setWindowTitle("fstl");
     setAcceptDrops(true);
@@ -35,9 +36,10 @@ Window::Window(QWidget *parent) :
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
 
-    QObject::connect(canvas, &Canvas::center_color, this, &Window::center_color);
+    test_pattern = new TestPattern(this);
 
-    QObject::connect(this, &Window::set_rotation, canvas, &Canvas::set_rotation);
+    QObject::connect(canvas, &Canvas::center_color, test_pattern, &TestPattern::center_color, Qt::QueuedConnection);
+    QObject::connect(test_pattern, &TestPattern::set_rotation, canvas, &Canvas::set_rotation, Qt::QueuedConnection);
 
 
 //    QObject::connect(watcher, &QFileSystemWatcher::fileChanged,
@@ -184,13 +186,6 @@ void Window::set_watched(const QString& filename)
     }
     settings.setValue(RECENT_FILE_KEY, recent);
     rebuild_recent_files();
-}
-
-void Window::center_color(QColor color, QVector3D rotation)
-{
-    float yaw = fmod( rotation.z() + 1.0, 360.0);
-    rotation.setZ(yaw);
-    emit set_rotation(rotation);
 }
 
 void Window::on_projection(QAction* proj)

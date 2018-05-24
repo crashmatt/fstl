@@ -29,6 +29,7 @@ public slots:
     void clear_status();
     void load_mesh(Mesh* m, const QString& shader, const QColor& color, const int show_order, const QString& name);
     void set_rotation(QVector3D rotation);
+    void set_object_pos(QString& obj_name, QVector3D& pos);
 
 signals:
     void center_color(QColor pixel, QVector3D rotation);

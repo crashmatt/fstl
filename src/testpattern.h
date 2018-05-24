@@ -17,6 +17,7 @@ protected:
 
 signals:
     void set_rotation(QVector3D rotation);
+    void set_obj_pos(QString& obj_name, QVector3D& pos);
 
 public slots:
     void center_color(QColor color, QVector3D rotation);

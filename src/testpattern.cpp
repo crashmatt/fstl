@@ -28,8 +28,16 @@ void TestPattern::center_color(QColor color, QVector3D rotation)
 void TestPattern::reset_pattern(void)
 {
     if(!pattern_running){
+        QString name = "all";
+        QVector3D pos = QVector3D(0.05, 0.1, 0.0);
+        emit set_obj_pos(name, pos);
+        name = "antenna";
+        pos = QVector3D(0.0, 0.0, 0.0);
+        emit set_obj_pos(name, pos);
+
         m_rotation = QVector3D(0.0, 0.0, 0.0);
         emit set_rotation(m_rotation);
+
     }
 }
 

@@ -19,7 +19,7 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     , perspective(0.0)
     , anim(this, "perspective")
     , status(" ")
-    ,roll(0)
+    , roll(0)
 {
 	setFormat(format);
     QFile styleFile(":/qt/style.qss");
@@ -100,6 +100,22 @@ void Canvas::set_rotation(QVector3D rotation)
     yaw = rotation.z();
     update();
 }
+
+void Canvas::set_object_pos(QString& obj_name, QVector3D& pos)
+{
+    if(obj_name == "all"){
+        foreach(GLObject* obj,  obj_map.values()){
+            if(obj != NULL){
+                obj->m_offset = pos;
+            }
+        }
+    } else {
+        GLObject *obj = obj_name_map.value(obj_name, NULL);
+        if(obj == NULL) return;
+        obj->m_offset = pos;
+    }
+}
+
 
 void Canvas::set_status(const QString &s)
 {

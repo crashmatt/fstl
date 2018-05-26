@@ -33,6 +33,7 @@ Window::Window(QWidget *parent) :
     QObject::connect(canvas, &Canvas::center_color, test_pattern, &TestPattern::center_color, Qt::QueuedConnection);
     QObject::connect(test_pattern, &TestPattern::set_rotation, canvas, &Canvas::set_rotation, Qt::QueuedConnection);
     QObject::connect(test_pattern, &TestPattern::set_obj_pos, canvas, &Canvas::set_object_pos);
+    QObject::connect(test_pattern, &TestPattern::set_view_pos, canvas, &Canvas::set_view_pos);
 
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,

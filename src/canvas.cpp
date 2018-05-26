@@ -116,6 +116,11 @@ void Canvas::set_object_pos(QString& obj_name, QVector3D& pos)
     }
 }
 
+void Canvas::set_view_pos(QVector3D& pos)
+{
+    center = pos;
+}
+
 
 void Canvas::set_status(const QString &s)
 {
@@ -226,6 +231,7 @@ QMatrix4x4 Canvas::transform_matrix(QVector3D offset) const
     QMatrix4x4 m;
     m.rotate(tilt, QVector3D(1, 0, 0));
     m.rotate(yaw,  QVector3D(0, 0, 1));
+    m.rotate(roll,  QVector3D(0, 1, 0));
     m.scale(-scale, scale, -scale);
     m.translate(-center + offset);
     return m;
@@ -278,14 +284,14 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
         tilt = fmod(tilt - d.y(), 360);
         update();
     }
-    else if (event->buttons() & Qt::RightButton)
-    {
-        center = transform_matrix().inverted() *
-                 view_matrix().inverted() *
-                 QVector3D(-d.x() / (0.5*width()),
-                            d.y() / (0.5*height()), 0);
-        update();
-    }
+//    else if (event->buttons() & Qt::RightButton)
+//    {
+//        center = transform_matrix().inverted() *
+//                 view_matrix().inverted() *
+//                 QVector3D(-d.x() / (0.5*width()),
+//                            d.y() / (0.5*height()), 0);
+//        update();
+//    }
     mouse_pos = p;
 }
 

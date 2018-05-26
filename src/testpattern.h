@@ -14,10 +14,13 @@ public:
 protected:
     bool pattern_running;
     QVector3D m_rotation;
+    QVector3D m_view_offset;
 
 signals:
     void set_rotation(QVector3D rotation);
     void set_obj_pos(QString& obj_name, QVector3D& pos);
+    void set_view_pos(QVector3D& pos);
+    void test_completed();
 
 public slots:
     void center_color(QColor color, QVector3D rotation);

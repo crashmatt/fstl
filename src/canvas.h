@@ -31,6 +31,7 @@ public slots:
     void set_rotation(QVector3D rotation);
     void set_object_pos(QString& obj_name, QVector3D& pos);
     void set_view_pos(QVector3D& pos);
+    void set_zoom(float zm);
 
 signals:
     void center_color(QColor pixel, QVector3D rotation);

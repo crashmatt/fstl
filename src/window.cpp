@@ -10,8 +10,9 @@ Window::Window(QWidget *parent) :
     about_action(new QAction("About", this)),
     quit_action(new QAction("Quit", this)),
     start_test(new QAction("Start test", this)),
-    pause_test(new QAction("Pause test", this)),
+    stop_test(new QAction("Stop test", this)),
     reset_test(new QAction("Reset test", this)),
+    step_antenna(new QAction("Step antenna", this)),
     test_pattern(NULL)
 {
     setWindowTitle("fstl");
@@ -34,6 +35,8 @@ Window::Window(QWidget *parent) :
     QObject::connect(test_pattern, &TestPattern::set_rotation, canvas, &Canvas::set_rotation, Qt::QueuedConnection);
     QObject::connect(test_pattern, &TestPattern::set_obj_pos, canvas, &Canvas::set_object_pos);
     QObject::connect(test_pattern, &TestPattern::set_view_pos, canvas, &Canvas::set_view_pos);
+    QObject::connect(test_pattern, &TestPattern::set_zoom, canvas, &Canvas::set_zoom);
+    connect(test_pattern, SIGNAL(redraw()), canvas, SLOT(update()));
 
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,
@@ -45,18 +48,26 @@ Window::Window(QWidget *parent) :
     QObject::connect(start_test, &QAction::triggered,
                      test_pattern, &TestPattern::start_pattern);
 
-    QObject::connect(pause_test, &QAction::triggered,
+    QObject::connect(stop_test, &QAction::triggered,
                      test_pattern, &TestPattern::stop_pattern);
 
     QObject::connect(reset_test, &QAction::triggered,
                      test_pattern, &TestPattern::reset_pattern);
+
+    step_antenna->setShortcut(QKeySequence(Qt::Key_A));
+    QObject::connect(step_antenna, &QAction::triggered,
+                     test_pattern, &TestPattern::step_antenna_pos);
+
+
 
     auto file_menu = menuBar()->addMenu("File");
     file_menu->addAction(quit_action);
 
     auto test_menu = menuBar()->addMenu("Test");
     test_menu->addAction(start_test);
-    test_menu->addAction(pause_test);
+    test_menu->addAction(stop_test);
+    test_menu->addSeparator();
+    test_menu->addAction(step_antenna);
     test_menu->addSeparator();
     test_menu->addAction(reset_test);
 

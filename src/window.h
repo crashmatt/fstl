@@ -32,8 +32,9 @@ private:
     QAction* const about_action;
     QAction* const quit_action;
     QAction* const start_test;
-    QAction* const pause_test;
+    QAction* const stop_test;
     QAction* const reset_test;
+    QAction* const step_antenna;
 
     Canvas*        canvas;
     TestPattern*   test_pattern;

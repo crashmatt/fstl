@@ -83,7 +83,6 @@ void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color,
         GLObject *newobj = new GLObject(new_mesh, shader, color, name);
         obj_map[show_order] = newobj;
         obj_name_map[name] = newobj;
-        if(name == "antenna") newobj->m_offset = QVector3D(0.25, 0.25, 0.25);
     } else {
         delete(new_mesh);
     }
@@ -119,6 +118,11 @@ void Canvas::set_object_pos(QString& obj_name, QVector3D& pos)
 void Canvas::set_view_pos(QVector3D& pos)
 {
     center = pos;
+}
+
+void Canvas::set_zoom(float zm)
+{
+    zoom = zm;
 }
 
 

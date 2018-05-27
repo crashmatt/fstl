@@ -189,16 +189,31 @@ void Canvas::paintGL()
     unsigned char pick_col[3];
     int pxwidth = width();
     int pxheight = height();
+
     glReadPixels( pxwidth/2, pxheight/2, 1, 1, GL_RGB , GL_UNSIGNED_BYTE , pick_col );
 
-    float px_offset = 0.1 * scale * zoom * 0.5 * width();
-    int px = (int) px_offset;
+    float px_offset = 0.1 * scale * zoom * 0.5;
+    if(pxwidth > pxheight)
+        px_offset *= pxwidth;
+    else
+        px_offset *= pxheight;
 
-    status = QString("R:%1 G:%2 B:%3 h:%4 w:%5 px:%6").arg(pick_col[0]).arg(pick_col[1]).arg(pick_col[2]).arg(pxheight).arg(pxwidth).arg(px);
+    const int px = (int) px_offset;
+    const int pxcnt = (px+1)*(px+1);
+
+    unsigned char img[pxcnt];
+    glReadPixels( (pxwidth-px)/2, (pxheight-px)/2, px, px, GL_GREEN , GL_UNSIGNED_BYTE , &img[0]);
+    long int g=0;
+    for(int i=0; i<pxcnt; i++){
+        g += img[i];
+    }
+    g /= pxcnt;
 
     QColor color = QColor(pick_col[0], pick_col[1], pick_col[2]);
     QVector3D rotation = QVector3D(tilt, roll, yaw);
     emit center_color(color, rotation);
+
+    status = QString("R:%1 G:%2 B:%3 h:%4 w:%5 px:%6 gh:%7").arg(pick_col[0]).arg(pick_col[1]).arg(pick_col[2]).arg(pxheight).arg(pxwidth).arg(px).arg(g);
 
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing);

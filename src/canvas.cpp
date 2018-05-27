@@ -187,9 +187,14 @@ void Canvas::paintGL()
     glFinish();
 
     unsigned char pick_col[3];
-    glReadPixels( width()/2, height()/2, 1, 1, GL_RGB , GL_UNSIGNED_BYTE , pick_col );
+    int pxwidth = width();
+    int pxheight = height();
+    glReadPixels( pxwidth/2, pxheight/2, 1, 1, GL_RGB , GL_UNSIGNED_BYTE , pick_col );
 
-    status = QString("R:%1 G:%2 B:%3").arg(pick_col[0]).arg(pick_col[1]).arg(pick_col[2]);
+    float px_offset = 0.1 * scale * zoom * 0.5 * width();
+    int px = (int) px_offset;
+
+    status = QString("R:%1 G:%2 B:%3 h:%4 w:%5 px:%6").arg(pick_col[0]).arg(pick_col[1]).arg(pick_col[2]).arg(pxheight).arg(pxwidth).arg(px);
 
     QColor color = QColor(pick_col[0], pick_col[1], pick_col[2]);
     QVector3D rotation = QVector3D(tilt, roll, yaw);
@@ -198,6 +203,7 @@ void Canvas::paintGL()
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing);
     painter.drawText(10, height() - 10, status);
+    painter.drawLine( (pxwidth-px)/2, (pxheight-px)/2, (pxwidth+px)/2, (pxheight+px)/2);
 }
 
 void Canvas::draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader, const QColor& color, QVector3D offset)

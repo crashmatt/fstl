@@ -163,7 +163,7 @@ void Canvas::initializeGL()
     antenna_shader.link();
     shader_map["antenna"] =  &antenna_shader;
 
-    backdrop = new Backdrop();
+    backdrop = new Backdrop(QColor(50,0,50));
 }
 
 
@@ -177,7 +177,6 @@ void Canvas::paintGL()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);      //To support transparency
 
 	backdrop->draw();
-
 
     foreach(int show_order, obj_map.keys()){
         GLObject* obj = obj_map[show_order];
@@ -303,11 +302,11 @@ void Canvas::wheelEvent(QWheelEvent *event)
 {
     // Find GL position before the zoom operation
     // (to zoom about mouse cursor)
-    auto p = event->pos();
-    QVector3D v(1 - p.x() / (0.5*width()),
-                p.y() / (0.5*height()) - 1, 0);
-    QVector3D a = transform_matrix().inverted() *
-                  view_matrix().inverted() * v;
+//    auto p = event->pos();
+//    QVector3D v(1 - p.x() / (0.5*width()),
+//                p.y() / (0.5*height()) - 1, 0);
+//    QVector3D a = transform_matrix().inverted() *
+//                  view_matrix().inverted() * v;
 
     if (event->delta() < 0)
     {
@@ -320,10 +319,10 @@ void Canvas::wheelEvent(QWheelEvent *event)
             zoom /= 1.001;
     }
 
-    // Then find the cursor's GL position post-zoom and adjust center.
-    QVector3D b = transform_matrix().inverted() *
-                  view_matrix().inverted() * v;
-    center += b - a;
+//    // Then find the cursor's GL position post-zoom and adjust center.
+//    QVector3D b = transform_matrix().inverted() *
+//                  view_matrix().inverted() * v;
+//    center += b - a;
     update();
 }
 

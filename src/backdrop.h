@@ -4,11 +4,12 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
+#include <QColor>
 
 class Backdrop : protected QOpenGLFunctions
 {
 public:
-    Backdrop();
+    Backdrop(QColor color);
     void draw();
 private:
     QOpenGLShaderProgram shader;

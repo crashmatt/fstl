@@ -1,6 +1,7 @@
+#include <QColor>
 #include "backdrop.h"
 
-Backdrop::Backdrop()
+Backdrop::Backdrop(QColor color)
 {
     initializeOpenGLFunctions();
 
@@ -8,11 +9,21 @@ Backdrop::Backdrop()
     shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/quad.frag");
     shader.link();
 
+    double red = color.redF();
+    double green = color.greenF();
+    double blue = color.blueF();
+
     float vbuf[] = {
-        -1, -1, 0.00, 0.10, 0.15,
-        -1,  1, 0.03, 0.21, 0.26,
-         1, -1, 0.00, 0.12, 0.18,
-         1,  1, 0.06, 0.26, 0.30};
+        -1, -1, red, green, blue,
+        -1,  1, red, green, blue,
+         1, -1, red, green, blue,
+         1,  1, red, green, blue};
+
+//    float vbuf[] = {
+//        -1, -1, 0.00, 0.10, 0.15,
+//        -1,  1, 0.03, 0.21, 0.26,
+//         1, -1, 0.00, 0.12, 0.18,
+//         1,  1, 0.06, 0.26, 0.30};
 
     vertices.create();
     vertices.bind();

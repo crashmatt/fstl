@@ -68,6 +68,7 @@ private:
 
     QVector3D center;
     float scale;
+    float requested_zoom;
     float zoom;
     float tilt;
     float yaw;

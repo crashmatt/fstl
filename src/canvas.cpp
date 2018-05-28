@@ -14,6 +14,7 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     : QOpenGLWidget(parent)
     , scale(1)
     , zoom(2.0)
+    , requested_zoom(2.0)
     , tilt(90)
     , yaw(0)
     , perspective(0.0)
@@ -122,7 +123,7 @@ void Canvas::set_view_pos(QVector3D& pos)
 
 void Canvas::set_zoom(float zm)
 {
-    zoom = zm;
+    requested_zoom = zm;
 }
 
 
@@ -178,6 +179,9 @@ void Canvas::paintGL()
 
 	backdrop->draw();
 
+    int zoom_step = floor(log(requested_zoom)/(log(2)) + 0.5);
+    zoom = pow(2.0, zoom_step);
+
     foreach(int show_order, obj_map.keys()){
         GLObject* obj = obj_map[show_order];
         if(obj) draw_mesh(obj->m_mesh, obj->m_shaderprog, obj->m_color, obj->m_offset);
@@ -198,8 +202,14 @@ void Canvas::paintGL()
     else
         px_offset *= pxheight;
 
-    const int px = (int) px_offset;
-    const int pxcnt = (px+1)*(px+1);
+    int px = (int) px_offset;
+    if(px < 4)
+        px = 4;
+    if(px > pxwidth)
+        px = pxwidth;
+    if(px > pxheight)
+        px = pxheight;
+    const int pxcnt = (px+2)*(px+2);
 
     unsigned char img[pxcnt];
     glReadPixels( (pxwidth-px)/2, (pxheight-px)/2, px, px, GL_GREEN , GL_UNSIGNED_BYTE , &img[0]);
@@ -213,7 +223,16 @@ void Canvas::paintGL()
     QVector3D rotation = QVector3D(tilt, roll, yaw);
     emit center_color(color, rotation);
 
-    status = QString("R:%1 G:%2 B:%3 h:%4 w:%5 px:%6 gh:%7").arg(pick_col[0]).arg(pick_col[1]).arg(pick_col[2]).arg(pxheight).arg(pxwidth).arg(px).arg(g);
+    status = QString("RGB:%1 %2 %3 h:%4 w:%5 px:%6 gh:%7 zm:%8 rz:%9")
+            .arg(pick_col[0],2,16).toUpper()
+            .arg(pick_col[1],2,16).toUpper()
+            .arg(pick_col[2],2,16).toUpper()
+            .arg(pxheight)
+            .arg(pxwidth)
+            .arg(px)
+            .arg(g)
+            .arg(zoom)
+            .arg(requested_zoom);
 
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing);
@@ -332,12 +351,12 @@ void Canvas::wheelEvent(QWheelEvent *event)
     if (event->delta() < 0)
     {
         for (int i=0; i > event->delta(); --i)
-            zoom *= 1.001;
+            requested_zoom *= 1.001;
     }
     else if (event->delta() > 0)
     {
         for (int i=0; i < event->delta(); ++i)
-            zoom /= 1.001;
+            requested_zoom /= 1.001;
     }
 
 //    // Then find the cursor's GL position post-zoom and adjust center.

@@ -35,7 +35,7 @@ void TestPattern::center_color(QColor color, QVector3D rotation)
 void TestPattern::reset_pattern(void)
 {
     if(!m_pattern_running){
-        emit set_zoom(4.0);
+        emit set_zoom(16.0);
         set_antenna_pos_to_index(0);
         m_rotation = QVector3D(-90.0, 0.0, 0.0);
         emit set_rotation(m_rotation);

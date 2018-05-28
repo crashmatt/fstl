@@ -159,10 +159,10 @@ void Canvas::initializeGL()
     solid_shader.link();
     shader_map["solid"] =  &solid_shader;
 
-    antenna_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/antenna.vert");
-    antenna_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/antenna.frag");
-    antenna_shader.link();
-    shader_map["antenna"] =  &antenna_shader;
+//    antenna_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/antenna.vert");
+//    antenna_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/antenna.frag");
+//    antenna_shader.link();
+//    shader_map["antenna"] =  &antenna_shader;
 
     backdrop = new Backdrop(QColor(50,0,50));
 }
@@ -223,16 +223,17 @@ void Canvas::paintGL()
     QVector3D rotation = QVector3D(tilt, roll, yaw);
     emit center_color(color, rotation);
 
-    status = QString("RGB:%1 %2 %3 h:%4 w:%5 px:%6 gh:%7 zm:%8 rz:%9")
-            .arg(pick_col[0],2,16).toUpper()
-            .arg(pick_col[1],2,16).toUpper()
-            .arg(pick_col[2],2,16).toUpper()
-            .arg(pxheight)
-            .arg(pxwidth)
+    status = QString("RGB:%1,%2,%3 px:%4 gh:%5 zm:%6 tilt:%7 roll:%8 yaw:%9")
+            .arg(pick_col[0],2,16, QChar('0')).toUpper()
+            .arg(pick_col[1],2,16, QChar('0')).toUpper()
+            .arg(pick_col[2],2,16, QChar('0')).toUpper()
             .arg(px)
             .arg(g)
             .arg(zoom)
-            .arg(requested_zoom);
+            .arg(tilt)
+            .arg(roll)
+            .arg(yaw)
+            ;
 
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing);

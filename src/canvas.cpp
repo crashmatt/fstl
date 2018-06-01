@@ -15,7 +15,7 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     , scale(1)
     , zoom(2.0)
     , requested_zoom(2.0)
-    , tilt(90)
+    , tilt(0)
     , yaw(0)
     , perspective(0.0)
     , anim(this, "perspective")
@@ -280,7 +280,7 @@ void Canvas::draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader, const QColor&
 QMatrix4x4 Canvas::transform_matrix(QVector3D offset) const
 {
     QMatrix4x4 m;
-    m.rotate(tilt, QVector3D(1, 0, 0));
+    m.rotate(tilt+90.0, QVector3D(1, 0, 0));
     m.rotate(yaw,  QVector3D(0, 0, 1));
     m.rotate(roll,  QVector3D(0, 1, 0));
     m.scale(-scale, scale, -scale);

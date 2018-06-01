@@ -41,7 +41,7 @@ void TestPattern::center_color(QColor color, QVector3D rotation)
 //        roll *= pitch_ratio;
         m_rotation.setX(pitch);
         m_rotation.setZ(yaw);
-        m_rotation.setY(yaw);
+//        m_rotation.setY(yaw);
         emit set_rotation(m_rotation);
     }
 }
@@ -53,7 +53,7 @@ void TestPattern::reset_pattern(void)
         set_antenna_pos_to_index(0);
         m_yaw_index = 0;
         m_pitch_index = 0;
-        m_rotation = QVector3D(-90.0, 0.0, 0.0);
+        m_rotation = QVector3D(0.0, 0.0, 0.0);
         emit set_rotation(m_rotation);
     }
 }

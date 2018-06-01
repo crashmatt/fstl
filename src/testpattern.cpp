@@ -4,9 +4,9 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
   , m_pattern_running(false)
   , m_rotation(0.0, 0.0, 0.0)
   , m_ant_pos_index(-1)
-  , m_pitch_steps(37)
+  , m_pitch_steps(36)
   , m_pitch_index(0)
-  , m_yaw_steps(36)
+  , m_yaw_steps(18)
   , m_yaw_index(0)
 
 {
@@ -18,30 +18,26 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
 void TestPattern::center_color(QColor color, QVector3D rotation)
 {
     if(m_pattern_running){
-        m_yaw_index++;
-        if(m_yaw_index > m_yaw_steps){
-            m_yaw_index = 0;
-            m_pitch_index++;
-            if(m_pitch_index > m_pitch_steps){
+        m_pitch_index++;
+        if(m_pitch_index >= m_pitch_steps){
+            m_pitch_index = 0;
+            m_yaw_index++;
+            if(m_yaw_index > m_yaw_steps){
+                m_yaw_index = 0;
                 if(!set_antenna_pos_to_index(m_ant_pos_index+1)){
                     m_pattern_running = false;
                     emit test_completed();
                     return;
                 }
-                m_pitch_index = 0;
             }
         }
 
         float pitch_ratio = (2.0 * ((float) m_pitch_index / (float) m_pitch_steps)) - 1.0;
-        float pitch = pitch_ratio * 90.0;
+        float pitch = pitch_ratio * 180.0;
         float yaw_ratio = (float) m_yaw_index / (float) m_yaw_steps;
-        float yaw = (yaw_ratio * 360.0) - 180.0;
-//        yaw *= (1.0 - (pitch_ratio * pitch_ratio));
-        float roll = (yaw_ratio * 180.0) - 90.0;
-//        roll *= pitch_ratio;
+        float yaw = (yaw_ratio * 180.0) - 90.0;
         m_rotation.setX(pitch);
         m_rotation.setZ(yaw);
-//        m_rotation.setY(yaw);
         emit set_rotation(m_rotation);
     }
 }

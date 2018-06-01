@@ -49,6 +49,7 @@ Window::Window(QWidget *parent) :
     QObject::connect(about_action, &QAction::triggered,
                      this, &Window::on_about);
 
+    start_test->setShortcut(QKeySequence(Qt::Key_S));
     QObject::connect(start_test, &QAction::triggered,
                      test_pattern, &TestPattern::start_pattern);
 

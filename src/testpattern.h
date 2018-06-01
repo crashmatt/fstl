@@ -5,6 +5,7 @@
 #include <QVector3D>
 #include <QObject>
 #include <QList>
+#include <QVector>
 
 class TestPattern : public QObject
 {
@@ -21,6 +22,9 @@ protected:
     int                 m_pitch_index;
     int                 m_yaw_steps;
     int                 m_yaw_index;
+    int                 m_measure_index;
+    QVector<QColor>     m_results;
+    QVector<QVector3D>  m_rotations;
 
     bool set_antenna_pos_to_index(int index);
 

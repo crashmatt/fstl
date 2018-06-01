@@ -8,6 +8,7 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
   , m_pitch_index(0)
   , m_yaw_steps(18)
   , m_yaw_index(0)
+  , m_measure_index(0)
 
 {
     m_antenna_positions.append( QVector3D(0.00, 0.35, 0.05) );      //Antenna just behind cockpit cover
@@ -18,6 +19,8 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
 void TestPattern::center_color(QColor color, QVector3D rotation)
 {
     if(m_pattern_running){
+        m_results.append(color);
+        m_measure_index++;
         m_pitch_index++;
         if(m_pitch_index >= m_pitch_steps){
             m_pitch_index = 0;
@@ -45,6 +48,9 @@ void TestPattern::center_color(QColor color, QVector3D rotation)
 void TestPattern::reset_pattern(void)
 {
     if(!m_pattern_running){
+        m_measure_index = 0;
+        m_results.clear();
+        m_results.reserve(m_antenna_positions.size() * m_pitch_steps * (m_yaw_steps+1));
         emit set_zoom(16.0);
         set_antenna_pos_to_index(0);
         m_yaw_index = 0;

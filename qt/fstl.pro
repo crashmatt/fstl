@@ -17,7 +17,8 @@ SOURCES += \
     ../src/window.cpp \
     ../src/backdrop.cpp \
     ../src/globject.cpp \
-    ../src/testpattern.cpp
+    ../src/testpattern.cpp \
+    ../src/antennadata.cpp
 
 HEADERS  += \
     ../src/app.h\
@@ -28,7 +29,8 @@ HEADERS  += \
     ../src/window.h \
     ../src/backdrop.h \
     ../src/globject.h \
-    ../src/testpattern.h
+    ../src/testpattern.h \
+    ../src/antennadata.h
 
 CONFIG += c++11
 

@@ -17,6 +17,10 @@ protected:
     QVector3D           m_rotation;
     QList<QVector3D>    m_antenna_positions;
     int                 m_ant_pos_index;
+    int                 m_pitch_steps;
+    int                 m_pitch_index;
+    int                 m_yaw_steps;
+    int                 m_yaw_index;
 
     bool set_antenna_pos_to_index(int index);
 

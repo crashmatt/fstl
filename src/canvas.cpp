@@ -97,7 +97,7 @@ void Canvas::set_rotation(QVector3D rotation)
 {
     tilt = rotation.x();
     roll = rotation.y();
-    yaw = rotation.z();
+    yaw  = rotation.z();
     update();
 }
 
@@ -126,6 +126,13 @@ void Canvas::set_zoom(float zm)
     requested_zoom = zm;
 }
 
+void Canvas::reset_rotation()
+{
+    roll = 0;
+    tilt = 0;
+    yaw = 0;
+    update();
+}
 
 void Canvas::set_status(const QString &s)
 {
@@ -326,6 +333,10 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
     {
         yaw = fmod(yaw - d.x(), 360);
         tilt = fmod(tilt - d.y(), 360);
+        update();
+    } else if (event->buttons() & Qt::RightButton)
+    {
+        roll = fmod(roll + d.x(), 360);
         update();
     }
 //    else if (event->buttons() & Qt::RightButton)

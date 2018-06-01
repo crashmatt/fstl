@@ -4,6 +4,7 @@
 #include "canvas.h"
 #include "loader.h"
 #include "testpattern.h"
+#include "antennadata.h"
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
@@ -13,7 +14,8 @@ Window::Window(QWidget *parent) :
     stop_test(new QAction("Stop test", this)),
     reset_test(new QAction("Reset test", this)),
     step_antenna(new QAction("Step antenna", this)),
-    test_pattern(NULL)
+    test_pattern(NULL),
+    reset_rotation(new QAction("Reset rotation", this))
 {
     setWindowTitle("fstl");
     setAcceptDrops(true);
@@ -38,6 +40,8 @@ Window::Window(QWidget *parent) :
     QObject::connect(test_pattern, &TestPattern::set_zoom, canvas, &Canvas::set_zoom);
     connect(test_pattern, SIGNAL(redraw()), canvas, SLOT(update()));
 
+    antenna_data = new AntennaData(this);
+
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,
                      this, &Window::close);
@@ -58,7 +62,9 @@ Window::Window(QWidget *parent) :
     QObject::connect(step_antenna, &QAction::triggered,
                      test_pattern, &TestPattern::step_antenna_pos);
 
-
+    reset_rotation->setShortcut(QKeySequence(Qt::Key_R));
+    QObject::connect(reset_rotation, &QAction::triggered,
+                     canvas, &Canvas::reset_rotation);
 
     auto file_menu = menuBar()->addMenu("File");
     file_menu->addAction(quit_action);
@@ -70,6 +76,8 @@ Window::Window(QWidget *parent) :
     test_menu->addAction(step_antenna);
     test_menu->addSeparator();
     test_menu->addAction(reset_test);
+    test_menu->addSeparator();
+    test_menu->addAction(reset_rotation);
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);

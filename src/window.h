@@ -8,6 +8,7 @@
 
 class Canvas;
 class TestPattern;
+class AntennaData;
 
 class Window : public QMainWindow
 {
@@ -35,9 +36,11 @@ private:
     QAction* const stop_test;
     QAction* const reset_test;
     QAction* const step_antenna;
+    QAction* const reset_rotation;
 
     Canvas*        canvas;
     TestPattern*   test_pattern;
+    AntennaData*   antenna_data;
 };
 
 #endif // WINDOW_H

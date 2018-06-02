@@ -8,7 +8,6 @@
 
 class Canvas;
 class TestPattern;
-class AntennaData;
 
 class Window : public QMainWindow
 {
@@ -40,7 +39,6 @@ private:
 
     Canvas*        canvas;
     TestPattern*   test_pattern;
-    AntennaData*   antenna_data;
 };
 
 #endif // WINDOW_H

@@ -8,7 +8,6 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
   , m_pitch_index(0)
   , m_yaw_steps(18)
   , m_yaw_index(0)
-  , m_measure_index(0)
 
 {
     m_antenna_positions.append( QVector3D(0.00, 0.35, 0.05) );      //Antenna just behind cockpit cover
@@ -19,13 +18,14 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
 void TestPattern::center_color(QColor color, QVector3D rotation)
 {
     if(m_pattern_running){
-        m_results.append(color);
-        m_measure_index++;
+        AntennaDataPoint* datapoint = new AntennaDataPoint(this, rotation);
+        AntennaData* data = m_results[m_ant_pos_index];
+        data->m_antenna_data.append(datapoint);
         m_pitch_index++;
         if(m_pitch_index >= m_pitch_steps){
             m_pitch_index = 0;
             m_yaw_index++;
-            if(m_yaw_index > m_yaw_steps){
+            if(m_yaw_index >= m_yaw_steps){
                 m_yaw_index = 0;
                 if(!set_antenna_pos_to_index(m_ant_pos_index+1)){
                     m_pattern_running = false;
@@ -48,9 +48,16 @@ void TestPattern::center_color(QColor color, QVector3D rotation)
 void TestPattern::reset_pattern(void)
 {
     if(!m_pattern_running){
-        m_measure_index = 0;
+        foreach(AntennaData* data, m_results){
+            data->deleteLater();
+        }
         m_results.clear();
-        m_results.reserve(m_antenna_positions.size() * m_pitch_steps * (m_yaw_steps+1));
+
+        foreach(QVector3D pos, m_antenna_positions){
+            AntennaData* data = new AntennaData(this, pos, m_pitch_steps, m_yaw_steps);
+            m_results.append(data);
+        }
+
         emit set_zoom(16.0);
         set_antenna_pos_to_index(0);
         m_yaw_index = 0;

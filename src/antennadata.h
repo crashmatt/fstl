@@ -6,15 +6,17 @@
 #include <QVector3D>
 #include <QMap>
 #include <QList>
+#include <QVector>
 
 class AntennaDataPoint : public QObject
 {
     Q_OBJECT
 public:
-    explicit AntennaDataPoint(QObject *parent = 0, QVector3D rotation = {0.0,0.0,0.0}, float center_visibility=0.0, float visibility=0.0);
+    explicit AntennaDataPoint(QObject *parent = 0, QVector3D rotation = {0.0,0.0,0.0});
 
 public:
     QVector3D   m_rotation;
+    QColor      m_center_color;
     float       m_center_visibility;
     double      m_visibility;
 
@@ -30,10 +32,14 @@ class AntennaData : public QObject
     Q_OBJECT
 
 public:
-    explicit AntennaData(QObject *parent = 0, QColor antenna_color = {0,255,0,255});
+    explicit AntennaData(QObject *parent, QVector3D ant_pos, int x_steps, int z_steps);
+
+    QVector<AntennaDataPoint*> m_antenna_data;
 
 protected:
-    QColor  m_antenna_color;
+    QVector3D   m_ant_pos;
+    int         m_x_axis_steps;
+    int         m_z_axis_steps;
 
 signals:
 

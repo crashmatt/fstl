@@ -7,6 +7,8 @@
 #include <QList>
 #include <QVector>
 
+#include "antennadata.h"
+
 class TestPattern : public QObject
 {
     Q_OBJECT
@@ -22,9 +24,7 @@ protected:
     int                 m_pitch_index;
     int                 m_yaw_steps;
     int                 m_yaw_index;
-    int                 m_measure_index;
-    QVector<QColor>     m_results;
-    QVector<QVector3D>  m_rotations;
+    QVector<AntennaData*> m_results;
 
     bool set_antenna_pos_to_index(int index);
 

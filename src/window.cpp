@@ -4,7 +4,6 @@
 #include "canvas.h"
 #include "loader.h"
 #include "testpattern.h"
-#include "antennadata.h"
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
@@ -39,8 +38,6 @@ Window::Window(QWidget *parent) :
     QObject::connect(test_pattern, &TestPattern::set_view_pos, canvas, &Canvas::set_view_pos);
     QObject::connect(test_pattern, &TestPattern::set_zoom, canvas, &Canvas::set_zoom);
     connect(test_pattern, SIGNAL(redraw()), canvas, SLOT(update()));
-
-    antenna_data = new AntennaData(this);
 
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,

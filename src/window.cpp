@@ -41,6 +41,7 @@ Window::Window(QWidget *parent) :
     connect(test_pattern, SIGNAL(redraw()), canvas, SLOT(update()));
 
     connect(test_pattern, &TestPattern::antenna_data, DataProcessor::process_data);
+//    connect(DataProcessor::built_mesh, canvas, Canvas::load_mesh);
 
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,

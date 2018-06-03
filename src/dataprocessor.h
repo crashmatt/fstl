@@ -2,6 +2,7 @@
 #define DATAPROCESSOR_H
 
 #include <QObject>
+#include "mesh.h"
 
 #include "antennadata.h"
 
@@ -15,6 +16,7 @@ protected:
     static void build_mesh(AntennaData* data);
 
 signals:
+    void built_mesh(Mesh* m, QString shader, QColor color, int order, QString name);
 
 public slots:
     static void process_data(AntennaData* data);

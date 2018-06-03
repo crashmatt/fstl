@@ -4,6 +4,7 @@
 #include "canvas.h"
 #include "loader.h"
 #include "testpattern.h"
+#include "dataprocessor.h"
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
@@ -32,12 +33,14 @@ Window::Window(QWidget *parent) :
 
     test_pattern = new TestPattern(this);
 
-    QObject::connect(canvas, &Canvas::center_color, test_pattern, &TestPattern::center_color, Qt::QueuedConnection);
+    QObject::connect(canvas, &Canvas::antenna_visibility, test_pattern, &TestPattern::antenna_visibility, Qt::QueuedConnection);
     QObject::connect(test_pattern, &TestPattern::set_rotation, canvas, &Canvas::set_rotation, Qt::QueuedConnection);
     QObject::connect(test_pattern, &TestPattern::set_obj_pos, canvas, &Canvas::set_object_pos);
     QObject::connect(test_pattern, &TestPattern::set_view_pos, canvas, &Canvas::set_view_pos);
     QObject::connect(test_pattern, &TestPattern::set_zoom, canvas, &Canvas::set_zoom);
     connect(test_pattern, SIGNAL(redraw()), canvas, SLOT(update()));
+
+    connect(test_pattern, &TestPattern::antenna_data, DataProcessor::process_data);
 
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,

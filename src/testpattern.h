@@ -35,9 +35,10 @@ signals:
     void set_zoom(float zm);
     void redraw();
     void test_completed();
+    void antenna_data(AntennaData* data);
 
 public slots:
-    void center_color(QColor color, QVector3D rotation);
+    void antenna_visibility(QVector3D rotation, float center_color, float color_visibility);
     void reset_pattern(void);
     void start_pattern(void);
     void stop_pattern(void);

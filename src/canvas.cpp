@@ -226,9 +226,10 @@ void Canvas::paintGL()
     }
     g /= pxcnt;
 
-    QColor color = QColor(pick_col[0], pick_col[1], pick_col[2]);
+//    QColor color = QColor(pick_col[0], pick_col[1], pick_col[2]);
     QVector3D rotation = QVector3D(tilt, roll, yaw);
-    emit center_color(color, rotation);
+    emit antenna_visibility(rotation, pick_col[1] , g);
+
 
     status = QString("RGB:%1,%2,%3 px:%4 gh:%5 zm:%6 tilt:%7 roll:%8 yaw:%9")
             .arg(pick_col[0],2,16, QChar('0')).toUpper()
@@ -363,12 +364,12 @@ void Canvas::wheelEvent(QWheelEvent *event)
     if (event->delta() < 0)
     {
         for (int i=0; i > event->delta(); --i)
-            requested_zoom *= 1.001;
+            requested_zoom /= 1.001;
     }
     else if (event->delta() > 0)
     {
         for (int i=0; i < event->delta(); ++i)
-            requested_zoom /= 1.001;
+            requested_zoom *= 1.001;
     }
 
 //    // Then find the cursor's GL position post-zoom and adjust center.

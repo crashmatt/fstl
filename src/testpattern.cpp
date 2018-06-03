@@ -15,18 +15,22 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
     reset_pattern();
 }
 
-void TestPattern::center_color(QColor color, QVector3D rotation)
+void TestPattern::antenna_visibility( QVector3D rotation, float center_color, float color_visibility)
 {
     if(m_pattern_running){
         AntennaDataPoint* datapoint = new AntennaDataPoint(this, rotation);
+        datapoint->m_center_color = center_color;
+        datapoint->m_color_visibility = color_visibility;
         AntennaData* data = m_results[m_ant_pos_index];
-        data->m_antenna_data.append(datapoint);
+        data->set_antenna_datapoint(datapoint, m_pitch_index, m_yaw_index);
+
         m_pitch_index++;
-        if(m_pitch_index >= m_pitch_steps){
+        if(m_pitch_index > m_pitch_steps){
             m_pitch_index = 0;
             m_yaw_index++;
             if(m_yaw_index >= m_yaw_steps){
                 m_yaw_index = 0;
+                emit antenna_data(m_results[m_ant_pos_index]);
                 if(!set_antenna_pos_to_index(m_ant_pos_index+1)){
                     m_pattern_running = false;
                     emit test_completed();
@@ -54,7 +58,7 @@ void TestPattern::reset_pattern(void)
         m_results.clear();
 
         foreach(QVector3D pos, m_antenna_positions){
-            AntennaData* data = new AntennaData(this, pos, m_pitch_steps, m_yaw_steps);
+            AntennaData* data = new AntennaData(this, pos, m_pitch_steps+1, m_yaw_steps, m_results.count());
             m_results.append(data);
         }
 

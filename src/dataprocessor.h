@@ -9,17 +9,17 @@
 class DataProcessor : public QObject
 {
     Q_OBJECT
-//public:
-//    explicit DataProcessor(QObject *parent = 0);
+public:
+    explicit DataProcessor(QObject *parent = 0);
 
 protected:
-    static void build_mesh(AntennaData* data);
+    void build_mesh(AntennaData* data);
 
 signals:
     void built_mesh(Mesh* m, QString shader, QColor color, int order, QString name);
 
 public slots:
-    static void process_data(AntennaData* data);
+    void process_data(AntennaData* data);
 };
 
 #endif // DATAPROCESSOR_H

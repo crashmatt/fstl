@@ -32,6 +32,7 @@ Window::Window(QWidget *parent) :
     setCentralWidget(canvas);
 
     test_pattern = new TestPattern(this);
+    data_processor = new DataProcessor(this);
 
     QObject::connect(canvas, &Canvas::antenna_visibility, test_pattern, &TestPattern::antenna_visibility, Qt::QueuedConnection);
     QObject::connect(test_pattern, &TestPattern::set_rotation, canvas, &Canvas::set_rotation, Qt::QueuedConnection);
@@ -40,8 +41,8 @@ Window::Window(QWidget *parent) :
     QObject::connect(test_pattern, &TestPattern::set_zoom, canvas, &Canvas::set_zoom);
     connect(test_pattern, SIGNAL(redraw()), canvas, SLOT(update()));
 
-    connect(test_pattern, &TestPattern::antenna_data, DataProcessor::process_data);
-//    connect(DataProcessor::built_mesh, canvas, Canvas::load_mesh);
+    connect(test_pattern, &TestPattern::antenna_data, data_processor, &DataProcessor::process_data);
+    connect(data_processor, &DataProcessor::built_mesh, canvas, &Canvas::load_mesh);
 
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,

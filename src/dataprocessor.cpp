@@ -3,6 +3,11 @@
 #include "antennadata.h"
 #include <QMatrix4x4>
 
+DataProcessor::DataProcessor(QObject *parent) : QObject(parent)
+{
+
+}
+
 void DataProcessor::process_data(AntennaData* data)
 {
     float max_vis = 0.01;

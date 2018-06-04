@@ -8,6 +8,7 @@
 
 class Canvas;
 class TestPattern;
+class DataProcessor;
 
 class Window : public QMainWindow
 {
@@ -39,6 +40,7 @@ private:
 
     Canvas*        canvas;
     TestPattern*   test_pattern;
+    DataProcessor* data_processor;
 };
 
 #endif // WINDOW_H

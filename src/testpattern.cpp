@@ -11,7 +11,7 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
 
 {
     m_antenna_positions.append( QVector3D(0.00, 0.35, 0.05) );      //Antenna just behind cockpit cover
-    m_antenna_positions.append( QVector3D(0.05, -0.1, 0.0) );       //Antenna on side behind wing
+//    m_antenna_positions.append( QVector3D(0.05, -0.1, 0.0) );       //Antenna on side behind wing
     reset_pattern();
 }
 

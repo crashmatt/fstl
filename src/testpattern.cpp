@@ -10,7 +10,7 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
   , m_yaw_index(0)
 
 {
-    m_antenna_positions.append( QVector3D(0.00, 0.0, 0.0) );      //On center
+    m_antenna_positions.append( QVector3D(0.0, 0.0, 0.0) );      //On center
 //    m_antenna_positions.append( QVector3D(0.00, 0.35, 0.05) );      //Antenna just behind cockpit cover
 //    m_antenna_positions.append( QVector3D(0.05, -0.1, 0.0) );       //Antenna on side behind wing
     reset_pattern();
@@ -18,7 +18,7 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
 
 void TestPattern::antenna_visibility(int index, QVector3D rotation, float center_color, float color_visibility)
 {
-    if( m_pattern_running){
+    if( m_pattern_running ){
         AntennaData* data = m_results[m_ant_pos_index];
         if(index < 0){
             m_pitch_index = 0;
@@ -62,6 +62,9 @@ void TestPattern::antenna_visibility(int index, QVector3D rotation, float center
 void TestPattern::reset_pattern(void)
 {
     if(!m_pattern_running){
+        QString del_pattern("ant_vis*");
+        emit delete_object(del_pattern);
+
         foreach(AntennaData* data, m_results){
             data->deleteLater();
         }

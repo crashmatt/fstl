@@ -36,6 +36,7 @@ signals:
     void redraw();
     void test_completed();
     void antenna_data(AntennaData &data);
+    void delete_object(QString& obj_name);
 
 public slots:
     void antenna_visibility(int index, QVector3D rotation, float center_color, float color_visibility);

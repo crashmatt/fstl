@@ -74,11 +74,6 @@ void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color,
         scale = new_scale;
     }
 
-    // Reset other camera parameters
-//    zoom = 1;
-//    yaw = 0;
-//    tilt = 90;
-
     QOpenGLShaderProgram* shader = shader_map.value(shader_name, NULL);
 
     if( (shader != NULL) && !obj_map.contains(show_order) ){
@@ -126,6 +121,32 @@ void Canvas::set_zoom(float zm)
 {
     requested_zoom = zm;
 }
+
+void Canvas::set_object_visible(QString& obj_name, bool visible)
+{
+    QRegExp exp(obj_name);
+    foreach(QString name, obj_name_map.keys()){
+        if(exp.indexIn(name) != -1){
+            GLObject *obj = obj_name_map.value(name);
+            obj->m_visible = visible;
+        }
+    }
+}
+
+void Canvas::delete_globject(QString& obj_name)
+{
+    QRegExp exp(obj_name);
+    foreach(QString name, obj_name_map.keys()){
+        if(exp.indexIn(name) != -1){
+            GLObject *obj = obj_name_map.value(name);
+            int index = obj_map.key(obj);
+            obj_map.remove(index);
+            obj_name_map.remove(name);
+            delete obj;
+        }
+    }
+}
+
 
 void Canvas::reset_rotation()
 {

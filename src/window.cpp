@@ -43,6 +43,7 @@ Window::Window(QWidget *parent) :
 
     connect(test_pattern, &TestPattern::antenna_data, data_processor, &DataProcessor::process_data);
     connect(data_processor, &DataProcessor::built_mesh, canvas, &Canvas::load_mesh);
+    connect(test_pattern, &TestPattern::delete_object, canvas, &Canvas::delete_globject);
 
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,

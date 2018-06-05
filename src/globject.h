@@ -18,6 +18,7 @@ public:
     const QColor    m_color;
     const QString   m_name;
     QVector3D       m_offset;
+    bool            m_visible;
 };
 
 #endif // GLOBJECT_H

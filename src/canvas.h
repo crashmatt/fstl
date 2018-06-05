@@ -32,6 +32,8 @@ public slots:
     void set_object_pos(QString& obj_name, QVector3D& pos);
     void set_view_pos(QVector3D& pos);
     void set_zoom(float zm);
+    void set_object_visible(QString& obj_name, bool visible);
+    void delete_globject(QString& obj_name);
     void reset_rotation();
 
 signals:

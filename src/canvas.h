@@ -28,14 +28,14 @@ public slots:
     void set_status(const QString& s);
     void clear_status();
     void load_mesh(Mesh* m, const QString& shader, const QColor& color, const int show_order, const QString& name);
-    void set_rotation(QVector3D rotation);
+    void set_rotation(QVector3D rotation, int ref_index);
     void set_object_pos(QString& obj_name, QVector3D& pos);
     void set_view_pos(QVector3D& pos);
     void set_zoom(float zm);
     void reset_rotation();
 
 signals:
-    void antenna_visibility(QVector3D rotation, float center_visibility , float color_visibility);
+    void antenna_visibility(int index, QVector3D rotation, float center_visibility , float color_visibility);
 
 protected:
 	void paintGL() override;
@@ -74,6 +74,7 @@ private:
     float tilt;
     float yaw;
     float roll;
+    int   ref_index;
 
     float perspective;
     Q_PROPERTY(float perspective WRITE set_perspective);

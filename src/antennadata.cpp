@@ -32,6 +32,13 @@ void AntennaData::set_antenna_datapoint(AntennaDataPoint* datapt, int x_step, in
     m_antenna_data[index] = datapt;
 }
 
+void AntennaData::set_antenna_datapoint(AntennaDataPoint* datapt, int index)
+{
+    if(index >= m_antenna_data.size())
+        return;
+    m_antenna_data[index] = datapt;
+}
+
 
 AntennaDataPoint* AntennaData::get_antenna_datapoint(int x_step, int z_step)
 {

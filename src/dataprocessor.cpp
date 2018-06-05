@@ -81,5 +81,8 @@ void DataProcessor::build_mesh(AntennaData &data)
 
     Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices));
     QString name = "ant_vis" + data.index();
+    QVector3D position = data.position();
+
     emit built_mesh(mesh, "solid", QColor(255,0,0,128), 10+data.index(), name);
+    emit set_obj_pos(name, position);
 }

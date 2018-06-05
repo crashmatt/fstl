@@ -17,6 +17,7 @@ protected:
 
 signals:
     void built_mesh(Mesh* m, QString shader, QColor color, int order, QString name);
+    void set_obj_pos(QString& obj_name, QVector3D& pos);
 
 public slots:
     void process_data(AntennaData &data);

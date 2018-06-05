@@ -42,8 +42,10 @@ Window::Window(QWidget *parent) :
     connect(test_pattern, SIGNAL(redraw()), canvas, SLOT(update()));
 
     connect(test_pattern, &TestPattern::antenna_data, data_processor, &DataProcessor::process_data);
-    connect(data_processor, &DataProcessor::built_mesh, canvas, &Canvas::load_mesh);
     connect(test_pattern, &TestPattern::delete_object, canvas, &Canvas::delete_globject);
+
+    connect(data_processor, &DataProcessor::built_mesh, canvas, &Canvas::load_mesh);
+    connect(data_processor, &DataProcessor::set_obj_pos, canvas, &Canvas::set_object_pos);
 
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,

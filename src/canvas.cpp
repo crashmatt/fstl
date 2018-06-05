@@ -213,7 +213,7 @@ void Canvas::paintGL()
 
     foreach(int show_order, obj_map.keys()){
         GLObject* obj = obj_map[show_order];
-        if(obj) draw_mesh(obj->m_mesh, obj->m_shaderprog, obj->m_color, obj->m_offset);
+        if(obj) draw_obj(obj);
     }
 
     glFlush();      //Make sure rendering is done
@@ -271,8 +271,14 @@ void Canvas::paintGL()
     painter.drawLine( (pxwidth-px)/2, (pxheight-px)/2, (pxwidth+px)/2, (pxheight+px)/2);
 }
 
-void Canvas::draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader, const QColor& color, QVector3D offset)
+void Canvas::draw_obj(GLObject* gl_obj)
 {
+    Q_ASSERT(gl_obj != NULL);
+    QOpenGLShaderProgram *shader = gl_obj->m_shaderprog;
+    GLMesh *mesh = gl_obj->m_mesh;
+    QVector3D offset = gl_obj->m_offset;
+    QColor color = gl_obj->m_color;
+
     shader->bind();
 
     // Load the transform and view matrices into the shader

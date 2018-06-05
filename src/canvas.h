@@ -53,7 +53,7 @@ protected:
     void view_anim(float v);
 
 private:
-    void draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader_name, const QColor& color, QVector3D offset);
+    void draw_obj(GLObject* gl_obj);
 
     QMatrix4x4 transform_matrix(QVector3D offset = QVector3D(0.0, 0.0, 0.0)) const;
     QMatrix4x4 view_matrix() const;

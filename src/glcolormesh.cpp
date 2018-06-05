@@ -12,6 +12,7 @@ void GLColorMesh::draw(GLuint vp, GLuint vc)
 
     glVertexAttribPointer(vp, 3, GL_FLOAT, false,
                           6 * sizeof(GLfloat), 0);
+
     glVertexAttribPointer(vc, 3, GL_FLOAT, false,
                           6 * sizeof(GLfloat),
                           (GLvoid*)(3 * sizeof(GLfloat)));

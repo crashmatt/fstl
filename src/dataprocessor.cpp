@@ -46,8 +46,8 @@ void DataProcessor::build_mesh(AntennaData &data)
         for(int x_step=0; x_step < data.m_x_axis_steps; x_step++){
             datapt = data.get_antenna_datapoint(x_step, z_step);
             Q_ASSERT(datapt != NULL);
-            float x_angle = degToRad(datapt->m_rotation.x());
-            float z_angle = degToRad(datapt->m_rotation.z());
+            float x_angle = degToRad(-datapt->m_rotation.x());
+            float z_angle = degToRad(datapt->m_rotation.z()  - 90.0);
             int vect_index = 3 * data.data_index(z_step, x_step);
             float x_theta = sin(z_angle);
             float y_theta = cos(z_angle);

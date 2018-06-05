@@ -62,6 +62,7 @@ private:
     QOpenGLShaderProgram quad_shader;
     QOpenGLShaderProgram solid_shader;
     QOpenGLShaderProgram antenna_shader;
+    QOpenGLShaderProgram visi_shader;
 
     QMap<int, GLObject*> obj_map;
     QMap<QString, GLObject*> obj_name_map;

@@ -64,7 +64,12 @@ void Canvas::view_perspective()
 
 void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color, const int show_order, const QString& name)
 {
-    GLMesh *new_mesh = new GLColorMesh(m);
+    GLMesh *new_mesh = NULL;
+    if(shader_name != "visi"){
+        new_mesh = new GLMesh(m);
+    } else {
+        new_mesh = new GLColorMesh(m);
+    }
 
     QVector3D lower(m->xmin(), m->ymin(), m->zmin());
     QVector3D upper(m->xmax(), m->ymax(), m->zmax());
@@ -188,6 +193,11 @@ void Canvas::initializeGL()
     solid_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/solid.frag");
     solid_shader.link();
     shader_map["solid"] =  &solid_shader;
+
+    visi_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/visi.vert");
+    visi_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/visi.frag");
+    visi_shader.link();
+    shader_map["visi"] =  &visi_shader;
 
 //    antenna_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/antenna.vert");
 //    antenna_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/antenna.frag");

@@ -39,7 +39,7 @@ void DataProcessor::process_data(AntennaData &data)
 
 void DataProcessor::build_mesh(AntennaData &data)
 {
-    std::vector<GLfloat> flat_verts(3 * data.m_z_axis_steps * data.m_x_axis_steps);
+    std::vector<GLfloat> flat_verts(6 * data.m_z_axis_steps * data.m_x_axis_steps);
 
     AntennaDataPoint* datapt;
     for(int z_step=0; z_step < data.m_z_axis_steps; z_step++){
@@ -48,7 +48,7 @@ void DataProcessor::build_mesh(AntennaData &data)
             Q_ASSERT(datapt != NULL);
             float x_angle = degToRad(-datapt->m_rotation.x());
             float z_angle = degToRad(datapt->m_rotation.z()  - 90.0);
-            int vect_index = 3 * data.data_index(z_step, x_step);
+            int vect_index = 6 * data.data_index(z_step, x_step);
             float x_theta = sin(z_angle);
             float y_theta = cos(z_angle);
             float x_phi = cos(x_angle);
@@ -60,6 +60,10 @@ void DataProcessor::build_mesh(AntennaData &data)
             flat_verts[vect_index] =  radius * y_theta * x_phi;
             flat_verts[vect_index+1] = radius * x_theta * x_phi;
             flat_verts[vect_index+2] = radius * z_phi;
+            flat_verts[vect_index+3] = 1.0;
+            flat_verts[vect_index+4] = 0.0;
+            flat_verts[vect_index+5] = 0.0;
+
         }
     }
 
@@ -89,6 +93,6 @@ void DataProcessor::build_mesh(AntennaData &data)
     QString name = "ant_vis" + data.index();
     QVector3D position = data.position();
 
-    emit built_mesh(mesh, "solid", QColor(255,0,0,128), 10+data.index(), name);
+    emit built_mesh(mesh, "visi", QColor(255,0,0,128), 10+data.index(), name);
     emit set_obj_pos(name, position);
 }

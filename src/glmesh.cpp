@@ -23,7 +23,7 @@ GLMesh::GLMesh(const Mesh* const mesh)
     indices.release();
 }
 
-void GLMesh::draw(GLuint vp)
+void GLMesh::draw(GLuint vp, GLuint vc)
 {
     vertices.bind();
     indices.bind();

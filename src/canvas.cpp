@@ -7,6 +7,7 @@
 #include "backdrop.h"
 #include "mesh.h"
 #include "glmesh.h"
+#include "glcolormesh.h"
 #include "globject.h"
 
 
@@ -63,7 +64,7 @@ void Canvas::view_perspective()
 
 void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color, const int show_order, const QString& name)
 {
-    GLMesh *new_mesh = new GLMesh(m);
+    GLMesh *new_mesh = new GLColorMesh(m);
 
     QVector3D lower(m->xmin(), m->ymin(), m->zmin());
     QVector3D upper(m->xmax(), m->ymax(), m->zmax());
@@ -298,11 +299,16 @@ void Canvas::draw_obj(GLObject* gl_obj)
     const GLuint vp = shader->attributeLocation("vertex_position");
     glEnableVertexAttribArray(vp);
 
+    // Find and enable the attribute location for color position
+    const GLuint vc = shader->attributeLocation("color_position");
+    glEnableVertexAttribArray(vc);
+
     // Then draw the mesh with that vertex position
-    mesh->draw(vp);
+    mesh->draw(vp, vc);
 
     // Clean up state machine
     glDisableVertexAttribArray(vp);
+    glDisableVertexAttribArray(vc);
     shader->release();
 }
 

@@ -19,7 +19,8 @@ SOURCES += \
     ../src/globject.cpp \
     ../src/testpattern.cpp \
     ../src/antennadata.cpp \
-    ../src/dataprocessor.cpp
+    ../src/dataprocessor.cpp \
+    ../src/glcolormesh.cpp
 
 HEADERS  += \
     ../src/app.h\
@@ -32,7 +33,8 @@ HEADERS  += \
     ../src/globject.h \
     ../src/testpattern.h \
     ../src/antennadata.h \
-    ../src/dataprocessor.h
+    ../src/dataprocessor.h \
+    ../src/glcolormesh.h
 
 CONFIG += c++11
 

@@ -11,8 +11,8 @@ class GLMesh : protected QOpenGLFunctions
 {
 public:
     GLMesh(const Mesh* const mesh);
-    void draw(GLuint vp);
-private:
+    virtual void draw(GLuint vp, GLuint vc);
+protected:
 	QOpenGLBuffer vertices;
 	QOpenGLBuffer indices;
 };

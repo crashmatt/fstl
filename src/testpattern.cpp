@@ -4,9 +4,9 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
   , m_pattern_running(false)
   , m_rotation(0.0, 0.0, 0.0)
   , m_ant_pos_index(-1)
-  , m_pitch_segments(18)
+  , m_pitch_segments(36)
   , m_pitch_index(0)
-  , m_yaw_segments(10)
+  , m_yaw_segments(18)
   , m_yaw_index(0)
 
 {

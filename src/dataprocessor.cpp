@@ -6,6 +6,8 @@
 #define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
 
 DataProcessor::DataProcessor(QObject *parent) : QObject(parent)
+  , m_scale_to_visibility(true)
+
 {
 
 }
@@ -18,7 +20,7 @@ void DataProcessor::process_data(AntennaData &data)
         for(int z_step=0; z_step < data.m_z_axis_steps; z_step++){
             datapt = data.get_antenna_datapoint(x_step, z_step);
             Q_ASSERT(datapt != NULL);
-            if(datapt->m_visibility > max_vis){
+            if(datapt->m_color_visibility > max_vis){
                 max_vis = datapt->m_color_visibility;
             }
         }
@@ -51,9 +53,13 @@ void DataProcessor::build_mesh(AntennaData &data)
             float y_theta = cos(z_angle);
             float x_phi = cos(x_angle);
             float z_phi = sin(x_angle);
-            flat_verts[vect_index] =  y_theta * x_phi;
-            flat_verts[vect_index+1] = x_theta * x_phi;
-            flat_verts[vect_index+2] = z_phi;
+            float radius = 1.0;
+            if(m_scale_to_visibility){
+                radius = datapt->m_visibility;
+            }
+            flat_verts[vect_index] =  radius * y_theta * x_phi;
+            flat_verts[vect_index+1] = radius * x_theta * x_phi;
+            flat_verts[vect_index+2] = radius * z_phi;
         }
     }
 

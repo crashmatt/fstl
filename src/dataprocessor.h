@@ -12,6 +12,8 @@ class DataProcessor : public QObject
 public:
     explicit DataProcessor(QObject *parent = 0);
 
+    bool    m_scale_to_visibility;
+
 protected:
     void build_mesh(AntennaData &data);
 

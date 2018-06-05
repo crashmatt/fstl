@@ -37,7 +37,6 @@ public:
 
     const int   m_x_axis_steps;
     const int   m_z_axis_steps;
-//    const QVector<AntennaDataPoint*>* antenna_data() {return &m_antenna_data;}
     void set_antenna_datapoint(AntennaDataPoint* datapt, int x_step, int z_step);
     AntennaDataPoint* get_antenna_datapoint(int x_step, int z_step);
     int data_index(int z_step, int x_step) {return z_step + (x_step * m_z_axis_steps);}

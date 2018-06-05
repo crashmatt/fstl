@@ -13,13 +13,13 @@ public:
     explicit DataProcessor(QObject *parent = 0);
 
 protected:
-    void build_mesh(AntennaData* data);
+    void build_mesh(AntennaData &data);
 
 signals:
     void built_mesh(Mesh* m, QString shader, QColor color, int order, QString name);
 
 public slots:
-    void process_data(AntennaData* data);
+    void process_data(AntennaData &data);
 };
 
 #endif // DATAPROCESSOR_H

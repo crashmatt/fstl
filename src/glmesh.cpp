@@ -23,10 +23,14 @@ GLMesh::GLMesh(const Mesh* const mesh)
     indices.release();
 }
 
-void GLMesh::draw(GLuint vp)
+void GLMesh::draw(QOpenGLShaderProgram* shader)
 {
     vertices.bind();
     indices.bind();
+
+    // Find and enable the attribute location for vertex position
+    const GLuint vp = shader->attributeLocation("vertex_position");
+    glEnableVertexAttribArray(vp);
 
     glVertexAttribPointer(vp, 3, GL_FLOAT, false, 3*sizeof(float), NULL);
     glDrawElements(GL_TRIANGLES, indices.size() / sizeof(uint32_t),
@@ -34,4 +38,7 @@ void GLMesh::draw(GLuint vp)
 
     vertices.release();
     indices.release();
+
+    // Clean up state machine
+    glDisableVertexAttribArray(vp);
 }

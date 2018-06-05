@@ -6,13 +6,14 @@
 
 // forward declaration
 class Mesh;
+class QOpenGLShaderProgram;
 
 class GLMesh : protected QOpenGLFunctions
 {
 public:
     GLMesh(const Mesh* const mesh);
-    void draw(GLuint vp);
-private:
+    virtual void draw(QOpenGLShaderProgram* shader);
+protected:
 	QOpenGLBuffer vertices;
 	QOpenGLBuffer indices;
 };

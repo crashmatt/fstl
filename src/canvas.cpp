@@ -7,6 +7,7 @@
 #include "backdrop.h"
 #include "mesh.h"
 #include "glmesh.h"
+#include "glcolormesh.h"
 #include "globject.h"
 
 
@@ -63,7 +64,12 @@ void Canvas::view_perspective()
 
 void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color, const int show_order, const QString& name)
 {
-    GLMesh *new_mesh = new GLMesh(m);
+    GLMesh *new_mesh = NULL;
+    if(shader_name != "visi"){
+        new_mesh = new GLMesh(m);
+    } else {
+        new_mesh = new GLColorMesh(m);
+    }
 
     QVector3D lower(m->xmin(), m->ymin(), m->zmin());
     QVector3D upper(m->xmax(), m->ymax(), m->zmax());
@@ -188,6 +194,11 @@ void Canvas::initializeGL()
     solid_shader.link();
     shader_map["solid"] =  &solid_shader;
 
+    solid_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/visi.vert");
+    solid_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/visi.frag");
+    solid_shader.link();
+    shader_map["visi"] =  &solid_shader;
+
 //    antenna_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/antenna.vert");
 //    antenna_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/antenna.frag");
 //    antenna_shader.link();
@@ -288,15 +299,9 @@ void Canvas::draw_mesh(GLMesh* mesh, QOpenGLShaderProgram* shader, const QColor&
     // Compensate for z-flattening when zooming
     glUniform1f(shader->uniformLocation("zoom"), 1/zoom);
 
-    // Find and enable the attribute location for vertex position
-    const GLuint vp = shader->attributeLocation("vertex_position");
-    glEnableVertexAttribArray(vp);
-
     // Then draw the mesh with that vertex position
-    mesh->draw(vp);
+    mesh->draw(shader);
 
-    // Clean up state machine
-    glDisableVertexAttribArray(vp);
     shader->release();
 }
 

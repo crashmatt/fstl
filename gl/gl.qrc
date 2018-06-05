@@ -8,5 +8,7 @@
         <file>solid.frag</file>
         <file>solid.vert</file>
         <file>antenna.vert</file>
+        <file>visi.frag</file>
+        <file>visi.vert</file>
     </qresource>
 </RCC>

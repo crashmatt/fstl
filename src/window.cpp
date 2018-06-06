@@ -16,7 +16,11 @@ Window::Window(QWidget *parent) :
     step_antenna(new QAction("Step antenna", this)),
     test_pattern(NULL),
     reset_rotation(new QAction("Reset rotation", this)),
-    fast_mode(new QAction("Fast mode", this))
+    fast_mode(new QAction("Fast mode", this)),
+    solid_visible(new QAction("Soild", this)),
+    transparent_visible(new QAction("Transparent", this)),
+    visibility_visible(new QAction("Visibility", this))
+
 {
     setWindowTitle("fstl");
     setAcceptDrops(true);
@@ -48,6 +52,8 @@ Window::Window(QWidget *parent) :
     connect(data_processor, &DataProcessor::built_mesh, canvas, &Canvas::load_mesh);
     connect(data_processor, &DataProcessor::set_obj_pos, canvas, &Canvas::set_object_pos);
 
+    connect(this, &Window::set_object_visible, canvas, &Canvas::set_object_visible);
+
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,
                      this, &Window::close);
@@ -55,7 +61,7 @@ Window::Window(QWidget *parent) :
     QObject::connect(about_action, &QAction::triggered,
                      this, &Window::on_about);
 
-    start_test->setShortcut(QKeySequence(Qt::Key_S));
+    start_test->setShortcut(QKeySequence(Qt::Key_Space));
     QObject::connect(start_test, &QAction::triggered,
                      test_pattern, &TestPattern::start_pattern);
 
@@ -93,6 +99,32 @@ Window::Window(QWidget *parent) :
     test_menu->addAction(reset_rotation);
     test_menu->addSeparator();
     test_menu->addAction(fast_mode);
+
+    auto view_menu = menuBar()->addMenu("View");
+
+    solid_visible->setShortcut(QKeySequence(Qt::Key_S));
+    QObject::connect(solid_visible, &QAction::toggled,
+                     this, &Window::solid_visibile);
+
+    transparent_visible->setShortcut(QKeySequence(Qt::Key_T));
+    QObject::connect(transparent_visible, &QAction::toggled,
+                     this, &Window::transparent_visibile);
+
+    visibility_visible->setShortcut(QKeySequence(Qt::Key_V));
+    QObject::connect(visibility_visible, &QAction::toggled,
+                     this, &Window::visibility_visibile);
+
+    solid_visible->setCheckable(true);
+    transparent_visible->setCheckable(true);
+    visibility_visible->setCheckable(true);
+
+    solid_visible->setChecked(true);
+    transparent_visible->setChecked(true);
+    visibility_visible->setChecked(true);
+
+    view_menu->addAction(solid_visible);
+    view_menu->addAction(transparent_visible);
+    view_menu->addAction(visibility_visible);
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
@@ -142,6 +174,25 @@ void Window::on_missing_file()
                           "The target file is missing.<br>");
 }
 
+void Window::solid_visibile(bool visible)
+{
+    QString name = "solid*";
+    emit set_object_visible(name, visible);
+    name = "shadow*";
+    emit set_object_visible(name, visible);
+}
+
+void Window::transparent_visibile(bool visible)
+{
+    QString name = "fuselage*";
+    emit set_object_visible(name, visible);
+}
+
+void Window::visibility_visibile(bool visible)
+{
+    QString name = "visi*";
+    emit set_object_visible(name, visible);
+}
 
 bool Window::load_stl(const QString& filename, const QString& name, const QString& shader_name, const QColor& base_color, int order)
 {

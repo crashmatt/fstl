@@ -17,6 +17,7 @@ public:
     explicit Window(QWidget* parent=0);
     bool load_stl(const QString& filename, const QString& name, const QString& shader_name, const QColor& base_color, int order);
 
+
 protected:
 
 public slots:
@@ -25,6 +26,12 @@ public slots:
     void on_empty_mesh();
     void on_missing_file();
     void on_confusing_stl();
+    void solid_visibile(bool visible);
+    void transparent_visibile(bool visible);
+    void visibility_visibile(bool visible);
+
+signals:
+    void set_object_visible(QString& obj_name, bool visible);
 
 private slots:
 
@@ -38,6 +45,10 @@ private:
     QAction* const step_antenna;
     QAction* const reset_rotation;
     QAction* const fast_mode;
+
+    QAction* const solid_visible;
+    QAction* const transparent_visible;
+    QAction* const visibility_visible;
 
     Canvas*        canvas;
     TestPattern*   test_pattern;

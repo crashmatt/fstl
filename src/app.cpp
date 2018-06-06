@@ -24,7 +24,7 @@ App::App(int& argc, char *argv[]) :
     window->load_stl("../models/shadow0_5.stl", "shadow" , "solid", QColor(0,0,0,100), 3);
 //    window->load_stl("../models/shadow0_75.stl", "shadow" , "solid", QColor(0,0,0,75), 4);
 //    window->load_stl("../models/shadow1_0.stl", "shadow" , "solid", QColor(0,0,0,50), 4);
-    window->load_stl("../models/transparent.stl", "fuselage" , "solid", QColor(0,0,0,50), 5);
+    window->load_stl("../models/transparent.stl", "fuselage" , "solid", QColor(0,0,0,125), 5);
 //    window->load_stl(":gl/sphere.stl", "ball", "solid", QColor(50,200,50,50), 3);
 #endif
 

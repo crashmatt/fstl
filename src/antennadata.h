@@ -44,10 +44,11 @@ public:
     int index() {return m_index;};
     QVector3D position() {return m_ant_pos;};
 
+    const int   m_index;
+
 protected:
     QVector<AntennaDataPoint*> m_antenna_data;
     QVector3D   m_ant_pos;
-    int         m_index;
 
 signals:
 

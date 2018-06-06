@@ -41,6 +41,19 @@ void DataProcessor::build_mesh(AntennaData &data)
 {
     std::vector<GLfloat> flat_verts(2 * 3 * data.m_z_axis_steps * data.m_x_axis_steps);
 
+    QColor viscolor;
+    switch(data.m_index){
+    case 0:
+        viscolor = QColor(255,0,0);
+        break;
+    case 1:
+        viscolor = QColor(0,0,255);
+        break;
+    case 2:
+        viscolor = QColor(0,255,0);
+        break;
+    }
+
     AntennaDataPoint* datapt;
     for(int z_step=0; z_step < data.m_z_axis_steps; z_step++){
         for(int x_step=0; x_step < data.m_x_axis_steps; x_step++){
@@ -60,9 +73,10 @@ void DataProcessor::build_mesh(AntennaData &data)
             flat_verts[vect_index] =  radius * y_theta * x_phi;
             flat_verts[vect_index+1] = radius * x_theta * x_phi;
             flat_verts[vect_index+2] = radius * z_phi;
-            flat_verts[vect_index+3] = datapt->m_visibility;
-            flat_verts[vect_index+4] = 0.0;
-            flat_verts[vect_index+5] = 1-datapt->m_visibility;
+            float color_scale = datapt->m_visibility * datapt->m_visibility;
+            flat_verts[vect_index+3] = color_scale * viscolor.redF();
+            flat_verts[vect_index+4] = color_scale * viscolor.greenF();
+            flat_verts[vect_index+5] = color_scale * viscolor.blueF();
         }
     }
 

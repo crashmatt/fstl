@@ -135,6 +135,7 @@ void Canvas::set_object_visible(QString& obj_name, bool visible)
         if(exp.indexIn(name) != -1){
             GLObject *obj = obj_name_map.value(name);
             obj->m_visible = visible;
+            update();
         }
     }
 }
@@ -224,7 +225,9 @@ void Canvas::paintGL()
 
     foreach(int show_order, obj_map.keys()){
         GLObject* obj = obj_map[show_order];
-        if(obj) draw_obj(obj);
+        if(obj->m_visible){
+            if(obj) draw_obj(obj);
+        }
     }
 
     glFlush();      //Make sure rendering is done

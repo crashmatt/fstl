@@ -9,8 +9,7 @@
 class Mesh
 {
 public:
-    Mesh(std::vector<GLfloat>&& vertices, std::vector<GLuint>&& indices, std::vector<GLfloat>&& colors);
-    Mesh(std::vector<GLfloat>&& vertices, std::vector<GLuint>&& indices);
+    Mesh(std::vector<GLfloat>&& vertices, std::vector<GLuint>&& indices, int step=3);
 
     float min(size_t start) const;
     float max(size_t start) const;
@@ -24,10 +23,11 @@ public:
 
     bool empty() const;
 
+    const int vertices_step;
+
 protected:
     std::vector<GLfloat> vertices;
     std::vector<GLuint> indices;
-    std::vector<GLfloat> colors;
 
     friend class GLMesh;
     friend class GLColorMesh;

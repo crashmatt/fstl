@@ -8,16 +8,10 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Mesh::Mesh(std::vector<GLfloat>&& v, std::vector<GLuint>&& i)
-    : vertices(std::move(v)), indices(std::move(i))
-{
-    // Nothing to do here
-}
-
-Mesh::Mesh(std::vector<GLfloat>&& v, std::vector<GLuint>&& i, std::vector<GLfloat>&& c)
+Mesh::Mesh(std::vector<GLfloat>&& v, std::vector<GLuint>&& i, int step)
     : vertices(std::move(v)),
       indices(std::move(i)),
-      colors(std::move(c))
+      vertices_step(step)
 {
     // Nothing to do here
 }
@@ -30,7 +24,7 @@ float Mesh::min(size_t start) const
         return -1;
     }
     float v = vertices[start];
-    for (size_t i=start; i < vertices.size(); i += 3)
+    for (size_t i=start; i < vertices.size(); i += vertices_step)
     {
         v = fmin(v, vertices[i]);
     }
@@ -44,7 +38,7 @@ float Mesh::max(size_t start) const
         return 1;
     }
     float v = vertices[start];
-    for (size_t i=start; i < vertices.size(); i += 3)
+    for (size_t i=start; i < vertices.size(); i += vertices_step)
     {
         v = fmax(v, vertices[i]);
     }

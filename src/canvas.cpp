@@ -310,7 +310,7 @@ void Canvas::draw_obj(GLObject* gl_obj)
     glEnableVertexAttribArray(vp);
 
     // Find and enable the attribute location for color position
-    const GLuint vc = shader->attributeLocation("color_position");
+    const GLuint vc = shader->attributeLocation("vertex_color");
     glEnableVertexAttribArray(vc);
 
     // Then draw the mesh with that vertex position

@@ -10,5 +10,5 @@ varying vec3 frag_color;
 void main() {
     gl_Position = view_matrix*transform_matrix*
         vec4(vertex_position, 1.0);
-    frag_color = vertex_position;  //vertex_position; // vertex_color;
+    frag_color = vertex_color;  //vertex_position; // vertex_color;
 }

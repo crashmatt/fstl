@@ -9,6 +9,7 @@
 class Mesh
 {
 public:
+    Mesh(std::vector<GLfloat>&& vertices, std::vector<GLuint>&& indices, std::vector<GLfloat>&& colors);
     Mesh(std::vector<GLfloat>&& vertices, std::vector<GLuint>&& indices);
 
     float min(size_t start) const;
@@ -23,11 +24,13 @@ public:
 
     bool empty() const;
 
-private:
+protected:
     std::vector<GLfloat> vertices;
     std::vector<GLuint> indices;
+    std::vector<GLfloat> colors;
 
     friend class GLMesh;
+    friend class GLColorMesh;
 };
 
 #endif // MESH_H

@@ -14,7 +14,7 @@ public:
     virtual void draw(GLuint vp, GLuint vc);
 protected:
 	QOpenGLBuffer vertices;
-	QOpenGLBuffer indices;
+    QOpenGLBuffer indices;
 };
 
 #endif // GLMESH_H

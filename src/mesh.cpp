@@ -14,6 +14,15 @@ Mesh::Mesh(std::vector<GLfloat>&& v, std::vector<GLuint>&& i)
     // Nothing to do here
 }
 
+Mesh::Mesh(std::vector<GLfloat>&& v, std::vector<GLuint>&& i, std::vector<GLfloat>&& c)
+    : vertices(std::move(v)),
+      indices(std::move(i)),
+      colors(std::move(c))
+{
+    // Nothing to do here
+}
+
+
 float Mesh::min(size_t start) const
 {
     if (start >= vertices.size())

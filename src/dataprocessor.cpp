@@ -61,8 +61,8 @@ void DataProcessor::build_mesh(AntennaData &data)
             flat_verts[vect_index+1] = radius * x_theta * x_phi;
             flat_verts[vect_index+2] = radius * z_phi;
             flat_verts[vect_index+3] = 1.0;
-            flat_verts[vect_index+4] = 1.0;
-            flat_verts[vect_index+5] = 1.0;
+            flat_verts[vect_index+4] = 0.0;
+            flat_verts[vect_index+5] = 0.0;
 
         }
     }

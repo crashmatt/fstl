@@ -37,6 +37,7 @@ private:
     QAction* const reset_test;
     QAction* const step_antenna;
     QAction* const reset_rotation;
+    QAction* const fast_mode;
 
     Canvas*        canvas;
     TestPattern*   test_pattern;

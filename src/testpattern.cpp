@@ -4,15 +4,15 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
   , m_pattern_running(false)
   , m_rotation(0.0, 0.0, 0.0)
   , m_ant_pos_index(-1)
-  , m_pitch_segments(36)
+  , m_pitch_segments(-1)
   , m_pitch_index(0)
-  , m_yaw_segments(18)
+  , m_yaw_segments(-1)
   , m_yaw_index(0)
-
+  , m_high_speed(false)
 {
 //    m_antenna_positions.append( QVector3D(0.0, 0.0, 0.0) );      //On center
-    m_antenna_positions.append( QVector3D(0.00, 0.35, 0.05) );      //Antenna just behind cockpit cover
-//    m_antenna_positions.append( QVector3D(0.05, -0.1, 0.0) );       //Antenna on side behind wing
+//    m_antenna_positions.append( QVector3D(0.00, 0.35, 0.05) );      //Antenna just behind cockpit cover
+    m_antenna_positions.append( QVector3D(0.05, -0.1, 0.0) );       //Antenna on side behind wing
     reset_pattern();
 }
 
@@ -69,6 +69,14 @@ void TestPattern::reset_pattern(void)
             data->deleteLater();
         }
         m_results.clear();
+
+        if(m_high_speed){
+            m_pitch_segments = 12;
+            m_yaw_segments = 6;
+        } else {
+            m_pitch_segments = 36;
+            m_yaw_segments = 18;
+        }
 
         foreach(QVector3D pos, m_antenna_positions){
             AntennaData* data = new AntennaData(this, pos, m_pitch_segments+1, m_yaw_segments+1, m_results.count());
@@ -128,3 +136,19 @@ void TestPattern::step_antenna_pos(void)
     }
     redraw();
 }
+
+void TestPattern::set_speed(bool high_speed)
+{
+    if(!m_pattern_running){
+        m_high_speed = high_speed;
+    }
+}
+
+//void TestPattern::set_segments(int pitch_segments, int yaw_segments)
+//{
+//    if(!m_pattern_running){
+//        m_pitch_segments = pitch_segments;
+//        m_yaw_segments = yaw_segments;
+//    }
+
+//}

@@ -25,6 +25,7 @@ protected:
     int                 m_yaw_segments;
     int                 m_yaw_index;
     QVector<AntennaData*> m_results;
+    bool                m_high_speed;
 
     bool set_antenna_pos_to_index(int index);
 
@@ -44,6 +45,7 @@ public slots:
     void start_pattern(void);
     void stop_pattern(void);
     void step_antenna_pos(void);
+    void set_speed(bool high_speed);
 };
 
 #endif // TESTPATTERN_H

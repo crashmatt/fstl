@@ -15,7 +15,8 @@ Window::Window(QWidget *parent) :
     reset_test(new QAction("Reset test", this)),
     step_antenna(new QAction("Step antenna", this)),
     test_pattern(NULL),
-    reset_rotation(new QAction("Reset rotation", this))
+    reset_rotation(new QAction("Reset rotation", this)),
+    fast_mode(new QAction("Fast mode", this))
 {
     setWindowTitle("fstl");
     setAcceptDrops(true);
@@ -72,8 +73,14 @@ Window::Window(QWidget *parent) :
     QObject::connect(reset_rotation, &QAction::triggered,
                      canvas, &Canvas::reset_rotation);
 
+    fast_mode->setShortcut(QKeySequence(Qt::Key_F));
+    QObject::connect(fast_mode, &QAction::toggled,
+                     test_pattern, &TestPattern::set_speed);
+
     auto file_menu = menuBar()->addMenu("File");
     file_menu->addAction(quit_action);
+
+    fast_mode->setCheckable(true);
 
     auto test_menu = menuBar()->addMenu("Test");
     test_menu->addAction(start_test);
@@ -84,6 +91,8 @@ Window::Window(QWidget *parent) :
     test_menu->addAction(reset_test);
     test_menu->addSeparator();
     test_menu->addAction(reset_rotation);
+    test_menu->addSeparator();
+    test_menu->addAction(fast_mode);
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);

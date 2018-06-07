@@ -53,6 +53,7 @@ Window::Window(QWidget *parent) :
     connect(data_processor, &DataProcessor::set_obj_pos, canvas, &Canvas::set_object_pos);
 
     connect(this, &Window::set_object_visible, canvas, &Canvas::set_object_visible);
+    connect(test_pattern, &TestPattern::set_object_visible, canvas, &Canvas::set_object_visible);
 
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,
@@ -190,7 +191,7 @@ void Window::transparent_visibile(bool visible)
 
 void Window::visibility_visibile(bool visible)
 {
-    QString name = "visi*";
+    QString name = "ant_vis*";
     emit set_object_visible(name, visible);
 }
 

@@ -113,6 +113,11 @@ void TestPattern::stop_pattern(void)
 bool TestPattern::set_antenna_pos_to_index(int index)
 {
     if(index >= m_antenna_positions.count()){
+        m_ant_pos_index = -1;
+        QString name = "ant_vis*";
+        emit set_object_visible(name, true);
+        QVector3D pos = {0.0, 0.0, 0.0};
+        emit set_view_pos(pos);
         return false;
     }
     m_ant_pos_index = index;
@@ -120,6 +125,10 @@ bool TestPattern::set_antenna_pos_to_index(int index)
     QVector3D antenna_offset = m_antenna_positions[m_ant_pos_index];
     emit set_obj_pos(name, antenna_offset);
     emit set_view_pos(antenna_offset);
+    name = "ant_vis*";
+    emit set_object_visible(name, false);
+    name = QString("ant_vis%1").arg(m_ant_pos_index);
+    emit set_object_visible(name, true);
     return true;
 }
 
@@ -129,9 +138,7 @@ void TestPattern::step_antenna_pos(void)
         if(m_ant_pos_index < 0){
             set_antenna_pos_to_index(0);
         } else {
-            if(!set_antenna_pos_to_index(m_ant_pos_index+1)){
-                set_antenna_pos_to_index(0);
-            }
+            set_antenna_pos_to_index(m_ant_pos_index+1);
         }
     }
     redraw();

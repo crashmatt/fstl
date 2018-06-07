@@ -142,7 +142,7 @@ void DataProcessor::build_mesh(AntennaData &data)
 //    indices[5] = 3;
 
     Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
-    QString name = "ant_vis" + data.index();
+    QString name = QString("ant_vis%1").arg(data.index());
     QVector3D position = data.position();
 
     emit built_mesh(mesh, "visi", QColor(255,0,0,128), 10+data.index(), name);

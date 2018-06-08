@@ -20,7 +20,8 @@ SOURCES += \
     ../src/testpattern.cpp \
     ../src/antennadata.cpp \
     ../src/dataprocessor.cpp \
-    ../src/glcolormesh.cpp
+    ../src/glcolormesh.cpp \
+    ../src/radpatternloader.cpp
 
 HEADERS  += \
     ../src/app.h\
@@ -34,7 +35,8 @@ HEADERS  += \
     ../src/testpattern.h \
     ../src/antennadata.h \
     ../src/dataprocessor.h \
-    ../src/glcolormesh.h
+    ../src/glcolormesh.h \
+    ../src/radpatternloader.h
 
 CONFIG += c++11
 

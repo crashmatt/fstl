@@ -26,6 +26,7 @@ App::App(int& argc, char *argv[]) :
 //    window->load_stl("../models/shadow1_0.stl", "shadow" , "solid", QColor(0,0,0,50), 4);
     window->load_stl("../models/transparent.stl", "fuselage" , "solid", QColor(0,0,0,125), 5);
 //    window->load_stl(":gl/sphere.stl", "ball", "solid", QColor(50,200,50,50), 3);
+    window->load_rad_pattern("../models/coax_monopole.stl", "monopole" , "solid", QColor(255,0,0,100), 8);
 #endif
 
     window->show();

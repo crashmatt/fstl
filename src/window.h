@@ -16,7 +16,7 @@ class Window : public QMainWindow
 public:
     explicit Window(QWidget* parent=0);
     bool load_stl(const QString& filename, const QString& name, const QString& shader_name, const QColor& base_color, int order);
-
+    bool load_rad_pattern(const QString& filename, const QString& name, const QString& shader_name, const QColor& base_color, int order);
 
 protected:
 

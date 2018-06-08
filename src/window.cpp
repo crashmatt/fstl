@@ -3,6 +3,7 @@
 #include "window.h"
 #include "canvas.h"
 #include "loader.h"
+#include "radpatternloader.h"
 #include "testpattern.h"
 #include "dataprocessor.h"
 
@@ -219,6 +220,32 @@ bool Window::load_stl(const QString& filename, const QString& name, const QStrin
             canvas, &Canvas::clear_status);
 
 
+    loader->start();
+    return true;
+}
+
+bool Window::load_rad_pattern(const QString& filename, const QString& name, const QString& shader_name, const QColor& base_color, int order)
+{
+    RadPatternLoader* loader = new RadPatternLoader(this, filename, name, shader_name, base_color, order);
+
+//    connect(loader, &RadPatternLoader::got_mesh,
+//            canvas, &Canvas::load_mesh);
+
+//    connect(loader, &Loader::error_bad_stl,
+//              this, &Window::on_bad_stl);
+//    connect(loader, &Loader::error_empty_mesh,
+//              this, &Window::on_empty_mesh);
+//    connect(loader, &Loader::warning_confusing_stl,
+//              this, &Window::on_confusing_stl);
+
+//    connect(loader, &RadPatternLoader::error_missing_file,
+//              this, &Window::on_missing_file);
+
+    connect(loader, &RadPatternLoader::finished,
+            loader, &Loader::deleteLater);
+
+//    connect(loader, &Loader::finished,
+//            canvas, &Canvas::clear_status);
     loader->start();
     return true;
 }

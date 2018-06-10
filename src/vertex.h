@@ -10,6 +10,7 @@ struct Vertex
 {
     Vertex() {}
     Vertex(float x, float y, float z) : x(x), y(y), z(z) {}
+    Vertex(float x, float y, float z, GLuint i) : x(x), y(y), z(z), i(i) {}
 
     GLfloat x, y, z;
     GLuint i=0;

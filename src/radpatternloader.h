@@ -5,7 +5,8 @@
 #include <QColor>
 #include <QString>
 
-class Mesh;
+#include "mesh.h"
+class Vertex;
 
 class RadPatternLoader : public QThread
 {
@@ -16,6 +17,9 @@ public:
 
 protected:
     Mesh* load_rad_pattern();
+
+    Mesh* mesh_from_verts(uint32_t tri_count, QVector<Vertex>& verts);
+    void parallel_sort(Vertex* begin, Vertex* end, int threads);
 
 signals:
     void loaded_file(QString filename);

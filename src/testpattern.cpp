@@ -70,6 +70,9 @@ void TestPattern::reset_pattern(void)
         }
         m_results.clear();
 
+        QString vis_pattern = "monopole*";
+        emit set_object_visible(vis_pattern, false);
+
         if(m_high_speed){
             m_pitch_segments = 12;
             m_yaw_segments = 6;

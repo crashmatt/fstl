@@ -228,8 +228,8 @@ bool Window::load_rad_pattern(const QString& filename, const QString& name, cons
 {
     RadPatternLoader* loader = new RadPatternLoader(this, filename, name, shader_name, base_color, order);
 
-//    connect(loader, &RadPatternLoader::got_mesh,
-//            canvas, &Canvas::load_mesh);
+    connect(loader, &RadPatternLoader::got_mesh,
+            canvas, &Canvas::load_mesh);
 
 //    connect(loader, &Loader::error_bad_stl,
 //              this, &Window::on_bad_stl);
@@ -238,8 +238,8 @@ bool Window::load_rad_pattern(const QString& filename, const QString& name, cons
 //    connect(loader, &Loader::warning_confusing_stl,
 //              this, &Window::on_confusing_stl);
 
-//    connect(loader, &RadPatternLoader::error_missing_file,
-//              this, &Window::on_missing_file);
+    connect(loader, &RadPatternLoader::error_missing_file,
+              this, &Window::on_missing_file);
 
     connect(loader, &RadPatternLoader::finished,
             loader, &Loader::deleteLater);

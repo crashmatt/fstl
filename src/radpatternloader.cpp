@@ -6,6 +6,82 @@
 
 #define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
 
+RadPatternPoint::RadPatternPoint(QObject* parent, int i, float t, float p, float v, float h, float tot) : QObject(parent)
+  , theta(t)
+  , phi(p)
+  , ver(v)
+  , hor(h)
+  , total(tot)
+  , index(i)
+{
+    ;
+};
+
+//bool RadPatternPoint::parse_line(QByteArray &line)
+//{
+//    const auto parts = file.readLine().trimmed().split(',');
+//    if(parts.count() < 8){
+//        return false;
+//    }
+
+//    bool ok;
+//    theta = parts[0].toFloat(&ok);
+//    phi = parts[1].toFloat(&ok);
+//    ver = parts[2].toFloat(&ok);
+//    hor = parts[3].toFloat(&ok);
+//    total = parts[4].toFloat(&ok);
+//}
+
+RadPatternPoint* RadPatternPoint::from_line(QObject* parent, QByteArray &line, int index)
+{
+    const auto parts = line.trimmed().split(',');
+    if(parts.count() < 8){
+        return NULL;
+    }
+
+    bool ok;
+    float theta = parts[0].toFloat(&ok);
+    if(!ok) return NULL;
+    float phi = parts[1].toFloat(&ok);
+    if(!ok) return NULL;
+    float ver = parts[2].toFloat(&ok);
+    if(!ok) return NULL;
+    float hor = parts[3].toFloat(&ok);
+    if(!ok) return NULL;
+    float total = parts[4].toFloat(&ok);
+    if(!ok) return NULL;
+
+    return new RadPatternPoint(parent, index, theta, phi, ver, hor, total);
+}
+
+Vertex RadPatternPoint::make_vertex()
+{
+    float amplitude = pow(10, total*0.1);
+    float x_angle = degToRad(theta-90);
+    float z_angle = degToRad(phi);
+    float x_theta = sin(z_angle);
+    float y_theta = cos(z_angle);
+    float x_phi = cos(x_angle);
+    float z_phi = sin(x_angle);
+    float radius = amplitude;
+    float x =  radius * y_theta * x_phi;
+    float y = radius * x_theta * x_phi;
+    float z = radius * z_phi;
+
+    return Vertex(x, y, z, index);
+}
+
+QColor RadPatternPoint::get_color()
+{
+    QColor color(0,0,0,125);
+    color.setRedF(pow(10, ver*0.1)*0.5);
+    color.setGreenF(pow(10, hor*0.1)*0.5);
+    return color;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 
 RadPatternLoader::RadPatternLoader(QObject* parent, const QString& filename, const QString& obj_name, const QString& frag_shader, const QColor& color, int order)
     : QThread(parent)
@@ -28,88 +104,11 @@ void RadPatternLoader::run()
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-
-void RadPatternLoader::parallel_sort(Vertex* begin, Vertex* end, int threads)
-{
-//    if (threads < 2 || end - begin < 2)
-//    {
-        std::sort(begin, end);
-//    }
-//    else
-//    {
-//        const auto mid = begin + (end - begin) / 2;
-//        if (threads == 2)
-//        {
-//            auto future = std::async(this->parallel_sort, begin, mid, threads / 2);
-//            std::sort(mid, end);
-//            future.wait();
-//        }
-//        else
-//        {
-//            auto a = std::async(std::launch::async, parallel_sort, begin, mid, threads / 2);
-//            auto b = std::async(std::launch::async, parallel_sort, mid, end, threads / 2);
-//            a.wait();
-//            b.wait();
-//        }
-//        std::inplace_merge(begin, mid, end);
-//    }
-}
-
-Mesh* RadPatternLoader::mesh_from_verts(uint32_t tri_count, QVector<Vertex>& verts)
-{
-    // Save indicies as the second element in the array
-    // (so that we can reconstruct triangle order after sorting)
-    for (size_t i=0; i < tri_count*3; ++i)
-    {
-        verts[i].i = i;
-    }
-
-    // Check how many threads the hardware can safely support. This may return
-    // 0 if the property can't be read so we shoud check for that too.
-    auto threads = std::thread::hardware_concurrency();
-    if (threads == 0)
-    {
-        threads = 8;
-    }
-
-    // Sort the set of vertices (to deduplicate)
-    parallel_sort(verts.begin(), verts.end(), threads);
-
-    // This vector will store triangles as sets of 3 indices
-    std::vector<GLuint> indices(tri_count*3);
-
-    // Go through the sorted vertex list, deduplicating and creating
-    // an indexed geometry representation for the triangles.
-    // Unique vertices are moved so that they occupy the first vertex_count
-    // positions in the verts array.
-    size_t vertex_count = 0;
-    for (auto v : verts)
-    {
-        if (!vertex_count || v != verts[vertex_count-1])
-        {
-            verts[vertex_count++] = v;
-        }
-        indices[v.i] = vertex_count - 1;
-    }
-    verts.resize(vertex_count);
-
-    std::vector<GLfloat> flat_verts;
-    flat_verts.reserve(vertex_count*3);
-    for (auto v : verts)
-    {
-        flat_verts.push_back(v.x);
-        flat_verts.push_back(v.y);
-        flat_verts.push_back(v.z);
-    }
-
-    return new Mesh(std::move(flat_verts), std::move(indices));
-}
 
 Mesh* RadPatternLoader::load_rad_pattern()
 {
-    QVector<Vertex*> verts;
-    verts.reserve(36*36);
+    QVector<RadPatternPoint*> radpts;
+    radpts.reserve(36*36);
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly))
@@ -118,7 +117,7 @@ Mesh* RadPatternLoader::load_rad_pattern()
         return NULL;
     }
 
-    QVector< QVector<Vertex*>* > totals;
+    QVector< QVector<RadPatternPoint*>* > pt_map;
     QList< int > thetas;
     QList< int > phis;
 
@@ -127,54 +126,38 @@ Mesh* RadPatternLoader::load_rad_pattern()
 
     int index  = 0;
     while(!file.atEnd()){
-        const auto parts = file.readLine().trimmed().split(',');
-        if(parts.count() > 10){
-            bool ok;
-            float theta = parts[0].toFloat(&ok);
-            float phi = parts[1].toFloat(&ok) - 90.0;
-//            float ver = parts[2].toFloat(&ok);
-//            float hor = parts[3].toFloat(&ok);
-            float total = parts[4].toFloat(&ok);
-            total = pow(10,total*0.1);
-            float x_angle = degToRad(phi);
-            float z_angle = degToRad(theta);
-            float x_theta = sin(z_angle);
-            float y_theta = cos(z_angle);
-            float x_phi = cos(x_angle);
-            float z_phi = sin(x_angle);
-            float radius = total;
-            float x =  radius * y_theta * x_phi;
-            float y = radius * x_theta * x_phi;
-            float z = radius * z_phi;
-            verts.append(new Vertex(x, y, z, index));
-
-//            int int_theta = (int) theta;
-            int int_phi = (int) phi;
+        auto line = file.readLine();
+        RadPatternPoint* radpt = RadPatternPoint::from_line(this, line, index);
+        if(radpt != NULL){
+            radpts.append(radpt);
+            int int_phi = (int) radpt->phi;
             if(!phis.contains(int_phi)){
                 phis.append(int_phi);
-                QVector<Vertex*>* newline = new QVector<Vertex*>();
-                totals.append( newline );
+                QVector<RadPatternPoint*>* newline = new QVector<RadPatternPoint*>();
+                pt_map.append( newline );
             }
 
-            totals.last()->append(verts[index]);
+            pt_map.last()->append(radpt);
             index++;
 
         }
+
     }
 
-    if(verts.isEmpty())
+    if(radpts.isEmpty())
         return NULL;
 
-    const int theta_cnt = totals[0]->count();
-    const int phi_cnt = totals.count();
+    const int theta_cnt = pt_map[0]->count();
+    const int phi_cnt = pt_map.count();
 
-    const int vertcount = verts.size();
+    const int vertcount = radpts.size();
     std::vector<GLfloat> flat_verts(3*vertcount);
     index = 0;
     for(int i=0; i<vertcount; i++){
-        flat_verts[index] = verts[i]->x;
-        flat_verts[index+1] = verts[i]->y;
-        flat_verts[index+2] = verts[i]->z;
+        Vertex vertex = radpts[i]->make_vertex();
+        flat_verts[index] = vertex.x;
+        flat_verts[index+1] = vertex.y;
+        flat_verts[index+2] = vertex.z;
         index += 3;
     }
 
@@ -185,10 +168,10 @@ Mesh* RadPatternLoader::load_rad_pattern()
     uint index00, index01, index11, index10;
     for(int t=0; t<(theta_cnt-1); t++){
         for(int p=0; p<(phi_cnt-1); p++){
-            index00 = totals[p]->at(t)->i;
-            index01 = totals[p]->at(t+1)->i;
-            index11 = totals[p+1]->at(t+1)->i;
-            index10 = totals[p+1]->at(t)->i;
+            index00 = pt_map[p]->at(t)->index;
+            index01 = pt_map[p]->at(t+1)->index;
+            index11 = pt_map[p+1]->at(t+1)->index;
+            index10 = pt_map[p+1]->at(t)->index;
             indices[index+0] = index00;
             indices[index+1] = index01;
             indices[index+2] = index10;
@@ -199,11 +182,11 @@ Mesh* RadPatternLoader::load_rad_pattern()
         }
     }
 
-    qDeleteAll(totals);
-    totals.clear();
+    qDeleteAll(pt_map);
+    pt_map.clear();
 
-    qDeleteAll(verts);
-    verts.clear();
+    qDeleteAll(radpts);
+    radpts.clear();
 
 
 //    std::vector<GLfloat> flat_verts(3 * 4);

@@ -18,6 +18,7 @@ public:
     const QColor    m_color;
     const QString   m_name;
     QVector3D       m_offset;
+    QVector3D       m_rotation;
     bool            m_visible;
 };
 

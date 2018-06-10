@@ -103,18 +103,35 @@ void Canvas::set_rotation(QVector3D rotation, int index)
     ref_index = index;
 }
 
-void Canvas::set_object_pos(QString& obj_name, QVector3D& pos)
+QList<GLObject*> Canvas::get_objs(QString& obj_name)
 {
+    QList<GLObject*> list;
     if(obj_name == "all"){
-        foreach(GLObject* obj,  obj_map.values()){
-            if(obj != NULL){
-                obj->m_offset = pos;
+        list = obj_map.values();
+    } else {
+        QRegExp exp(obj_name);
+        foreach(QString name, obj_name_map.keys()){
+            if(exp.indexIn(name) != -1){
+                list.append(obj_name_map[name]);
             }
         }
-    } else {
-        GLObject *obj = obj_name_map.value(obj_name, NULL);
-        if(obj == NULL) return;
+    }
+    return list;
+}
+
+void Canvas::set_object_pos(QString& obj_name, QVector3D& pos)
+{
+    QList<GLObject*> list = get_objs(obj_name);
+    foreach(GLObject* obj, list){
         obj->m_offset = pos;
+    }
+}
+
+void Canvas::set_object_rot(QString& obj_name, QVector3D& rot)
+{
+    QList<GLObject*> list = get_objs(obj_name);
+    foreach(GLObject* obj, list){
+        obj->m_rotation = rot;
     }
 }
 
@@ -130,13 +147,9 @@ void Canvas::set_zoom(float zm)
 
 void Canvas::set_object_visible(QString& obj_name, bool visible)
 {
-    QRegExp exp(obj_name);
-    foreach(QString name, obj_name_map.keys()){
-        if(exp.indexIn(name) != -1){
-            GLObject *obj = obj_name_map.value(name);
-            obj->m_visible = visible;
-            update();
-        }
+    QList<GLObject*> list = get_objs(obj_name);
+    foreach(GLObject* obj, list){
+        obj->m_visible = visible;
     }
 }
 
@@ -290,20 +303,18 @@ void Canvas::draw_obj(GLObject* gl_obj)
     Q_ASSERT(gl_obj != NULL);
     QOpenGLShaderProgram *shader = gl_obj->m_shaderprog;
     GLMesh *mesh = gl_obj->m_mesh;
-    QVector3D offset = gl_obj->m_offset;
-    QColor color = gl_obj->m_color;
 
     shader->bind();
 
     // Load the transform and view matrices into the shader
     glUniformMatrix4fv(
                 shader->uniformLocation("transform_matrix"),
-                1, GL_FALSE, transform_matrix(offset).data());
+                1, GL_FALSE, transform_matrix(gl_obj->m_offset, gl_obj->m_rotation).data());
     glUniformMatrix4fv(
                 shader->uniformLocation("view_matrix"),
                 1, GL_FALSE, view_matrix().data());
 
-    shader->setUniformValue("color", color);
+    shader->setUniformValue("color", gl_obj->m_color);
 
     // Compensate for z-flattening when zooming
     glUniform1f(shader->uniformLocation("zoom"), 1/zoom);
@@ -325,12 +336,17 @@ void Canvas::draw_obj(GLObject* gl_obj)
     shader->release();
 }
 
-QMatrix4x4 Canvas::transform_matrix(QVector3D offset) const
+QMatrix4x4 Canvas::transform_matrix(QVector3D offset, QVector3D rotation) const
 {
     QMatrix4x4 m;
     m.rotate(tilt+90.0, QVector3D(1, 0, 0));
     m.rotate(yaw,  QVector3D(0, 0, 1));
     m.rotate(roll,  QVector3D(0, 1, 0));
+
+    m.rotate(rotation.x(), QVector3D(1, 0, 0));
+    m.rotate(rotation.z(),  QVector3D(0, 0, 1));
+    m.rotate(rotation.y(),  QVector3D(0, 1, 0));
+
     m.scale(-scale, scale, -scale);
     m.translate(-center + offset);
     return m;

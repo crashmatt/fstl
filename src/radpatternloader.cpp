@@ -74,8 +74,9 @@ Vertex RadPatternPoint::make_vertex()
 QColor RadPatternPoint::get_color()
 {
     QColor color(0,0,0,125);
-    color.setRedF(pow(10, ver*0.1)*0.5);
-    color.setGreenF(pow(10, hor*0.1)*0.5);
+    color.setRedF( pow(10, ver*0.2 )*0.25);
+    color.setGreenF(pow(10, hor*0.2 )*0.25);
+    color.setBlueF(1.0-pow(10, total*0.2 )*0.25);
     return color;
 }
 
@@ -151,14 +152,18 @@ Mesh* RadPatternLoader::load_rad_pattern()
     const int phi_cnt = pt_map.count();
 
     const int vertcount = radpts.size();
-    std::vector<GLfloat> flat_verts(3*vertcount);
+    std::vector<GLfloat> flat_verts(6*vertcount);
     index = 0;
     for(int i=0; i<vertcount; i++){
         Vertex vertex = radpts[i]->make_vertex();
+        QColor color = radpts[i]->get_color();
         flat_verts[index] = vertex.x;
         flat_verts[index+1] = vertex.y;
         flat_verts[index+2] = vertex.z;
-        index += 3;
+        flat_verts[index+3] = color.redF();
+        flat_verts[index+4] = color.greenF();
+        flat_verts[index+5] = color.blueF();
+        index += 6;
     }
 
     int tri_count = (theta_cnt-1) * (phi_cnt-1) * 2;
@@ -219,6 +224,6 @@ Mesh* RadPatternLoader::load_rad_pattern()
 //    indices[4] = 2;
 //    indices[5] = 3;
 
-    Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices));
+    Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
     return mesh;
 }

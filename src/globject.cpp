@@ -10,6 +10,7 @@ GLObject::GLObject(GLMesh *mesh, QOpenGLShaderProgram* shaderprog, const QColor&
   , m_color(color)
   , m_name(obj_name)
   , m_offset(QVector3D(0.0, 0.0, 0.0))
+  , m_rotation(QVector3D(0.0, 0.0, 0.0))
   , m_visible(true)
 {
 

@@ -1,5 +1,13 @@
 #include "testpattern.h"
 
+
+AntennaConfig::AntennaConfig(QVector3D pos, QVector3D rot)
+  : m_pos(pos)
+  , m_rotation(rot)
+{
+
+}
+
 TestPattern::TestPattern(QObject *parent) : QObject(parent)
   , m_pattern_running(false)
   , m_rotation(0.0, 0.0, 0.0)
@@ -11,8 +19,8 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
   , m_high_speed(false)
 {
 //    m_antenna_positions.append( QVector3D(0.0, 0.0, 0.0) );      //On center
-    m_antenna_positions.append( QVector3D(0.00, 0.35, 0.05) );      //Antenna just behind cockpit cover
-    m_antenna_positions.append( QVector3D(0.05, -0.1, 0.0) );       //Antenna on side behind wing
+    m_antenna_configs.append( AntennaConfig( QVector3D(0.00, 0.35, 0.05),  QVector3D(0.0, 0.0, 0.0) ) );      //Antenna just behind cockpit cover
+    m_antenna_configs.append( AntennaConfig( QVector3D(0.05, -0.1, 0.0),   QVector3D(90.0, 135.0, 0.0) ) );       //Antenna on side behind wing
     reset_pattern();
 }
 
@@ -70,7 +78,7 @@ void TestPattern::reset_pattern(void)
         }
         m_results.clear();
 
-        QString vis_pattern = "monopole*";
+        QString vis_pattern = "monopole";
         emit set_object_visible(vis_pattern, false);
 
         if(m_high_speed){
@@ -81,8 +89,8 @@ void TestPattern::reset_pattern(void)
             m_yaw_segments = 18;
         }
 
-        foreach(QVector3D pos, m_antenna_positions){
-            AntennaData* data = new AntennaData(this, pos, m_pitch_segments+1, m_yaw_segments+1, m_results.count());
+        foreach(AntennaConfig config, m_antenna_configs){
+            AntennaData* data = new AntennaData(this, config.m_pos, m_pitch_segments+1, m_yaw_segments+1, m_results.count());
             m_results.append(data);
         }
 
@@ -100,7 +108,7 @@ void TestPattern::start_pattern(void)
 {
     if(!m_pattern_running){
         reset_pattern();
-        emit set_view_pos( m_antenna_positions[m_ant_pos_index] );
+        emit set_view_pos( m_antenna_configs[m_ant_pos_index].m_pos );
         emit set_rotation(m_rotation, -1);
         emit redraw();
     }
@@ -115,22 +123,27 @@ void TestPattern::stop_pattern(void)
 
 bool TestPattern::set_antenna_pos_to_index(int index)
 {
-    if(index >= m_antenna_positions.count()){
+    if(index >= m_antenna_configs.count()){
         m_ant_pos_index = -1;
         QString name = "ant_vis*";
         emit set_object_visible(name, true);
         QVector3D pos = {0.0, 0.0, 0.0};
         emit set_view_pos(pos);
+        name = "monopole";
+        emit set_obj_rotation(name, pos);
         return false;
     }
     m_ant_pos_index = index;
     QString name = "antenna";
-    QVector3D antenna_offset = m_antenna_positions[m_ant_pos_index];
+    QVector3D antenna_offset = m_antenna_configs[m_ant_pos_index].m_pos;
     emit set_obj_pos(name, antenna_offset);
     emit set_view_pos(antenna_offset);
     name = "ant_vis*";
     emit set_object_visible(name, false);
     name = QString("ant_vis%1").arg(m_ant_pos_index);
+    emit set_object_visible(name, true);
+    name = "monopole";
+    emit set_obj_rotation(name, m_antenna_configs[m_ant_pos_index].m_rotation);
     emit set_object_visible(name, true);
     return true;
 }

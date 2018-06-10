@@ -30,6 +30,7 @@ public slots:
     void load_mesh(Mesh* m, const QString& shader, const QColor& color, const int show_order, const QString& name);
     void set_rotation(QVector3D rotation, int ref_index);
     void set_object_pos(QString& obj_name, QVector3D& pos);
+    void set_object_rot(QString& obj_name, QVector3D& rot);
     void set_view_pos(QVector3D& pos);
     void set_zoom(float zm);
     void set_object_visible(QString& obj_name, bool visible);
@@ -52,10 +53,12 @@ protected:
 	void set_perspective(float p);
     void view_anim(float v);
 
+    QList<GLObject*> get_objs(QString& obj_name);
+
 private:
     void draw_obj(GLObject* gl_obj);
 
-    QMatrix4x4 transform_matrix(QVector3D offset = QVector3D(0.0, 0.0, 0.0)) const;
+    QMatrix4x4 transform_matrix( QVector3D offset = QVector3D(0.0, 0.0, 0.0), QVector3D rotation = QVector3D(0.0, 0.0, 0.0) ) const;
     QMatrix4x4 view_matrix() const;
 
     QOpenGLShaderProgram mesh_shader;

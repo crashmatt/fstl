@@ -29,6 +29,7 @@ public slots:
     void solid_visibile(bool visible);
     void transparent_visibile(bool visible);
     void visibility_visibile(bool visible);
+    void rad_pattern_visibile(bool visible);
 
 signals:
     void set_object_visible(QString& obj_name, bool visible);
@@ -49,6 +50,7 @@ private:
     QAction* const solid_visible;
     QAction* const transparent_visible;
     QAction* const visibility_visible;
+    QAction* const rad_pattern_visible;
 
     Canvas*        canvas;
     TestPattern*   test_pattern;

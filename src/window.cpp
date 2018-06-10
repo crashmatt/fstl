@@ -20,8 +20,8 @@ Window::Window(QWidget *parent) :
     fast_mode(new QAction("Fast mode", this)),
     solid_visible(new QAction("Soild", this)),
     transparent_visible(new QAction("Transparent", this)),
-    visibility_visible(new QAction("Visibility", this))
-
+    visibility_visible(new QAction("Visibility", this)),
+    rad_pattern_visible(new QAction("Rad Pattern", this))
 {
     setWindowTitle("fstl");
     setAcceptDrops(true);
@@ -117,17 +117,24 @@ Window::Window(QWidget *parent) :
     QObject::connect(visibility_visible, &QAction::toggled,
                      this, &Window::visibility_visibile);
 
+    rad_pattern_visible->setShortcut(QKeySequence(Qt::Key_D));
+    QObject::connect(rad_pattern_visible, &QAction::toggled,
+                     this, &Window::rad_pattern_visibile);
+
     solid_visible->setCheckable(true);
     transparent_visible->setCheckable(true);
     visibility_visible->setCheckable(true);
+    rad_pattern_visible->setCheckable(true);
 
     solid_visible->setChecked(true);
     transparent_visible->setChecked(true);
     visibility_visible->setChecked(true);
+    rad_pattern_visible->setChecked(true);
 
     view_menu->addAction(solid_visible);
     view_menu->addAction(transparent_visible);
     view_menu->addAction(visibility_visible);
+    view_menu->addAction(rad_pattern_visible);
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
@@ -194,6 +201,12 @@ void Window::transparent_visibile(bool visible)
 void Window::visibility_visibile(bool visible)
 {
     QString name = "ant_vis*";
+    emit set_object_visible(name, visible);
+}
+
+void Window::rad_pattern_visibile(bool visible)
+{
+    QString name = "monopole";
     emit set_object_visible(name, visible);
 }
 

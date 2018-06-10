@@ -78,9 +78,6 @@ void TestPattern::reset_pattern(void)
         }
         m_results.clear();
 
-        QString vis_pattern = "monopole";
-        emit set_object_visible(vis_pattern, false);
-
         if(m_high_speed){
             m_pitch_segments = 12;
             m_yaw_segments = 6;
@@ -94,11 +91,15 @@ void TestPattern::reset_pattern(void)
             m_results.append(data);
         }
 
+        QString vis_pattern = "monopole";
+        emit set_object_visible(vis_pattern, false);
+
         emit set_zoom(16.0);
         set_antenna_pos_to_index(0);
         m_yaw_index = 0;
         m_pitch_index = 0;
         m_rotation = QVector3D(0.0, 0.0, 0.0);
+
         emit set_rotation(m_rotation, -1);
         emit redraw();
     }
@@ -107,12 +108,12 @@ void TestPattern::reset_pattern(void)
 void TestPattern::start_pattern(void)
 {
     if(!m_pattern_running){
+        m_pattern_running = true;
         reset_pattern();
         emit set_view_pos( m_antenna_configs[m_ant_pos_index].m_pos );
         emit set_rotation(m_rotation, -1);
         emit redraw();
     }
-    m_pattern_running = true;
 }
 
 void TestPattern::stop_pattern(void)
@@ -129,8 +130,11 @@ bool TestPattern::set_antenna_pos_to_index(int index)
         emit set_object_visible(name, true);
         QVector3D pos = {0.0, 0.0, 0.0};
         emit set_view_pos(pos);
-        name = "monopole";
-        emit set_obj_rotation(name, pos);
+        if(!m_pattern_running){
+            name = "monopole";
+            emit set_obj_rotation(name, pos);
+            emit set_object_visible(name, true);
+        }
         return false;
     }
     m_ant_pos_index = index;
@@ -142,9 +146,11 @@ bool TestPattern::set_antenna_pos_to_index(int index)
     emit set_object_visible(name, false);
     name = QString("ant_vis%1").arg(m_ant_pos_index);
     emit set_object_visible(name, true);
-    name = "monopole";
-    emit set_obj_rotation(name, m_antenna_configs[m_ant_pos_index].m_rotation);
-    emit set_object_visible(name, true);
+    if(!m_pattern_running){
+        name = "monopole";
+        emit set_obj_rotation(name, m_antenna_configs[m_ant_pos_index].m_rotation);
+        emit set_object_visible(name, true);
+    }
     return true;
 }
 

@@ -30,6 +30,8 @@ public slots:
     void transparent_visibile(bool visible);
     void visibility_visibile(bool visible);
     void rad_pattern_visibile(bool visible);
+    void object_visible(QAction* a);
+    void loaded_object(const QString &obj_name);
 
 signals:
     void set_object_visible(QString& obj_name, bool visible);
@@ -55,6 +57,9 @@ private:
     Canvas*        canvas;
     TestPattern*   test_pattern;
     DataProcessor* data_processor;
+
+    QMenu* const visibility;
+    QActionGroup* const objects_visibility;
 };
 
 #endif // WINDOW_H

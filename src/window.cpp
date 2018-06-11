@@ -21,7 +21,9 @@ Window::Window(QWidget *parent) :
     solid_visible(new QAction("Soild", this)),
     transparent_visible(new QAction("Transparent", this)),
     visibility_visible(new QAction("Visibility", this)),
-    rad_pattern_visible(new QAction("Rad Pattern", this))
+    rad_pattern_visible(new QAction("Rad Pattern", this)),
+    visibility(new QMenu("Object visibility", this)),
+    objects_visibility(new QActionGroup(this))
 {
     setWindowTitle("fstl");
     setAcceptDrops(true);
@@ -51,11 +53,16 @@ Window::Window(QWidget *parent) :
     connect(test_pattern, &TestPattern::antenna_data, data_processor, &DataProcessor::process_data);
     connect(test_pattern, &TestPattern::delete_object, canvas, &Canvas::delete_globject);
 
+    connect(canvas, &Canvas::loaded_object, this, &Window::loaded_object);
+
     connect(data_processor, &DataProcessor::built_mesh, canvas, &Canvas::load_mesh);
     connect(data_processor, &DataProcessor::set_obj_pos, canvas, &Canvas::set_object_pos);
 
     connect(this, &Window::set_object_visible, canvas, &Canvas::set_object_visible);
     connect(test_pattern, &TestPattern::set_object_visible, canvas, &Canvas::set_object_visible);
+
+    QObject::connect(objects_visibility, &QActionGroup::triggered,
+                     this, &Window::object_visible);
 
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,
@@ -121,20 +128,14 @@ Window::Window(QWidget *parent) :
     QObject::connect(rad_pattern_visible, &QAction::toggled,
                      this, &Window::rad_pattern_visibile);
 
-    solid_visible->setCheckable(true);
-    transparent_visible->setCheckable(true);
-    visibility_visible->setCheckable(true);
-    rad_pattern_visible->setCheckable(true);
+    for (auto p : {solid_visible, transparent_visible, visibility_visible, rad_pattern_visible})
+    {
+        p->setCheckable(true);
+        p->setChecked(true);
+        view_menu->addAction(p);
+    }
 
-    solid_visible->setChecked(true);
-    transparent_visible->setChecked(true);
-    visibility_visible->setChecked(true);
-    rad_pattern_visible->setChecked(true);
-
-    view_menu->addAction(solid_visible);
-    view_menu->addAction(transparent_visible);
-    view_menu->addAction(visibility_visible);
-    view_menu->addAction(rad_pattern_visible);
+    menuBar()->addMenu(visibility);
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
@@ -209,6 +210,26 @@ void Window::rad_pattern_visibile(bool visible)
     QString name = "monopole";
     emit set_object_visible(name, visible);
 }
+
+void Window::object_visible(QAction* a)
+{
+    QString obj_name = a->data().toString();
+    emit set_object_visible(obj_name , a->isChecked() );
+    emit update();
+}
+
+
+void Window::loaded_object(const QString &obj_name)
+{
+    const auto a = new QAction(obj_name, visibility);
+    a->setCheckable(true);
+    a->setChecked(true);
+    a->setData(obj_name);
+    objects_visibility->addAction(a);
+    visibility->addAction(a);
+}
+
+
 
 bool Window::load_stl(const QString& filename, const QString& name, const QString& shader_name, const QColor& base_color, int order)
 {

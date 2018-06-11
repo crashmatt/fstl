@@ -86,6 +86,7 @@ void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color,
         GLObject *newobj = new GLObject(new_mesh, shader, color, name);
         obj_map[show_order] = newobj;
         obj_name_map[name] = newobj;
+        emit loaded_object(name);
     } else {
         delete(new_mesh);
     }

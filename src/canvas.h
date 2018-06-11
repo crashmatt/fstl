@@ -39,6 +39,7 @@ public slots:
 
 signals:
     void antenna_visibility(int index, QVector3D rotation, float center_visibility , float color_visibility);
+    void loaded_object(const QString& obj_name);
 
 protected:
 	void paintGL() override;

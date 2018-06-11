@@ -214,17 +214,26 @@ void Window::rad_pattern_visibile(bool visible)
 void Window::object_visible(QAction* a)
 {
     QString obj_name = a->data().toString();
-    emit set_object_visible(obj_name , a->isChecked() );
+    emit set_object_visible(obj_name , !object_visibilities[obj_name] );
     emit update();
+    object_visibilities[obj_name] ^= true;
 }
 
 
 void Window::loaded_object(const QString &obj_name)
 {
+    auto list = objects_visibility->actions();
+    foreach(QAction* a, list){
+        if(a->data().toString() == obj_name)
+            return;
+    }
+
     const auto a = new QAction(obj_name, visibility);
-    a->setCheckable(true);
-    a->setChecked(true);
+    object_visibilities[obj_name] = true;
+//    a->setCheckable(true);
+//    a->setChecked(true);
     a->setData(obj_name);
+    a->setShortcut(QKeySequence(Qt::Key_0+list.count()));
     objects_visibility->addAction(a);
     visibility->addAction(a);
 }

@@ -19,6 +19,7 @@ public:
     bool load_rad_pattern(const QString& filename, const QString& name, const QString& shader_name, const QColor& base_color, int order);
 
 protected:
+    QMap<QString, bool> object_visibilities;
 
 public slots:
     void on_about();

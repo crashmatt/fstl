@@ -21,7 +21,7 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
 //    m_antenna_positions.append( QVector3D(0.0, 0.0, 0.0) );      //On center
     m_antenna_configs.append( AntennaConfig( QVector3D(0.00, 0.35, 0.05),  QVector3D(0.0, 0.0, 0.0) ) );      //Antenna just behind cockpit cover
     m_antenna_configs.append( AntennaConfig( QVector3D(0.05, -0.1, 0.0),   QVector3D(90.0, 135.0, 0.0) ) );       //Antenna on side behind wing
-    reset_pattern();
+    reset();
 }
 
 void TestPattern::antenna_visibility(int index, QVector3D rotation, float center_color, float color_visibility)
@@ -70,46 +70,52 @@ void TestPattern::antenna_visibility(int index, QVector3D rotation, float center
 void TestPattern::reset_pattern(void)
 {
     if(!m_pattern_running){
-        QString del_pattern("ant_vis*");
-        emit delete_object(del_pattern);
-
-        foreach(AntennaData* data, m_results){
-            data->deleteLater();
-        }
-        m_results.clear();
-
-        if(m_high_speed){
-            m_pitch_segments = 12;
-            m_yaw_segments = 6;
-        } else {
-            m_pitch_segments = 36;
-            m_yaw_segments = 18;
-        }
-
-        foreach(AntennaConfig config, m_antenna_configs){
-            AntennaData* data = new AntennaData(this, config.m_pos, m_pitch_segments+1, m_yaw_segments+1, m_results.count());
-            m_results.append(data);
-        }
-
-        QString vis_pattern = "monopole";
-        emit set_object_visible(vis_pattern, false);
-
-        emit set_zoom(16.0);
-        set_antenna_pos_to_index(0);
-        m_yaw_index = 0;
-        m_pitch_index = 0;
-        m_rotation = QVector3D(0.0, 0.0, 0.0);
-
-        emit set_rotation(m_rotation, -1);
-        emit redraw();
+        reset();
     }
 }
+
+void TestPattern::reset()
+{
+    QString del_pattern("ant_vis*");
+    emit delete_object(del_pattern);
+
+    foreach(AntennaData* data, m_results){
+        data->deleteLater();
+    }
+    m_results.clear();
+
+    if(m_high_speed){
+        m_pitch_segments = 12;
+        m_yaw_segments = 6;
+    } else {
+        m_pitch_segments = 36;
+        m_yaw_segments = 18;
+    }
+
+    foreach(AntennaConfig config, m_antenna_configs){
+        AntennaData* data = new AntennaData(this, config.m_pos, m_pitch_segments+1, m_yaw_segments+1, m_results.count());
+        m_results.append(data);
+    }
+
+    emit set_zoom(16.0);
+    set_antenna_pos_to_index(0);
+    m_yaw_index = 0;
+    m_pitch_index = 0;
+    m_rotation = QVector3D(0.0, 0.0, 0.0);
+
+    QString vis_pattern = "monopole";
+    emit set_object_visible(vis_pattern, false);
+
+    emit set_rotation(m_rotation, -1);
+    emit redraw();
+}
+
 
 void TestPattern::start_pattern(void)
 {
     if(!m_pattern_running){
         m_pattern_running = true;
-        reset_pattern();
+        reset();
         emit set_view_pos( m_antenna_configs[m_ant_pos_index].m_pos );
         emit set_rotation(m_rotation, -1);
         emit redraw();
@@ -133,7 +139,6 @@ bool TestPattern::set_antenna_pos_to_index(int index)
         if(!m_pattern_running){
             name = "monopole";
             emit set_obj_rotation(name, pos);
-            emit set_object_visible(name, true);
         }
         return false;
     }
@@ -149,7 +154,6 @@ bool TestPattern::set_antenna_pos_to_index(int index)
     if(!m_pattern_running){
         name = "monopole";
         emit set_obj_rotation(name, m_antenna_configs[m_ant_pos_index].m_rotation);
-        emit set_object_visible(name, true);
     }
     return true;
 }

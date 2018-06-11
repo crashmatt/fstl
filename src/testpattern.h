@@ -38,6 +38,7 @@ protected:
     bool                m_high_speed;
 
     bool set_antenna_pos_to_index(int index);
+    void reset();
 
 signals:
     void set_rotation(QVector3D rotation, int index);

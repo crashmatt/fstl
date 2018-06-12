@@ -17,43 +17,6 @@ RadPatternPoint::RadPatternPoint(QObject* parent, int i, float t, float p, float
     ;
 };
 
-//bool RadPatternPoint::parse_line(QByteArray &line)
-//{
-//    const auto parts = file.readLine().trimmed().split(',');
-//    if(parts.count() < 8){
-//        return false;
-//    }
-
-//    bool ok;
-//    theta = parts[0].toFloat(&ok);
-//    phi = parts[1].toFloat(&ok);
-//    ver = parts[2].toFloat(&ok);
-//    hor = parts[3].toFloat(&ok);
-//    total = parts[4].toFloat(&ok);
-//}
-
-RadPatternPoint* RadPatternPoint::from_line(QObject* parent, QByteArray &line, int index)
-{
-    const auto parts = line.trimmed().split(',');
-    if(parts.count() < 8){
-        return NULL;
-    }
-
-    bool ok;
-    float theta = parts[0].toFloat(&ok);
-    if(!ok) return NULL;
-    float phi = parts[1].toFloat(&ok);
-    if(!ok) return NULL;
-    float ver = parts[2].toFloat(&ok);
-    if(!ok) return NULL;
-    float hor = parts[3].toFloat(&ok);
-    if(!ok) return NULL;
-    float total = parts[4].toFloat(&ok);
-    if(!ok) return NULL;
-
-    return new RadPatternPoint(parent, index, theta, phi, ver, hor, total);
-}
-
 Vertex RadPatternPoint::make_vertex()
 {
     float amplitude = pow(10, total*0.1);
@@ -106,6 +69,29 @@ void RadPatternLoader::run()
 }
 
 
+RadPatternPoint* RadPatternLoader::point_from_line(QObject* parent, QByteArray &line, int index)
+{
+    const auto parts = line.trimmed().split(',');
+    if(parts.count() < 8){
+        return NULL;
+    }
+
+    bool ok;
+    float theta = parts[0].toFloat(&ok);
+    if(!ok) return NULL;
+    float phi = parts[1].toFloat(&ok);
+    if(!ok) return NULL;
+    float ver = parts[2].toFloat(&ok);
+    if(!ok) return NULL;
+    float hor = parts[3].toFloat(&ok);
+    if(!ok) return NULL;
+    float total = parts[4].toFloat(&ok);
+    if(!ok) return NULL;
+
+    return new RadPatternPoint(parent, index, theta, phi, ver, hor, total);
+}
+
+
 Mesh* RadPatternLoader::load_rad_pattern()
 {
     QVector<RadPatternPoint*> radpts;
@@ -128,7 +114,7 @@ Mesh* RadPatternLoader::load_rad_pattern()
     int index  = 0;
     while(!file.atEnd()){
         auto line = file.readLine();
-        RadPatternPoint* radpt = RadPatternPoint::from_line(this, line, index);
+        RadPatternPoint* radpt = point_from_line(this, line, index);
         if(radpt != NULL){
             radpts.append(radpt);
             int int_phi = (int) radpt->phi;
@@ -192,37 +178,6 @@ Mesh* RadPatternLoader::load_rad_pattern()
 
     qDeleteAll(radpts);
     radpts.clear();
-
-
-//    std::vector<GLfloat> flat_verts(3 * 4);
-//    std::vector<GLuint> indices(2*3);
-
-//    uint index = 0;
-//    flat_verts[index+0] = -1.0;
-//    flat_verts[index+1] = -1.0;
-//    flat_verts[index+2] = 0.0;
-////    flat_verts[index+3] = 1.0;
-////    flat_verts[index+4] = 0.0;
-////    flat_verts[index+5] = 0.0;
-//    index += 3;
-//    flat_verts[index+0] = -1.0;
-//    flat_verts[index+1] = 1.0;
-//    flat_verts[index+2] = 0.0;
-//    index += 3;
-//    flat_verts[index+0] = 1.0;
-//    flat_verts[index+1] = -1.0;
-//    flat_verts[index+2] = 0.0;
-//    index += 3;
-//    flat_verts[index+0] = 1.0;
-//    flat_verts[index+1] = 1.0;
-//    flat_verts[index+2] = 0.0;
-
-//    indices[0] = 0;
-//    indices[1] = 1;
-//    indices[2] = 2;
-//    indices[3] = 1;
-//    indices[4] = 2;
-//    indices[5] = 3;
 
     Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
     return mesh;

@@ -23,6 +23,8 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     , status(" ")
     , roll(0)
     , ref_index(-1)
+    , fps(0)
+    , fps_count(0)
 {
 	setFormat(format);
     QFile styleFile(":/qt/style.qss");
@@ -30,6 +32,7 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     setStyleSheet(styleFile.readAll());
 
     anim.setDuration(100);
+    fps_time.start();
 }
 
 Canvas::~Canvas()
@@ -280,8 +283,16 @@ void Canvas::paintGL()
     QVector3D rotation = QVector3D(tilt, roll, yaw);
     emit antenna_visibility(ref_index, rotation, pick_col[1] , g);
 
+    int elapsed = fps_time.elapsed();
+    if(elapsed > 1000){
+        fps = fps_count * 1000.0 / (float) elapsed;
+        fps_time.start();
+        fps_count = 0;
+    } else {
+        fps_count++;
+    }
 
-    status = QString("RGB:%1,%2,%3 px:%4 gh:%5 zm:%6 tilt:%7 roll:%8 yaw:%9")
+    status = QString("RGB:%1,%2,%3 px:%4 gh:%5 zm:%6 tilt:%7 roll:%8 yaw:%9 fps:%10")
             .arg(pick_col[0],2,16, QChar('0')).toUpper()
             .arg(pick_col[1],2,16, QChar('0')).toUpper()
             .arg(pick_col[2],2,16, QChar('0')).toUpper()
@@ -291,6 +302,7 @@ void Canvas::paintGL()
             .arg(tilt)
             .arg(roll)
             .arg(yaw)
+            .arg(fps)
             ;
 
 	QPainter painter(this);

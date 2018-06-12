@@ -82,6 +82,9 @@ private:
     float yaw;
     float roll;
     int   ref_index;
+    float fps;
+    uint  fps_count;
+    QTime fps_time;
 
     float perspective;
     Q_PROPERTY(float perspective WRITE set_perspective);

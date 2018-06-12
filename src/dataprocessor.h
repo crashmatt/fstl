@@ -15,7 +15,8 @@ public:
     bool    m_scale_to_visibility;
 
 protected:
-    void build_mesh(AntennaData &data);
+    void build_antenna_visibility_object(AntennaData &data, AntennaConfig &config);
+    void build_antenna_effective_object(AntennaData &data, AntennaConfig &config);
 
 signals:
     void built_mesh(Mesh* m, QString shader, QColor color, int order, QString name);

@@ -34,10 +34,10 @@ void DataProcessor::process_data(AntennaData &data, AntennaConfig &config)
         }
     }
 
-    build_mesh(data);
+    build_antenna_visibility_object(data, config);
 }
 
-void DataProcessor::build_mesh(AntennaData &data)
+void DataProcessor::build_antenna_visibility_object(AntennaData &data, AntennaConfig &config)
 {
     std::vector<GLfloat> flat_verts(2 * 3 * data.m_z_axis_steps * data.m_x_axis_steps);
 
@@ -51,6 +51,9 @@ void DataProcessor::build_mesh(AntennaData &data)
         break;
     case 2:
         viscolor = QColor(0,255,0);
+        break;
+    default:
+        viscolor = QColor(128,128,128);
         break;
     }
 
@@ -143,8 +146,13 @@ void DataProcessor::build_mesh(AntennaData &data)
 
     Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
     QString name = QString("ant_vis%1").arg(data.index());
-    QVector3D position = data.position();
 
     emit built_mesh(mesh, "visi", QColor(255,0,0,128), 10+data.index(), name);
-    emit set_obj_pos(name, position);
+    emit set_obj_pos(name, config.m_pos);
+}
+
+
+void build_antenna_effective_object(AntennaData &data, AntennaConfig &config)
+{
+
 }

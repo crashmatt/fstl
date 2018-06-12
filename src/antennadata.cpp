@@ -25,7 +25,7 @@ AntennaDataPoint::AntennaDataPoint(QObject *parent, QVector3D rotation) : QObjec
 
 
 AntennaData::AntennaData(QObject *parent, QVector3D ant_pos, int x_steps, int z_steps, int index) : QObject(parent)
-    , m_ant_pos(ant_pos)
+//    , m_ant_pos(ant_pos)
     , m_x_axis_steps(x_steps)
     , m_z_axis_steps(z_steps)
     , m_index(index)

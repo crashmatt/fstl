@@ -59,13 +59,13 @@ public:
     AntennaDataPoint* get_antenna_datapoint(int x_step, int z_step);
     int data_index(int z_step, int x_step) {return z_step + (x_step * m_z_axis_steps);}
     int index() {return m_index;};
-    QVector3D position() {return m_ant_pos;};
+//    QVector3D position() {return m_ant_pos;};
 
     const int   m_index;
 
 protected:
     QVector<AntennaDataPoint*> m_antenna_data;
-    QVector3D   m_ant_pos;
+//    QVector3D   m_ant_pos;
 
 signals:
 

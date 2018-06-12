@@ -45,9 +45,12 @@ void TestPattern::antenna_visibility(int index, QVector3D rotation, float center
                 if(m_yaw_index > m_yaw_segments){
                     m_yaw_index = 0;
                     if(!set_antenna_pos_to_index(m_ant_pos_index+1)){
+                        m_ant_pos_index = 0;
                         foreach(data, m_results){
                             emit antenna_data(*data, m_antenna_configs[m_ant_pos_index]);
+                            m_ant_pos_index++;
                         }
+                        m_ant_pos_index = -1;
                         m_pattern_running = false;
                         emit test_completed();
                         return;

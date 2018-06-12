@@ -9,16 +9,6 @@
 
 #include "antennadata.h"
 
-class AntennaConfig
-{
-public:
-    explicit AntennaConfig(QVector3D pos, QVector3D rot);
-
-    QVector3D m_pos;
-    QVector3D m_rotation;
-};
-
-
 class TestPattern : public QObject
 {
     Q_OBJECT
@@ -48,7 +38,7 @@ signals:
     void set_zoom(float zm);
     void redraw();
     void test_completed();
-    void antenna_data(AntennaData &data);
+    void antenna_data(AntennaData &data, AntennaConfig &config);
     void delete_object(QString& obj_name);
     void set_object_visible(QString& obj_name, bool visible);
 

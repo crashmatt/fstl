@@ -1,12 +1,6 @@
 #include "testpattern.h"
 
 
-AntennaConfig::AntennaConfig(QVector3D pos, QVector3D rot)
-  : m_pos(pos)
-  , m_rotation(rot)
-{
-
-}
 
 TestPattern::TestPattern(QObject *parent) : QObject(parent)
   , m_pattern_running(false)
@@ -19,8 +13,15 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
   , m_high_speed(false)
 {
 //    m_antenna_positions.append( QVector3D(0.0, 0.0, 0.0) );      //On center
-    m_antenna_configs.append( AntennaConfig( QVector3D(0.00, 0.35, 0.05),  QVector3D(0.0, 0.0, 0.0) ) );      //Antenna just behind cockpit cover
-    m_antenna_configs.append( AntennaConfig( QVector3D(0.05, -0.1, 0.0),   QVector3D(90.0, 135.0, 0.0) ) );       //Antenna on side behind wing
+    m_antenna_configs.append( AntennaConfig( QVector3D(0.00, 0.35, 0.05)
+                                             ,QVector3D(0.0, 0.0, 0.0)
+                                             ,"monopole"
+                                             ,"cockpit" ) );      //Antenna just behind cockpit cover
+
+    m_antenna_configs.append( AntennaConfig( QVector3D(0.05, -0.1, 0.0)
+                                             ,QVector3D(90.0, 135.0, 0.0)
+                                             ,"monopole"
+                                             ,"rear_right" ) );       //Antenna on side behind wing
     reset();
 }
 
@@ -45,7 +46,7 @@ void TestPattern::antenna_visibility(int index, QVector3D rotation, float center
                     m_yaw_index = 0;
                     if(!set_antenna_pos_to_index(m_ant_pos_index+1)){
                         foreach(data, m_results){
-                            emit antenna_data(*data);
+                            emit antenna_data(*data, m_antenna_configs[m_ant_pos_index]);
                         }
                         m_pattern_running = false;
                         emit test_completed();

@@ -11,7 +11,6 @@ RadPatternPoint::RadPatternPoint(QObject* parent, int i, float t, float p, float
   , total(tot)
   , index(i)
 {
-    ;
 };
 
 Vertex RadPatternPoint::make_vertex()

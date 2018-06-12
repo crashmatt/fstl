@@ -1,5 +1,17 @@
 #include "antennadata.h"
 
+
+AntennaConfig::AntennaConfig(QVector3D pos, QVector3D rot, QString type, QString name)
+  : m_pos(pos)
+  , m_rotation(rot)
+  , m_type(type)
+  , m_name(name)
+{
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 AntennaDataPoint::AntennaDataPoint(QObject *parent, QVector3D rotation) : QObject(parent)
   , m_rotation(rotation)
   , m_center_color(0, 0, 0, 255)
@@ -8,6 +20,9 @@ AntennaDataPoint::AntennaDataPoint(QObject *parent, QVector3D rotation) : QObjec
 {
 
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
 
 AntennaData::AntennaData(QObject *parent, QVector3D ant_pos, int x_steps, int z_steps, int index) : QObject(parent)
     , m_ant_pos(ant_pos)

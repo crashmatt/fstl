@@ -22,7 +22,7 @@ signals:
     void set_obj_pos(QString& obj_name, QVector3D& pos);
 
 public slots:
-    void process_data(AntennaData &data);
+    void process_data(AntennaData &data, AntennaConfig &config);
 };
 
 #endif // DATAPROCESSOR_H

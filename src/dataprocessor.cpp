@@ -12,7 +12,7 @@ DataProcessor::DataProcessor(QObject *parent) : QObject(parent)
 
 }
 
-void DataProcessor::process_data(AntennaData &data)
+void DataProcessor::process_data(AntennaData &data, AntennaConfig &config)
 {
     float max_vis = 0.01;
     AntennaDataPoint* datapt;

@@ -8,6 +8,21 @@
 #include <QList>
 #include <QVector>
 
+class AntennaConfig
+{
+public:
+    explicit AntennaConfig(QVector3D pos, QVector3D rot, QString m_type, QString m_name);
+
+    QVector3D   m_pos;
+    QVector3D   m_rotation;
+    QString     m_type;
+    QString     m_name;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 class AntennaDataPoint : public QObject
 {
     Q_OBJECT
@@ -27,6 +42,8 @@ public slots:
 
 };
 
+
+////////////////////////////////////////////////////////////////////////////////
 
 class AntennaData : public QObject
 {

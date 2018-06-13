@@ -9,6 +9,7 @@
 class Canvas;
 class TestPattern;
 class DataProcessor;
+class RadPatternData;
 
 class Window : public QMainWindow
 {
@@ -58,6 +59,7 @@ private:
     Canvas*        canvas;
     TestPattern*   test_pattern;
     DataProcessor* data_processor;
+    RadPatternData* rad_patterns;
 
     QMenu* const visibility;
     QActionGroup* const objects_visibility;

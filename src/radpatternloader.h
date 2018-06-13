@@ -6,16 +6,18 @@
 #include <QColor>
 #include <QString>
 #include <QByteArray>
+#include <QExplicitlySharedDataPointer>
 
 #include "mesh.h"
+#include "radpatterndata.h"
 class Vertex;
-class RadPatternPoint;
 
 class RadPatternLoader : public QThread
 {
     Q_OBJECT
 public:
     explicit RadPatternLoader(QObject* parent, const QString& filename, const QString& obj_name, const QString& frag_shader, const QColor &color, int order);
+    ~RadPatternLoader();
     void run();
 
 protected:
@@ -25,6 +27,7 @@ protected:
 signals:
     void loaded_file(QString filename);
     void got_mesh(Mesh* m, QString shader, QColor color, int order, QString name);
+    void got_rad_pattern(RadPatternSet& pattern);
     void error_missing_file();
 
 private:
@@ -33,6 +36,7 @@ private:
     const QColor  base_color;
     const int     show_order;
     const QString name;
+    QExplicitlySharedDataPointer<RadPatternSet> rad_pattern_ptr;
 };
 
 #endif // RADPATTERNLOADER_H

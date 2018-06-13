@@ -17,6 +17,11 @@ RadPatternLoader::RadPatternLoader(QObject* parent, const QString& filename, con
 
 }
 
+RadPatternLoader::~RadPatternLoader()
+{
+
+}
+
 void RadPatternLoader::run()
 {
     Mesh* mesh = load_rad_pattern();
@@ -53,8 +58,11 @@ RadPatternPoint* RadPatternLoader::point_from_line(QObject* parent, QByteArray &
 
 Mesh* RadPatternLoader::load_rad_pattern()
 {
-    QVector<RadPatternPoint*> radpts;
-    radpts.reserve(36*36);
+    RadPatternSet rad_pattern;
+    rad_pattern_ptr = &rad_pattern;
+
+    QVector<RadPatternPoint*>& rad_data = rad_pattern.rad_data;
+    rad_data.reserve(36*36);
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly))
@@ -75,7 +83,7 @@ Mesh* RadPatternLoader::load_rad_pattern()
         auto line = file.readLine();
         RadPatternPoint* radpt = point_from_line(this, line, index);
         if(radpt != NULL){
-            radpts.append(radpt);
+            rad_data.append(radpt);
             int int_phi = (int) radpt->phi;
             if(!phis.contains(int_phi)){
                 phis.append(int_phi);
@@ -90,18 +98,21 @@ Mesh* RadPatternLoader::load_rad_pattern()
 
     }
 
-    if(radpts.isEmpty())
+    if(rad_data.isEmpty())
         return NULL;
+
+    rad_pattern.set_name = name;
+    emit got_rad_pattern(rad_pattern);
 
     const int theta_cnt = pt_map[0]->count();
     const int phi_cnt = pt_map.count();
 
-    const int vertcount = radpts.size();
+    const int vertcount = rad_data.size();
     std::vector<GLfloat> flat_verts(6*vertcount);
     index = 0;
     for(int i=0; i<vertcount; i++){
-        Vertex vertex = radpts[i]->make_vertex();
-        QColor color = radpts[i]->get_color();
+        Vertex vertex = rad_data[i]->make_vertex();
+        QColor color = rad_data[i]->get_color();
         flat_verts[index] = vertex.x;
         flat_verts[index+1] = vertex.y;
         flat_verts[index+2] = vertex.z;
@@ -134,9 +145,6 @@ Mesh* RadPatternLoader::load_rad_pattern()
 
     qDeleteAll(pt_map);
     pt_map.clear();
-
-    qDeleteAll(radpts);
-    radpts.clear();
 
     Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
     return mesh;

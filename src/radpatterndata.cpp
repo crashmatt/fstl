@@ -44,5 +44,18 @@ QColor RadPatternPoint::get_color()
 
 RadPatternData::RadPatternData(QObject *parent) : QObject(parent)
 {
+}
 
+QExplicitlySharedDataPointer<RadPatternSet> RadPatternData::get_data(QString &pattern_name)
+{
+    return pattern_data.value( pattern_name, QExplicitlySharedDataPointer<RadPatternSet>() );
+//    return QExplicitlySharedDataPointer();
+}
+
+void RadPatternData::new_pattern_data( RadPatternSet &data )
+{
+    if(pattern_data.contains(data.set_name)){
+        pattern_data.remove(data.set_name);
+    }
+    pattern_data[data.set_name] = &data;
 }

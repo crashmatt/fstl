@@ -1,6 +1,7 @@
 #include "dataprocessor.h"
 #include "mesh.h"
 #include "antennadata.h"
+#include "radpatterndata.h"
 #include <QMatrix4x4>
 
 #define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
@@ -104,45 +105,6 @@ void DataProcessor::build_antenna_visibility_object(AntennaData &data, AntennaCo
             index += 6;
         }
     }
-
-//    std::vector<GLfloat> flat_verts(6 * 4);
-//    std::vector<GLuint> indices(2*3);
-
-//    uint index = 0;
-//    flat_verts[index+0] = -1.0;
-//    flat_verts[index+1] = -1.0;
-//    flat_verts[index+2] = 0.0;
-//    flat_verts[index+3] = 1.0;
-//    flat_verts[index+4] = 0.0;
-//    flat_verts[index+5] = 0.0;
-//    index += 6;
-//    flat_verts[index+0] = -1.0;
-//    flat_verts[index+1] = 1.0;
-//    flat_verts[index+2] = 0.0;
-//    flat_verts[index+3] = 0.0;
-//    flat_verts[index+4] = 1.0;
-//    flat_verts[index+5] = 0.0;
-//    index += 6;
-//    flat_verts[index+0] = 1.0;
-//    flat_verts[index+1] = -1.0;
-//    flat_verts[index+2] = 0.0;
-//    flat_verts[index+3] = 0.0;
-//    flat_verts[index+4] = 0.0;
-//    flat_verts[index+5] = 1.0;
-//    index += 6;
-//    flat_verts[index+0] = 1.0;
-//    flat_verts[index+1] = 1.0;
-//    flat_verts[index+2] = 0.0;
-//    flat_verts[index+3] = 0.5;
-//    flat_verts[index+4] = 0.5;
-//    flat_verts[index+5] = 0.5;
-
-//    indices[0] = 0;
-//    indices[1] = 1;
-//    indices[2] = 2;
-//    indices[3] = 1;
-//    indices[4] = 2;
-//    indices[5] = 3;
 
     Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
     QString name = QString("ant_vis%1").arg(data.index());

@@ -3,6 +3,10 @@
 
 #include <QObject>
 #include <QColor>
+#include <QVector>
+#include <QMap>
+#include <QSharedData>
+#include <QExplicitlySharedDataPointer>
 
 class Vertex;
 
@@ -11,7 +15,6 @@ class RadPatternPoint : public QObject
     Q_OBJECT
 public:
     explicit RadPatternPoint(QObject* parent, int index, float theta, float phi, float ver, float hor, float total);
-//    bool parse_line(QByteArray line);
 
     Vertex make_vertex();
     QColor get_color();
@@ -25,15 +28,27 @@ public:
 };
 
 
+class RadPatternSet : public QSharedData
+{
+public:
+    QVector<RadPatternPoint*>   rad_data;
+    QString                     set_name;
+};
+
 class RadPatternData : public QObject
 {
     Q_OBJECT
 public:
     explicit RadPatternData(QObject *parent = 0);
+    QExplicitlySharedDataPointer<RadPatternSet> get_data(QString &pattern_name);
 
 signals:
 
 public slots:
+    void new_pattern_data(RadPatternSet &data);
+
+protected:
+    QMap< QString, QExplicitlySharedDataPointer<RadPatternSet> > pattern_data;
 };
 
 #endif // RADPATTERNDATA_H

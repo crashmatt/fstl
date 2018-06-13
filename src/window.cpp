@@ -3,6 +3,7 @@
 #include "window.h"
 #include "canvas.h"
 #include "loader.h"
+#include "radpatterndata.h"
 #include "radpatternloader.h"
 #include "testpattern.h"
 #include "dataprocessor.h"
@@ -39,6 +40,7 @@ Window::Window(QWidget *parent) :
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
 
+    rad_patterns = new RadPatternData(this);
     test_pattern = new TestPattern(this);
     data_processor = new DataProcessor(this);
 
@@ -274,6 +276,9 @@ bool Window::load_rad_pattern(const QString& filename, const QString& name, cons
 
     connect(loader, &RadPatternLoader::got_mesh,
             canvas, &Canvas::load_mesh);
+
+    connect(loader, &RadPatternLoader::got_rad_pattern,
+                rad_patterns, &RadPatternData::new_pattern_data);
 
 //    connect(loader, &Loader::error_bad_stl,
 //              this, &Window::on_bad_stl);

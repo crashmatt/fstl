@@ -6,8 +6,9 @@
 
 #define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
 
-DataProcessor::DataProcessor(QObject *parent) : QObject(parent)
+DataProcessor::DataProcessor(QObject *parent, RadPatternData* patterns) : QObject(parent)
   , m_scale_to_visibility(true)
+  , m_patterns(patterns)
 
 {
 
@@ -114,7 +115,22 @@ void DataProcessor::build_antenna_visibility_object(AntennaData &data, AntennaCo
 }
 
 
-void build_antenna_effective_object(AntennaData &data, AntennaConfig &config)
+void DataProcessor::build_antenna_effective_object(AntennaData &data, AntennaConfig &config)
 {
 
+}
+
+
+float DataProcessor::get_rad_intensity(RadPatternSet* pattern, QVector3D rot)
+{
+//    QVector3D distance = {1000, 1000, 1000};
+//    foreach(QVector<RadPatternPoint*> pt , pattern->rad_data ){
+//        if( ( abs(pt->theta-rot.z()) < distance.z ) &&
+//            ( abs(pt->phi-rot.x()) < distance.x ) ) {
+//            distance.z =    abs(pt->theta-rot.z());
+//            distance.x =    abs(pt->theta-rot.z());
+//        }
+//    }
+
+    return 1.0;
 }

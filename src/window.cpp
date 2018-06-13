@@ -42,7 +42,7 @@ Window::Window(QWidget *parent) :
 
     rad_patterns = new RadPatternData(this);
     test_pattern = new TestPattern(this);
-    data_processor = new DataProcessor(this);
+    data_processor = new DataProcessor(this, rad_patterns);
 
     QObject::connect(canvas, &Canvas::antenna_visibility, test_pattern, &TestPattern::antenna_visibility, Qt::QueuedConnection);
     QObject::connect(test_pattern, &TestPattern::set_rotation, canvas, &Canvas::set_rotation, Qt::QueuedConnection);

@@ -44,7 +44,7 @@ public:
 signals:
 
 public slots:
-    void new_pattern_data(RadPatternSet &data);
+    void new_pattern_data(RadPatternSet* data);
 
 protected:
     QMap< QString, QExplicitlySharedDataPointer<RadPatternSet> > pattern_data;

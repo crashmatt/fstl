@@ -24,12 +24,17 @@ RadPatternLoader::~RadPatternLoader()
 
 void RadPatternLoader::run()
 {
-    Mesh* mesh = load_rad_pattern();
-    if (mesh)
-    {
-        emit got_mesh(mesh, frag_shader, base_color, show_order, name);
-        emit loaded_file(filename);
+    auto pattern = load_rad_pattern();
+    if(pattern){
+        auto mesh = create_mesh(pattern);
+        if (mesh)
+        {
+            emit got_mesh(mesh, frag_shader, base_color, show_order, name);
+            emit loaded_file(filename);
+        }
+        emit got_rad_pattern(pattern);
     }
+
 }
 
 
@@ -56,12 +61,12 @@ RadPatternPoint* RadPatternLoader::point_from_line(QObject* parent, QByteArray &
 }
 
 
-Mesh* RadPatternLoader::load_rad_pattern()
+RadPatternSet* RadPatternLoader::load_rad_pattern()
 {
-    RadPatternSet rad_pattern;
-    rad_pattern_ptr = &rad_pattern;
+    auto rad_pattern = new RadPatternSet();
+    rad_pattern->set_name = name;
 
-    QVector<RadPatternPoint*>& rad_data = rad_pattern.rad_data;
+    QVector<RadPatternPoint*>& rad_data = rad_pattern->rad_data;
     rad_data.reserve(36*36);
 
     QFile file(filename);
@@ -70,10 +75,6 @@ Mesh* RadPatternLoader::load_rad_pattern()
         emit error_missing_file();
         return NULL;
     }
-
-    QVector< QVector<RadPatternPoint*>* > pt_map;
-    QList< int > thetas;
-    QList< int > phis;
 
     file.readLine();    //Ignore first two lines as headers
     file.readLine();
@@ -84,25 +85,36 @@ Mesh* RadPatternLoader::load_rad_pattern()
         RadPatternPoint* radpt = point_from_line(this, line, index);
         if(radpt != NULL){
             rad_data.append(radpt);
-            int int_phi = (int) radpt->phi;
-            if(!phis.contains(int_phi)){
-                phis.append(int_phi);
-                QVector<RadPatternPoint*>* newline = new QVector<RadPatternPoint*>();
-                pt_map.append( newline );
-            }
+        }
+        index++;
+    }
 
-            pt_map.last()->append(radpt);
-            index++;
+    return rad_pattern;
+}
 
+
+Mesh* RadPatternLoader::create_mesh(RadPatternSet* rad_pattern)
+{
+    QVector<RadPatternPoint*>& rad_data = rad_pattern->rad_data;
+
+    QVector< QVector<RadPatternPoint*>* > pt_map;
+    QList< int > thetas;
+    QList< int > phis;
+    int index;
+
+    foreach(RadPatternPoint* radpt, rad_data){
+        int int_phi = (int) radpt->phi;
+        if(!phis.contains(int_phi)){
+            phis.append(int_phi);
+            QVector<RadPatternPoint*>* newline = new QVector<RadPatternPoint*>();
+            pt_map.append( newline );
         }
 
+        pt_map.last()->append(radpt);
     }
 
     if(rad_data.isEmpty())
         return NULL;
-
-    rad_pattern.set_name = name;
-    emit got_rad_pattern(rad_pattern);
 
     const int theta_cnt = pt_map[0]->count();
     const int phi_cnt = pt_map.count();

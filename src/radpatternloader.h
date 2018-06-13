@@ -21,13 +21,14 @@ public:
     void run();
 
 protected:
-    Mesh* load_rad_pattern();
+    RadPatternSet* load_rad_pattern();
+    Mesh* create_mesh(RadPatternSet* pattern);
     RadPatternPoint* point_from_line(QObject* parent, QByteArray &line, int index);
 
 signals:
     void loaded_file(QString filename);
     void got_mesh(Mesh* m, QString shader, QColor color, int order, QString name);
-    void got_rad_pattern(RadPatternSet& pattern);
+    void got_rad_pattern(RadPatternSet* pattern);
     void error_missing_file();
 
 private:
@@ -36,7 +37,6 @@ private:
     const QColor  base_color;
     const int     show_order;
     const QString name;
-    QExplicitlySharedDataPointer<RadPatternSet> rad_pattern_ptr;
 };
 
 #endif // RADPATTERNLOADER_H

@@ -52,10 +52,11 @@ QExplicitlySharedDataPointer<RadPatternSet> RadPatternData::get_data(QString &pa
 //    return QExplicitlySharedDataPointer();
 }
 
-void RadPatternData::new_pattern_data( RadPatternSet &data )
+void RadPatternData::new_pattern_data(RadPatternSet* data)
 {
-    if(pattern_data.contains(data.set_name)){
-        pattern_data.remove(data.set_name);
+    Q_ASSERT(data != NULL);
+    if(pattern_data.contains(data->set_name)){
+        pattern_data.remove(data->set_name);
     }
-    pattern_data[data.set_name] = &data;
+    pattern_data[data->set_name] = data;
 }

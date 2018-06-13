@@ -275,10 +275,10 @@ bool Window::load_rad_pattern(const QString& filename, const QString& name, cons
     RadPatternLoader* loader = new RadPatternLoader(this, filename, name, shader_name, base_color, order);
 
     connect(loader, &RadPatternLoader::got_mesh,
-            canvas, &Canvas::load_mesh);
+            canvas, &Canvas::load_mesh, Qt::ConnectionType::BlockingQueuedConnection);
 
     connect(loader, &RadPatternLoader::got_rad_pattern,
-                rad_patterns, &RadPatternData::new_pattern_data);
+                rad_patterns, &RadPatternData::new_pattern_data, Qt::ConnectionType::BlockingQueuedConnection);
 
 //    connect(loader, &Loader::error_bad_stl,
 //              this, &Window::on_bad_stl);

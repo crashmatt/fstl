@@ -52,7 +52,7 @@ RadPatternPoint* RadPatternLoader::point_from_line(QObject* parent, QByteArray &
     float total = parts[4].toFloat(&ok);
     if(!ok) return NULL;
 
-    return new RadPatternPoint(parent, index, theta, phi, ver, hor, total);
+    return new RadPatternPoint(index, theta, phi, ver, hor, total);
 }
 
 

@@ -3,8 +3,8 @@
 
 #define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
 
-RadPatternPoint::RadPatternPoint(QObject* parent, int i, float t, float p, float v, float h, float tot) : QObject(parent)
-  , theta(t)
+RadPatternPoint::RadPatternPoint(int i, float t, float p, float v, float h, float tot)
+  : theta(t)
   , phi(p)
   , ver(v)
   , hor(h)

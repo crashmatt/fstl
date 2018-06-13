@@ -10,11 +10,10 @@
 
 class Vertex;
 
-class RadPatternPoint : public QObject
+class RadPatternPoint
 {
-    Q_OBJECT
 public:
-    explicit RadPatternPoint(QObject* parent, int index, float theta, float phi, float ver, float hor, float total);
+    explicit RadPatternPoint(int index, float theta, float phi, float ver, float hor, float total);
 
     Vertex make_vertex();
     QColor get_color();

@@ -17,6 +17,7 @@ public:
 
     Vertex make_vertex();
     QColor get_color();
+    float get_amplitude();
 
     float theta;
     float phi;

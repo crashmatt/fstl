@@ -13,16 +13,20 @@ RadPatternPoint::RadPatternPoint(int i, float t, float p, float v, float h, floa
 {
 };
 
+float RadPatternPoint::get_amplitude()
+{
+    return pow(10, total*0.1);
+}
+
 Vertex RadPatternPoint::make_vertex()
 {
-    float amplitude = pow(10, total*0.1);
     float x_angle = degToRad(theta-90);
     float z_angle = degToRad(phi);
     float x_theta = sin(z_angle);
     float y_theta = cos(z_angle);
     float x_phi = cos(x_angle);
     float z_phi = sin(x_angle);
-    float radius = amplitude;
+    float radius = get_amplitude();
     float x =  radius * y_theta * x_phi;
     float y = radius * x_theta * x_phi;
     float z = radius * z_phi;

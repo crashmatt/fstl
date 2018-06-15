@@ -7,6 +7,7 @@
 #include "radpatternloader.h"
 #include "testpattern.h"
 #include "dataprocessor.h"
+#include "globject.h"
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
@@ -242,11 +243,11 @@ void Window::loaded_object(const QString &obj_name)
 
 
 
-bool Window::load_stl(const QString& filename, const QString& name, const QString& shader_name, const QColor& base_color, int order)
+bool Window::load_stl(const QString& filename, const ObjectConfig& config)
 {
     canvas->set_status("Loading " + filename);
 
-    Loader* loader = new Loader(this, filename, name, shader_name, base_color, order);
+    Loader* loader = new Loader(this, filename, config);
 
     connect(loader, &Loader::got_mesh,
             canvas, &Canvas::load_mesh);
@@ -270,9 +271,9 @@ bool Window::load_stl(const QString& filename, const QString& name, const QStrin
     return true;
 }
 
-bool Window::load_rad_pattern(const QString& filename, const QString& name, const QString& shader_name, const QColor& base_color, int order)
+bool Window::load_rad_pattern(const QString& filename, const ObjectConfig& config)
 {
-    RadPatternLoader* loader = new RadPatternLoader(this, filename, name, shader_name, base_color, order);
+    RadPatternLoader* loader = new RadPatternLoader(this, filename, config);
 
     connect(loader, &RadPatternLoader::got_mesh,
             canvas, &Canvas::load_mesh, Qt::ConnectionType::BlockingQueuedConnection);

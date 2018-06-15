@@ -50,7 +50,7 @@ RadPatternData::RadPatternData(QObject *parent) : QObject(parent)
 {
 }
 
-QExplicitlySharedDataPointer<RadPatternSet> RadPatternData::get_data(QString &pattern_name)
+QExplicitlySharedDataPointer<RadPatternSet> RadPatternData::get_data(const QString &pattern_name)
 {
     return pattern_data.value( pattern_name, QExplicitlySharedDataPointer<RadPatternSet>() );
 }

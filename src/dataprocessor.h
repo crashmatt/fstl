@@ -8,6 +8,7 @@
 
 class RadPatternData;
 class RadPatternSet;
+class ObjectConfig;
 
 class DataProcessor : public QObject
 {
@@ -18,16 +19,16 @@ public:
     bool    m_scale_to_visibility;
 
 protected:
-    void build_antenna_visibility_object(AntennaData &data, AntennaConfig &config);
-    void build_antenna_effective_object(AntennaData &data, AntennaConfig &config);
+    void build_antenna_visibility_object(AntennaData &data, const AntennaConfig &config);
+    void build_antenna_effective_object(AntennaData &data, const AntennaConfig &config);
 
     RadPatternData* m_patterns;
 
     float get_rad_intensity(RadPatternSet* pattern, QVector3D rot);
 
 signals:
-    void built_mesh(Mesh* m, QString shader, QColor color, int order, QString name);
-    void set_obj_pos(QString& obj_name, QVector3D& pos);
+    void built_mesh(Mesh* m, const ObjectConfig& config);
+    void set_obj_pos(const QString& obj_name, const QVector3D& pos);
 
 public slots:
     void process_data(AntennaData &data, AntennaConfig &config);

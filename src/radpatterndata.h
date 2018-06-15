@@ -40,7 +40,7 @@ class RadPatternData : public QObject
     Q_OBJECT
 public:
     explicit RadPatternData(QObject *parent = 0);
-    QExplicitlySharedDataPointer<RadPatternSet> get_data(QString &pattern_name);
+    QExplicitlySharedDataPointer<RadPatternSet> get_data(const QString &pattern_name);
 
 signals:
 

@@ -10,6 +10,7 @@
 class GLMesh;
 class Mesh;
 class Backdrop;
+class ObjectConfig;
 class GLObject;
 class QColor;
 
@@ -27,14 +28,14 @@ public:
 public slots:
     void set_status(const QString& s);
     void clear_status();
-    void load_mesh(Mesh* m, const QString& shader, const QColor& color, const int show_order, const QString& name);
+    void load_mesh(Mesh* m, const ObjectConfig &config);
     void set_rotation(QVector3D rotation, int ref_index);
-    void set_object_pos(QString& obj_name, QVector3D& pos);
-    void set_object_rot(QString& obj_name, QVector3D& rot);
-    void set_view_pos(QVector3D& pos);
+    void set_object_pos(const QString& obj_name, const QVector3D& pos);
+    void set_object_rot(const QString& obj_name, const QVector3D& rot);
+    void set_view_pos(const QVector3D& pos);
     void set_zoom(float zm);
-    void set_object_visible(QString& obj_name, bool visible);
-    void delete_globject(QString& obj_name);
+    void set_object_visible(const QString& obj_name, bool visible);
+    void delete_globject(const QString& obj_name);
     void reset_rotation();
 
 signals:
@@ -54,7 +55,7 @@ protected:
 	void set_perspective(float p);
     void view_anim(float v);
 
-    QList<GLObject*> get_objs(QString& obj_name);
+    QList<GLObject*> get_objs(const QString& obj_name);
 
 private:
     void draw_obj(GLObject* gl_obj);

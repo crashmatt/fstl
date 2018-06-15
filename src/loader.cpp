@@ -3,13 +3,10 @@
 #include "loader.h"
 #include "vertex.h"
 
-Loader::Loader(QObject* parent, const QString& filename, const QString& obj_name, const QString& frag_shader, const QColor& color, int order)
+Loader::Loader(QObject* parent, const QString& filename, const ObjectConfig& config)
     : QThread(parent)
-    , filename(filename)
-    , frag_shader(frag_shader)
-    , base_color(color)
-    , show_order(order)
-    , name(obj_name)
+    , m_filename(filename)
+    , m_config(config)
 {
     // Nothing to do here
 }
@@ -26,8 +23,8 @@ void Loader::run()
         }
         else
         {
-            emit got_mesh(mesh, frag_shader, base_color, show_order, name);
-            emit loaded_file(filename);
+            emit got_mesh(mesh, m_config);
+            emit loaded_file(m_filename);
         }
     }
 }
@@ -114,7 +111,7 @@ Mesh* mesh_from_verts(uint32_t tri_count, QVector<Vertex>& verts)
 
 Mesh* Loader::load_stl()
 {
-    QFile file(filename);
+    QFile file(m_filename);
     if (!file.open(QIODevice::ReadOnly))
     {
         emit error_missing_file();

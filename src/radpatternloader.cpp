@@ -4,15 +4,13 @@
 #include "radpatternloader.h"
 #include "vertex.h"
 #include "radpatterndata.h"
+#include "globject.h"
 
 
-RadPatternLoader::RadPatternLoader(QObject* parent, const QString& filename, const QString& obj_name, const QString& frag_shader, const QColor& color, int order)
+RadPatternLoader::RadPatternLoader(QObject* parent, const QString& filename, const ObjectConfig& config)
     : QThread(parent)
     , filename(filename)
-    , frag_shader(frag_shader)
-    , base_color(color)
-    , show_order(order)
-    , name(obj_name)
+    , m_config(config)
 {
 
 }
@@ -29,7 +27,7 @@ void RadPatternLoader::run()
         auto mesh = create_mesh(pattern);
         if (mesh)
         {
-            emit got_mesh(mesh, frag_shader, base_color, show_order, name);
+            emit got_mesh(mesh, m_config);
             emit loaded_file(filename);
         }
         emit got_rad_pattern(pattern);
@@ -64,7 +62,7 @@ RadPatternPoint* RadPatternLoader::point_from_line(QObject* parent, QByteArray &
 RadPatternSet* RadPatternLoader::load_rad_pattern()
 {
     auto rad_pattern = new RadPatternSet();
-    rad_pattern->set_name = name;
+    rad_pattern->set_name = m_config.m_name;
 
     QVector<RadPatternPoint*>& rad_data = rad_pattern->rad_data;
     rad_data.reserve(36*36);

@@ -65,10 +65,10 @@ void Canvas::view_perspective()
     view_anim(0.25);
 }
 
-void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color, const int show_order, const QString& name)
+void Canvas::load_mesh(Mesh* m, const ObjectConfig &config)
 {
     GLMesh *new_mesh = NULL;
-    if(shader_name != "visi"){
+    if(config.m_shadername != "visi"){
         new_mesh = new GLMesh(m);
     } else {
         new_mesh = new GLColorMesh(m);
@@ -83,13 +83,13 @@ void Canvas::load_mesh(Mesh* m, const QString& shader_name, const QColor& color,
         scale = new_scale;
     }
 
-    QOpenGLShaderProgram* shader = shader_map.value(shader_name, NULL);
+    QOpenGLShaderProgram* shader = shader_map.value(config.m_shadername, NULL);
 
-    if( (shader != NULL) && !obj_map.contains(show_order) ){
-        GLObject *newobj = new GLObject(new_mesh, shader, color, name);
-        obj_map[show_order] = newobj;
-        obj_name_map[name] = newobj;
-        emit loaded_object(name);
+    if( (shader != NULL) && !obj_map.contains(config.m_show_order) ){
+        GLObject *newobj = new GLObject(new_mesh, shader, config);
+        obj_map[config.m_show_order] = newobj;
+        obj_name_map[newobj->m_name] = newobj;
+        emit loaded_object(newobj->m_name);
     } else {
         delete(new_mesh);
     }
@@ -107,7 +107,7 @@ void Canvas::set_rotation(QVector3D rotation, int index)
     ref_index = index;
 }
 
-QList<GLObject*> Canvas::get_objs(QString& obj_name)
+QList<GLObject*> Canvas::get_objs(const QString& obj_name)
 {
     QList<GLObject*> list;
     if(obj_name == "all"){
@@ -123,7 +123,7 @@ QList<GLObject*> Canvas::get_objs(QString& obj_name)
     return list;
 }
 
-void Canvas::set_object_pos(QString& obj_name, QVector3D& pos)
+void Canvas::set_object_pos(const QString& obj_name, const QVector3D& pos)
 {
     QList<GLObject*> list = get_objs(obj_name);
     foreach(GLObject* obj, list){
@@ -131,7 +131,7 @@ void Canvas::set_object_pos(QString& obj_name, QVector3D& pos)
     }
 }
 
-void Canvas::set_object_rot(QString& obj_name, QVector3D& rot)
+void Canvas::set_object_rot(const QString& obj_name, const QVector3D& rot)
 {
     QList<GLObject*> list = get_objs(obj_name);
     foreach(GLObject* obj, list){
@@ -139,7 +139,7 @@ void Canvas::set_object_rot(QString& obj_name, QVector3D& rot)
     }
 }
 
-void Canvas::set_view_pos(QVector3D& pos)
+void Canvas::set_view_pos(const QVector3D& pos)
 {
     center = pos;
 }
@@ -149,7 +149,7 @@ void Canvas::set_zoom(float zm)
     requested_zoom = zm;
 }
 
-void Canvas::set_object_visible(QString& obj_name, bool visible)
+void Canvas::set_object_visible(const QString& obj_name, bool visible)
 {
     QList<GLObject*> list = get_objs(obj_name);
     foreach(GLObject* obj, list){
@@ -157,7 +157,7 @@ void Canvas::set_object_visible(QString& obj_name, bool visible)
     }
 }
 
-void Canvas::delete_globject(QString& obj_name)
+void Canvas::delete_globject(const QString& obj_name)
 {
     QRegExp exp(obj_name);
     foreach(QString name, obj_name_map.keys()){

@@ -250,7 +250,7 @@ bool Window::load_stl(const QString& filename, const ObjectConfig& config)
     Loader* loader = new Loader(this, filename, config);
 
     connect(loader, &Loader::got_mesh,
-            canvas, &Canvas::load_mesh);
+            canvas, &Canvas::load_mesh, Qt::ConnectionType::BlockingQueuedConnection);
     connect(loader, &Loader::error_bad_stl,
               this, &Window::on_bad_stl);
     connect(loader, &Loader::error_empty_mesh,

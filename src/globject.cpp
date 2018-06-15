@@ -2,6 +2,17 @@
 #include "glmesh.h"
 #include <QOpenGLShaderProgram>
 
+ObjectConfig::ObjectConfig()
+    : m_name("no_name")
+    , m_shadername("no_shader")
+    , m_color(QColor(0,0,0,0))
+    , m_show_order(-1)
+    , m_visible(false)
+    , m_offset(0.0, 0.0, 0.0)
+    , m_rotation(0.0, 0.0, 0.0)
+{
+
+}
 
 ObjectConfig::ObjectConfig(const QString& name, const QString& shader_name, const QColor& base_color, const int order, bool visible)
     : m_name(name)
@@ -14,6 +25,7 @@ ObjectConfig::ObjectConfig(const QString& name, const QString& shader_name, cons
 {
 
 }
+Q_DECLARE_METATYPE(ObjectConfig)
 
 
 GLObject::GLObject(GLMesh *mesh, QOpenGLShaderProgram* shaderprog, const ObjectConfig &config) :

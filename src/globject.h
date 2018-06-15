@@ -10,6 +10,7 @@
 class ObjectConfig
 {
 public:
+    ObjectConfig();
     ObjectConfig(const QString& name, const QString& shader_name, const QColor& base_color, const int order, bool visible=true);
 
     const QString   m_shadername;

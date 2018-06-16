@@ -61,8 +61,7 @@ RadPatternPoint* RadPatternLoader::point_from_line(QObject* parent, QByteArray &
 
 RadPatternSet* RadPatternLoader::load_rad_pattern()
 {
-    auto rad_pattern = new RadPatternSet();
-    rad_pattern->set_name = m_config.m_name;
+    auto rad_pattern = new RadPatternSet(m_config.m_name);
 
     QVector<RadPatternPoint*>& rad_data = rad_pattern->rad_data;
     rad_data.reserve(36*36);
@@ -85,6 +84,10 @@ RadPatternSet* RadPatternLoader::load_rad_pattern()
             rad_data.append(radpt);
         }
         index++;
+    }
+
+    if(!rad_pattern->build_maps()){
+        emit incomplete_pattern(m_config.m_name);
     }
 
     return rad_pattern;

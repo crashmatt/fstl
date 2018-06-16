@@ -45,6 +45,57 @@ QColor RadPatternPoint::get_color()
 
 ////////////////////////////////////////////////////////////////////////////////
 
+RadPatternSet::RadPatternSet(QString name)
+    : set_name(name)
+{
+
+}
+
+bool RadPatternSet::build_maps()
+{
+    phi_map.clear();
+    theta_map.clear();
+    foreach(RadPatternPoint* pt, rad_data){
+        int phi     = (int) pt->phi;
+        int theta   = (int) pt->theta;
+        if(!phi_map.contains(phi)){
+            phi_map[phi] = phi_map.size();
+        }
+        if(!theta_map.contains(theta)){
+            theta_map[theta] = theta_map.size();
+        }
+    }
+    auto total = phi_map.count() * theta_map.count();
+    if(rad_data.count() != total){
+        theta_map.clear();
+        phi_map.clear();
+        return false;
+    }
+    return true;
+}
+
+RadPatternPoint* RadPatternSet::get_point(uint phi, uint theta)
+{
+    auto phi_index = phi_map.value(phi, -1);
+    auto theta_index = theta_map.value(theta, -1);
+
+    if(phi_index == -1)
+        return NULL;
+    if(theta_index == -1)
+        return NULL;
+
+//    auto phi_count = phi_map.size();
+    auto theta_count = theta_map.size();
+
+    auto index = theta_index + (phi_index * theta_count);
+    if(index >= rad_data.count())
+        return NULL;
+    return rad_data[index];
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+
 
 RadPatternData::RadPatternData(QObject *parent) : QObject(parent)
 {

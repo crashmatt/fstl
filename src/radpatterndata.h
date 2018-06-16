@@ -7,6 +7,7 @@
 #include <QMap>
 #include <QSharedData>
 #include <QExplicitlySharedDataPointer>
+#include <QMultiMap>
 
 class Vertex;
 
@@ -28,12 +29,27 @@ public:
 };
 
 
+////////////////////////////////////////////////////////////////////////////////
+
+
 class RadPatternSet : public QSharedData
 {
 public:
+    RadPatternSet(QString name);
+
+    const QString               set_name;
     QVector<RadPatternPoint*>   rad_data;
-    QString                     set_name;
+    QVector<RadPatternPoint*>   pattern_map;
+    QMap<int, int>              phi_map;
+    QMap<int, int>              theta_map;
+
+    bool build_maps();
+    RadPatternPoint* get_point(uint phi, uint theta);
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+
 
 class RadPatternData : public QObject
 {

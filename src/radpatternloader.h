@@ -32,6 +32,7 @@ signals:
     void got_mesh(Mesh* m, const ObjectConfig& config);
     void got_rad_pattern(RadPatternSet* pattern);
     void error_missing_file();
+    void incomplete_pattern(const QString& name);
 
 private:
     const QString       filename;

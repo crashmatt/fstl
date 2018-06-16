@@ -44,7 +44,8 @@ public:
     QMap<int, int>              theta_map;
 
     bool build_maps();
-    RadPatternPoint* get_point(uint phi, uint theta);
+    RadPatternPoint* get_point(int phi, int theta);
+    RadPatternPoint* nearest_point(int phi, int theta);
 };
 
 

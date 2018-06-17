@@ -34,18 +34,32 @@ public:
 
 class RadPatternSet : public QSharedData
 {
+
+    union index_id {
+        struct _t{
+            int16_t phi;
+            int16_t theta;
+        } _;
+        int32_t     id;
+    };
+
 public:
     RadPatternSet(QString name);
 
     const QString               set_name;
     QVector<RadPatternPoint*>   rad_data;
-    QMap<int, QMap<int, RadPatternPoint*> > angle_point_map;
-    QMap<int, QMap<int, RadPatternPoint*> > index_point_map;
 
     bool build_maps();
     RadPatternPoint* get_point(int phi, int theta);
     RadPatternPoint* get_point_at_index(uint phi_index, uint theta_index);
     RadPatternPoint* nearest_point(float phi, float theta);
+
+protected:
+    index_id get_id(int phi, int theta);
+    QMap<uint32_t, RadPatternPoint*>    angle_point_map;
+    QMap<uint32_t, RadPatternPoint*>    index_point_map;
+    QVector<int> phis;
+    QVector<int> thetas;
 };
 
 

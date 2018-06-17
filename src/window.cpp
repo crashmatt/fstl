@@ -47,14 +47,14 @@ Window::Window(QWidget *parent) :
 
     QObject::connect(canvas, &Canvas::antenna_visibility, test_pattern, &TestPattern::antenna_visibility, Qt::QueuedConnection);
     QObject::connect(test_pattern, &TestPattern::set_rotation, canvas, &Canvas::set_rotation, Qt::QueuedConnection);
-    QObject::connect(test_pattern, &TestPattern::set_obj_pos, canvas, &Canvas::set_object_pos);
-    QObject::connect(test_pattern, &TestPattern::set_obj_rotation, canvas, &Canvas::set_object_rot);
-    QObject::connect(test_pattern, &TestPattern::set_view_pos, canvas, &Canvas::set_view_pos);
-    QObject::connect(test_pattern, &TestPattern::set_zoom, canvas, &Canvas::set_zoom);
+    QObject::connect(test_pattern, &TestPattern::set_obj_pos, canvas, &Canvas::set_object_pos, Qt::QueuedConnection);
+    QObject::connect(test_pattern, &TestPattern::set_obj_rotation, canvas, &Canvas::set_object_rot, Qt::QueuedConnection);
+    QObject::connect(test_pattern, &TestPattern::set_view_pos, canvas, &Canvas::set_view_pos, Qt::QueuedConnection);
+    QObject::connect(test_pattern, &TestPattern::set_zoom, canvas, &Canvas::set_zoom, Qt::QueuedConnection);
     connect(test_pattern, SIGNAL(redraw()), canvas, SLOT(update()));
 
     connect(test_pattern, &TestPattern::antenna_data, data_processor, &DataProcessor::process_data);
-    connect(test_pattern, &TestPattern::delete_object, canvas, &Canvas::delete_globject);
+    connect(test_pattern, &TestPattern::delete_object, canvas, &Canvas::delete_globject, Qt::QueuedConnection);
 
     connect(canvas, &Canvas::loaded_object, this, &Window::loaded_object);
 

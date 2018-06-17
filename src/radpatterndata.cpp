@@ -53,72 +53,71 @@ RadPatternSet::RadPatternSet(QString name)
 
 bool RadPatternSet::build_maps()
 {
-    phi_map.clear();
-    theta_map.clear();
+    index_point_map.clear();
+    angle_point_map.clear();
+
+    int phi_index = 0;
+    int theta_index = 0;
     foreach(RadPatternPoint* pt, rad_data){
         int phi     = (int) pt->phi;
         int theta   = (int) pt->theta;
-        if(!phi_map.contains(phi)){
-            phi_map[phi] = phi_map.size();
+
+        if(!angle_point_map.contains(phi)){
+            theta_index = 0;
+            phi_index++;
+//            angle_point_map[phi] = QMap<int, RadPatternPoint*>;
+//            index_point_map[phi_index] = QMap<int, RadPatternPoint*>;
         }
-        if(!theta_map.contains(theta)){
-            theta_map[theta] = theta_map.size();
-        }
+        angle_point_map[phi][theta] = pt;
+        index_point_map[phi_index][theta_index] = pt;
+        theta_index++;
     }
-    auto total = phi_map.count() * theta_map.count();
-    if(rad_data.count() != total){
-        theta_map.clear();
-        phi_map.clear();
-        return false;
-    }
+
+//    auto total = phi_map.count() * theta_map.count();
+//    if(rad_data.count() != total){
+//        theta_map.clear();
+//        phi_map.clear();
+//        return false;
+//    }
     return true;
 }
 
 RadPatternPoint* RadPatternSet::get_point(int phi, int theta)
 {
-    auto phi_index = phi_map.value(phi, -1);
-    auto theta_index = theta_map.value(theta, -1);
-
-    if(phi_index == -1)
-        return NULL;
-    if(theta_index == -1)
-        return NULL;
-
-    auto theta_count = theta_map.size();
-
-    auto index = theta_index + (phi_index * theta_count);
-    if(index >= rad_data.count())
-        return NULL;
-    return rad_data[index];
+    if(!angle_point_map.keys().contains(phi)) return NULL;
+    if(!angle_point_map.contains(theta)) return NULL;
+    return angle_point_map[phi][theta];
 }
 
-
-RadPatternPoint* RadPatternSet::nearest_point(int phi, int theta)
+RadPatternPoint* RadPatternSet::get_point_at_index(uint phi_index, uint theta_index)
 {
-    const int phi_index_max = phi_map.last();
-    const int phi_value_min = phi_map[0];
-    const int phi_value_max = phi_map[phi_map.size()];
-
-    const int phi_delta = (phi_value_max - phi_value_min);
-    const float phi_ratio = (float) ( phi - phi_value_min ) / (float) phi_delta;
-    float fphi_index = phi_ratio * (float) phi_index_max;
-    int phi_index = (int) fphi_index;
-
-    const int theta_index_max = theta_map.last();
-    const int theta_value_min = theta_map[0];
-    const int theta_value_max = theta_map[theta_map.size()];
-
-    const int theta_delta = (theta_value_max - theta_value_min);
-    const float theta_ratio = (float) ( theta - theta_value_min ) / (float) theta_delta;
-    float ftheta_index = theta_ratio * (float) theta_index_max;
-    int theta_index = (int) ftheta_index;
-
-    auto theta_count = theta_map.size();
-
-    auto index = theta_index + (phi_index * theta_count);
-    if(index >= rad_data.count())
+    if(phi_index >= index_point_map.count())
         return NULL;
-    return rad_data[index];
+    if(theta_index >= index_point_map[phi_index].count())
+        return NULL;
+
+    return index_point_map[phi_index][theta_index];
+}
+
+RadPatternPoint* RadPatternSet::nearest_point(float phi, float theta)
+{
+    auto phi_min = angle_point_map[0][0]->phi;
+    auto theta_min = angle_point_map[0][0]->theta;
+    auto phi_max = angle_point_map.last()[0]->phi;
+    auto theta_max = angle_point_map[0].last()->phi;
+    auto delta_phi = phi_max - phi_min;
+    auto delta_theta = theta_max - theta_min;
+
+    auto phi_point = (phi - phi_min) / delta_phi;
+    auto theta_point = (theta - theta_min) / delta_theta;
+
+    phi_point /= (float) angle_point_map.count();
+    theta_point /= (float) angle_point_map[0].count();
+
+    int phi_index = floor(phi_point + 0.5);
+    int theta_index = floor(theta_point + 0.5);
+
+    return index_point_map[phi_index][theta_index];
 }
 
 

@@ -39,13 +39,13 @@ public:
 
     const QString               set_name;
     QVector<RadPatternPoint*>   rad_data;
-    QVector<RadPatternPoint*>   pattern_map;
-    QMap<int, int>              phi_map;
-    QMap<int, int>              theta_map;
+    QMap<int, QMap<int, RadPatternPoint*> > angle_point_map;
+    QMap<int, QMap<int, RadPatternPoint*> > index_point_map;
 
     bool build_maps();
     RadPatternPoint* get_point(int phi, int theta);
-    RadPatternPoint* nearest_point(int phi, int theta);
+    RadPatternPoint* get_point_at_index(uint phi_index, uint theta_index);
+    RadPatternPoint* nearest_point(float phi, float theta);
 };
 
 

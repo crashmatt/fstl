@@ -195,7 +195,6 @@ void DataProcessor::build_antenna_effective_object(AntennaData &data, const Ante
     }
 
     Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
-//    QString name = QString("ant_vis%1").arg(data.index());
 
     auto mesh_config = ObjectConfig(config.m_name, "visi", QColor(255,0,0,128), 20+data.index());
     emit built_mesh(mesh, mesh_config);
@@ -206,22 +205,6 @@ void DataProcessor::build_antenna_effective_object(AntennaData &data, const Ante
 float DataProcessor::get_rad_intensity(RadPatternSet* pattern, QVector3D rot)
 {
     //find closest measurement
-    float minz = 1000;
-    float minx = 1000;
-    int index = 0;
-    int find_index = 0;
-    const auto data_count = pattern->rad_data.count();
-    for(auto index=0; index < data_count; index++ ) {
-        auto pt = pattern->rad_data[index];
-        float diffz = abs(pt->theta-rot.z());
-        float diffx = abs(pt->phi-rot.x());
-        if( (diffz  < minz ) &&
-            (diffx < minx ) ) {
-            minz = diffz;
-            minx = diffx;
-            find_index = index;
-        }
-    }
-
-    return pattern->rad_data[find_index]->get_amplitude();
+    RadPatternPoint* pt = pattern->nearest_point(rot.x(), rot.z());
+    return pt->get_amplitude();
 }

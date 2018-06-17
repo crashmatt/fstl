@@ -51,6 +51,14 @@ RadPatternSet::RadPatternSet(QString name)
 
 }
 
+RadPatternSet::~RadPatternSet()
+{
+    //Clear these so referenced contents are not automatically deleted
+    index_point_map.clear();
+    angle_point_map.clear();
+    phis.clear();
+    thetas.clear();
+}
 
 RadPatternSet::index_id RadPatternSet::get_id(int phi, int theta)
 {

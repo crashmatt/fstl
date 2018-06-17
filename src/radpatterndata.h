@@ -45,6 +45,7 @@ class RadPatternSet : public QSharedData
 
 public:
     RadPatternSet(QString name);
+    ~RadPatternSet();
 
     const QString               set_name;
     QVector<RadPatternPoint*>   rad_data;

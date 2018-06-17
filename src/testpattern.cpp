@@ -44,7 +44,7 @@ void TestPattern::antenna_visibility(int index, QVector3D rotation, float center
                 m_yaw_index++;
                 if(m_yaw_index > m_yaw_segments){
                     m_yaw_index = 0;
-                    if(!set_antenna_pos_to_index(m_ant_pos_index+1)){
+                    if(m_ant_pos_index >= m_antenna_configs.size()-1) {
                         m_ant_pos_index = 0;
                         foreach(data, m_results){
                             emit antenna_data(*data, m_antenna_configs[m_ant_pos_index]);
@@ -54,6 +54,8 @@ void TestPattern::antenna_visibility(int index, QVector3D rotation, float center
                         m_pattern_running = false;
                         emit test_completed();
                         return;
+                    } else {
+                        set_antenna_pos_to_index(m_ant_pos_index+1);
                     }
                 }
             }
@@ -134,8 +136,8 @@ void TestPattern::stop_pattern(void)
 
 bool TestPattern::set_antenna_pos_to_index(int index)
 {
-    if(index >= m_antenna_configs.count()){
-        m_ant_pos_index = -1;
+    if( (index >= m_antenna_configs.size()) || (index < 0) ){
+        m_ant_pos_index = index;
         QString name = "ant_vis*";
         emit set_object_visible(name, true);
         QVector3D pos = {0.0, 0.0, 0.0};
@@ -168,7 +170,11 @@ void TestPattern::step_antenna_pos(void)
         if(m_ant_pos_index < 0){
             set_antenna_pos_to_index(0);
         } else {
-            set_antenna_pos_to_index(m_ant_pos_index+1);
+            m_ant_pos_index++;
+            if(m_ant_pos_index >= m_antenna_configs.size()) {
+                m_ant_pos_index = -1;
+            }
+            set_antenna_pos_to_index(m_ant_pos_index);
         }
     }
     redraw();

@@ -18,23 +18,15 @@ DataProcessor::DataProcessor(QObject *parent, RadPatternData* patterns) : QObjec
 void DataProcessor::process_data(AntennaData &data, AntennaConfig &config)
 {
     float max_vis = 0.01;
-    AntennaDataPoint* datapt;
-    for(int x_step=0; x_step < data.m_x_axis_steps; x_step++){
-        for(int z_step=0; z_step < data.m_z_axis_steps; z_step++){
-            datapt = data.get_antenna_datapoint(x_step, z_step);
-            Q_ASSERT(datapt != NULL);
-            if(datapt->m_color_visibility > max_vis){
-                max_vis = datapt->m_color_visibility;
-            }
+    foreach(AntennaDataPoint* datapt, data.m_antenna_data){
+        Q_ASSERT(datapt != NULL);
+        if(datapt->m_color_visibility > max_vis){
+            max_vis = datapt->m_color_visibility;
         }
     }
-    for(int x_step=0; x_step < data.m_x_axis_steps; x_step++){
-        for(int z_step=0; z_step < data.m_z_axis_steps; z_step++){
-            datapt = data.get_antenna_datapoint(x_step, z_step);
-            Q_ASSERT(datapt != NULL);
-            datapt->m_center_visibility = datapt->m_center_color.greenF();
-            datapt->m_visibility = datapt->m_color_visibility / max_vis;
-        }
+    foreach(AntennaDataPoint* datapt, data.m_antenna_data){
+        datapt->m_center_visibility = datapt->m_center_color.greenF();
+        datapt->m_visibility = datapt->m_color_visibility / max_vis;
     }
 
     build_antenna_visibility_object(data, config);

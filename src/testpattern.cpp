@@ -27,50 +27,50 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
 
 void TestPattern::antenna_visibility(int index, QVector3D rotation, float center_color, float color_visibility)
 {
-    if( m_pattern_running ){
-        AntennaData* data = m_results[m_ant_pos_index];
-        if(index < 0){
-            m_pitch_index = 0;
-            m_yaw_index = 0;
-        } else {
-            AntennaDataPoint* datapoint = new AntennaDataPoint(this, rotation);
-            datapoint->m_center_color = center_color;
-            datapoint->m_color_visibility = color_visibility;
-            data->set_antenna_datapoint(datapoint, m_pitch_index, m_yaw_index);
+    if(!m_pattern_running)
+        return;
 
-            m_pitch_index++;
-            if(m_pitch_index > m_pitch_segments){
-                m_pitch_index = 0;
-                m_yaw_index++;
-                if(m_yaw_index > m_yaw_segments){
-                    m_yaw_index = 0;
-                    if(m_ant_pos_index >= m_antenna_configs.size()-1) {
-                        m_ant_pos_index = 0;
-                        foreach(data, m_results){
-                            emit antenna_data(*data, m_antenna_configs[m_ant_pos_index]);
-                            m_ant_pos_index++;
-                        }
-                        m_ant_pos_index = -1;
-                        m_pattern_running = false;
-                        emit test_completed();
-                        return;
-                    } else {
-                        set_antenna_pos_to_index(m_ant_pos_index+1);
+    AntennaData* data = m_results[m_ant_pos_index];
+    if(index < 0){
+        m_pitch_index = 0;
+        m_yaw_index = 0;
+    } else {
+        AntennaDataPoint* datapoint = new AntennaDataPoint(this, rotation);
+        datapoint->m_center_color = center_color;
+        datapoint->m_color_visibility = color_visibility;
+        data->set_antenna_datapoint(datapoint, m_pitch_index, m_yaw_index);
+
+        m_pitch_index++;
+        if(m_pitch_index > m_pitch_segments){
+            m_pitch_index = 0;
+            m_yaw_index++;
+            if(m_yaw_index > m_yaw_segments){
+                m_yaw_index = 0;
+                if(m_ant_pos_index >= m_antenna_configs.size()-1) {
+                    m_ant_pos_index = 0;
+                    foreach(data, m_results){
+                        emit antenna_data(*data, m_antenna_configs[m_ant_pos_index]);
+                        m_ant_pos_index++;
                     }
+                    m_ant_pos_index = -1;
+                    m_pattern_running = false;
+                    emit test_completed();
+                    return;
+                } else {
+                    set_antenna_pos_to_index(m_ant_pos_index+1);
                 }
             }
         }
-
-        float pitch_ratio = (2.0 * ((float) m_pitch_index / (float) m_pitch_segments)) - 1.0;
-        float pitch = pitch_ratio * 180.0;
-        float yaw_ratio = (float) m_yaw_index / (float) m_yaw_segments;
-        float yaw = (yaw_ratio * 180.0) - 90.0;
-        m_rotation.setX(pitch);
-        m_rotation.setZ(yaw);
-        emit set_rotation(m_rotation, data->data_index(m_yaw_index, m_pitch_index));
-        emit redraw();
-
     }
+
+    float pitch_ratio = (2.0 * ((float) m_pitch_index / (float) m_pitch_segments)) - 1.0;
+    float pitch = pitch_ratio * 180.0;
+    float yaw_ratio = (float) m_yaw_index / (float) m_yaw_segments;
+    float yaw = (yaw_ratio * 180.0) - 90.0;
+    m_rotation.setX(pitch);
+    m_rotation.setZ(yaw);
+    emit set_rotation(m_rotation, data->data_index(m_yaw_index, m_pitch_index));
+    emit redraw();
 }
 
 void TestPattern::reset_pattern(void)

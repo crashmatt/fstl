@@ -133,8 +133,8 @@ RadPatternPoint* RadPatternSet::nearest_point(float phi, float theta)
     auto phi_point = (phi - phi_min) / delta_phi;
     auto theta_point = (theta - theta_min) / delta_theta;
 
-    phi_point /= (float) phis.count();
-    theta_point /= (float) thetas.count();
+    phi_point *= (float) phis.count();
+    theta_point *= (float) thetas.count();
 
     int phi_index = floor(phi_point + 0.5);
     int theta_index = floor(theta_point + 0.5);

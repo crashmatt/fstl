@@ -15,7 +15,7 @@ App::App(int& argc, char *argv[]) :
     auto ant_config = ObjectConfig("antenna", "solid", QColor(0,255,0,255), 0);
     window->load_stl("../models/antenna.stl", ant_config);
 
-    auto solid_config = ObjectConfig("antenna", "solid", QColor(0,0,0,255), 1);
+    auto solid_config = ObjectConfig("solid", "solid", QColor(0,0,0,255), 1);
     window->load_stl("../models/solid.stl", solid_config);
 
 ////    window->load_stl("../models/shadow0_25.stl", "shadow0_25" , "solid", QColor(0,0,0,150), 2);
@@ -30,7 +30,7 @@ App::App(int& argc, char *argv[]) :
     window->load_stl("../models/transparent.stl", transp_config);
 
 ////    window->load_stl(":gl/sphere.stl", "ball", "solid", QColor(50,200,50,50), 3);
-    auto mono_config = ObjectConfig("monopole" , "visi", QColor(255,0,0,200), 8);
+    auto mono_config = ObjectConfig("rad_monopole" , "visi", QColor(255,0,0,200), 8);
     window->load_rad_pattern("../models/coax_monopole.csv", mono_config);
 
     window->show();

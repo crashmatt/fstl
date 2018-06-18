@@ -29,9 +29,9 @@ void DataProcessor::process_data(AntennaData &data, AntennaConfig &config)
         datapt->m_visibility = datapt->m_color_visibility / max_vis;
     }
 
-    build_antenna_visibility_object(data, config);
+//    build_antenna_visibility_object(data, config);
 
-//    build_antenna_effective_object(data, config);
+    build_antenna_effective_object(data, config);
 }
 
 void DataProcessor::build_antenna_visibility_object(AntennaData &data, const AntennaConfig &config)
@@ -150,9 +150,9 @@ void DataProcessor::build_antenna_effective_object(AntennaData &data, const Ante
             float z_phi = sin(x_angle);
             float radius = 1.0;
             if(m_scale_to_visibility){
-                float intensity = get_rad_intensity(pattern, rot);
-                radius =  intensity;    //datapt->m_visibility *
-//                radius =  datapt->m_visibility;
+//                float intensity = get_rad_intensity(pattern, rot);
+//                radius =  intensity;    //datapt->m_visibility *
+                radius =  datapt->m_visibility;
             }
             flat_verts[vect_index] =  radius * y_theta * x_phi;
             flat_verts[vect_index+1] = radius * x_theta * x_phi;
@@ -198,5 +198,7 @@ float DataProcessor::get_rad_intensity(RadPatternSet* pattern, QVector3D rot)
 {
     //find closest measurement
     RadPatternPoint* pt = pattern->nearest_point(rot.x(), rot.z());
+    if(pt == NULL)
+        return 0.0;
     return pt->get_amplitude();
 }

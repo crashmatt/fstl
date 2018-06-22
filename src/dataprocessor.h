@@ -16,8 +16,6 @@ class DataProcessor : public QObject
 public:
     explicit DataProcessor(QObject *parent, RadPatternData* patterns);
 
-    bool    m_scale_to_visibility;
-
 protected:
     void build_antenna_visibility_object(AntennaData &data, const AntennaConfig &config);
     void build_antenna_effective_object(AntennaData &data, const AntennaConfig &config);

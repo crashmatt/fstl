@@ -17,10 +17,9 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
 //                                             ,"rad_monopole"
 //                                             ,"cockpit" ) );      //Antenna just behind cockpit cover
 
-    QQuaternion rear_right_rot =
+    const QQuaternion rear_right_rot =
             QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), 90.0) *
             QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), 135);
-//    rear_right_rot.normalize();
 
     m_antenna_configs.append( AntennaConfig( QVector3D(0.05, -0.1, 0.0)
                                              ,rear_right_rot
@@ -71,8 +70,8 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
     float pitch = pitch_ratio * 180.0;
     float yaw_ratio = (float) m_yaw_index / (float) m_yaw_segments;
     float yaw = (yaw_ratio * 180.0) - 90.0;
-    m_rotation.setX(pitch);
-    m_rotation.setZ(yaw);
+    m_rotation = QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), yaw) *
+                 QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), pitch);
     emit set_rotation(m_rotation, data->data_index(m_yaw_index, m_pitch_index));
     emit redraw();
 }
@@ -191,11 +190,3 @@ void TestPattern::set_speed(bool high_speed)
     }
 }
 
-//void TestPattern::set_segments(int pitch_segments, int yaw_segments)
-//{
-//    if(!m_pattern_running){
-//        m_pitch_segments = pitch_segments;
-//        m_yaw_segments = yaw_segments;
-//    }
-
-//}

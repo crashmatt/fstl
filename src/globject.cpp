@@ -9,7 +9,7 @@ ObjectConfig::ObjectConfig()
     , m_show_order(-1)
     , m_visible(false)
     , m_offset(0.0, 0.0, 0.0)
-    , m_rotation(0.0, 0.0, 0.0)
+    , m_rotation()
 {
 
 }
@@ -21,7 +21,7 @@ ObjectConfig::ObjectConfig(const QString& name, const QString& shader_name, cons
     , m_show_order(order)
     , m_visible(visible)
     , m_offset(0.0, 0.0, 0.0)
-    , m_rotation(0.0, 0.0, 0.0)
+    , m_rotation()
 {
 
 }

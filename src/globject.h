@@ -18,7 +18,7 @@ public:
     const QString   m_name;
     const int       m_show_order;
     QVector3D       m_offset;
-    QVector3D       m_rotation;
+    QQuaternion     m_rotation;
     bool            m_visible;
 };
 

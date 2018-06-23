@@ -16,7 +16,7 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     , scale(1)
     , zoom(2.0)
     , requested_zoom(2.0)
-    , view_rotation(0.0, 0.0, 0.0, 0.0)
+    , view_rotation()
     , perspective(0.0)
     , anim(this, "perspective")
     , status(" ")
@@ -170,7 +170,7 @@ void Canvas::delete_globject(const QString& obj_name)
 
 void Canvas::reset_rotation()
 {
-    view_rotation = QQuaternion(0.0, 0.0, 0.0, 0.0);
+    view_rotation = QQuaternion();
     update();
 }
 
@@ -294,9 +294,9 @@ void Canvas::paintGL()
             .arg(px)
             .arg(g)
             .arg(zoom)
-            .arg(euler.x())
-            .arg(euler.y())
-            .arg(euler.z())
+            .arg(euler.x(), 3, 'f', 0)
+            .arg(euler.y(), 3, 'f', 0)
+            .arg(euler.z(), 3, 'f', 0)
             .arg(fps)
             ;
 
@@ -347,9 +347,10 @@ void Canvas::draw_obj(GLObject* gl_obj)
 QMatrix4x4 Canvas::transform_matrix(QVector3D offset, QQuaternion obj_rotation) const
 {
     QMatrix4x4 m;
-    m.rotate(obj_rotation);
-    m.rotate(view_rotation);
-    m.scale(-scale, scale, -scale);
+    auto rot = QQuaternion::fromAxisAndAngle(1.0, 0.0, 0.0, -90) * view_rotation * obj_rotation;
+    rot.normalize();
+    m.rotate(rot);
+    m.scale(scale, scale, scale);
     m.translate(-center + offset);
     return m;
 }
@@ -396,9 +397,12 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
 
 
     if (event->buttons() & Qt::LeftButton)
-    {        
-        view_rotation *= (QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), 0.0) * d.x());
-        view_rotation *= (QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), 0.0) * d.y());
+    {
+        QQuaternion delta_rot =
+                (QQuaternion::fromAxisAndAngle(0.0, 0.0, 1.0, d.x())) *
+                (QQuaternion::fromAxisAndAngle(1.0, 0.0, 0.0, d.y()));
+        view_rotation = view_rotation * delta_rot;
+//        view_rotation = rot;
 //        QMatrix4x4 m;
 //        m.rotate(d.x(), QVector3D(0.0, 0.0, 1.0));
 //        m.rotate(d.y(), QVector3D(1.0, 0.0, 0.0));
@@ -408,7 +412,7 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
         update();
     } else if (event->buttons() & Qt::RightButton)
     {
-        view_rotation *= QQuaternion::fromAxisAndAngle(QVector3D(0,0,0), d.x());
+        view_rotation  = view_rotation * QQuaternion::fromAxisAndAngle(0.0, 1.0, 0.0, d.x());
 //        roll = fmod(roll + d.x(), 360);
         update();
     }

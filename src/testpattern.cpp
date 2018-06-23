@@ -4,7 +4,7 @@
 
 TestPattern::TestPattern(QObject *parent) : QObject(parent)
   , m_pattern_running(false)
-  , m_rotation(0.0, 0.0, 0.0, 0.0)
+  , m_rotation()
   , m_ant_pos_index(-1)
   , m_pitch_segments(-1)
   , m_pitch_index(0)
@@ -17,9 +17,10 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
 //                                             ,"rad_monopole"
 //                                             ,"cockpit" ) );      //Antenna just behind cockpit cover
 
-    const QQuaternion rear_right_rot =
+    QQuaternion rear_right_rot =
             QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), 90.0) *
-            QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), 135);
+            QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), 135);
+//    rear_right_rot.normalize();
 
     m_antenna_configs.append( AntennaConfig( QVector3D(0.05, -0.1, 0.0)
                                              ,rear_right_rot
@@ -110,7 +111,7 @@ void TestPattern::reset()
     set_antenna_pos_to_index(0);
     m_yaw_index = 0;
     m_pitch_index = 0;
-    m_rotation = QQuaternion(0.0, 0.0, 0.0, 0.0);
+    m_rotation = QQuaternion();
 
     QString name = "ant_vis*";
     emit set_object_visible(name, false);
@@ -145,7 +146,7 @@ bool TestPattern::set_antenna_pos_to_index(int index)
     if( (index >= m_antenna_configs.size()) || (index < 0) ){
         m_ant_pos_index = index;
         QVector3D pos = {0.0, 0.0, 0.0};
-        QQuaternion rot = {0.0, 0.0, 0.0, 0.0};
+        auto rot = QQuaternion();
         emit set_view_pos(pos);
         if(!m_pattern_running){
             QString name = "rad_*";

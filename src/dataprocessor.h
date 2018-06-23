@@ -22,7 +22,7 @@ protected:
 
     RadPatternData* m_patterns;
 
-    float get_rad_intensity(RadPatternSet* pattern, QVector3D rot);
+    float get_rad_intensity(RadPatternSet* pattern, QVector4D quat);
 
 signals:
     void built_mesh(Mesh* m, const ObjectConfig& config);

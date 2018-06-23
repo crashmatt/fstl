@@ -121,26 +121,27 @@ RadPatternPoint* RadPatternSet::get_point_at_index(uint phi_index, uint theta_in
     return index_point_map.value(id.id, NULL);
 }
 
-RadPatternPoint* RadPatternSet::nearest_point(float phi, float theta)
+RadPatternPoint* RadPatternSet::nearest_point(QVector4D quat)
 {
-    auto phi_min = phis[0];
-    auto theta_min = thetas[0];
-    auto phi_max = phis.last();
-    auto theta_max = thetas.last();
-    auto delta_phi = phi_max - phi_min;
-    auto delta_theta = theta_max - theta_min;
+//    auto phi_min = phis[0];
+//    auto theta_min = thetas[0];
+//    auto phi_max = phis.last();
+//    auto theta_max = thetas.last();
+//    auto delta_phi = phi_max - phi_min;
+//    auto delta_theta = theta_max - theta_min;
 
-    auto phi_point = (phi - phi_min) / delta_phi;
-    auto theta_point = (theta - theta_min) / delta_theta;
+//    auto phi_point = (phi - phi_min) / delta_phi;
+//    auto theta_point = (theta - theta_min) / delta_theta;
 
-    phi_point *= (float) phis.count();
-    theta_point *= (float) thetas.count();
+//    phi_point *= (float) phis.count();
+//    theta_point *= (float) thetas.count();
 
-    int phi_index = floor(phi_point + 0.5);
-    int theta_index = floor(theta_point + 0.5);
+//    int phi_index = floor(phi_point + 0.5);
+//    int theta_index = floor(theta_point + 0.5);
 
-    const auto id = get_id(phi_index, theta_index);
-    return index_point_map[id.id];
+//    const auto id = get_id(phi_index, theta_index);
+//    return index_point_map[id.id];
+    return NULL;
 }
 
 

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QColor>
 #include <QVector3D>
+#include <QQuaternion>
 #include <QMap>
 #include <QList>
 #include <QVector>
@@ -11,10 +12,10 @@
 class AntennaConfig
 {
 public:
-    explicit AntennaConfig(QVector3D pos, QVector3D rot, QString m_type, QString m_name);
+    explicit AntennaConfig(QVector3D pos, QQuaternion rot, QString m_type, QString m_name);
 
     QVector3D   m_pos;
-    QVector3D   m_rotation;
+    QQuaternion m_rotation;
     QString     m_type;
     QString     m_name;
 };
@@ -27,10 +28,10 @@ class AntennaDataPoint : public QObject
 {
     Q_OBJECT
 public:
-    explicit AntennaDataPoint(QObject *parent = 0, QVector3D rotation = {0.0,0.0,0.0});
+    explicit AntennaDataPoint(QObject *parent, QQuaternion rotation);
 
 public:
-    QVector3D   m_rotation;
+    QQuaternion m_rotation;
     QColor      m_center_color;
     float       m_center_visibility;
     float       m_color_visibility;

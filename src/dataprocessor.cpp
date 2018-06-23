@@ -28,9 +28,9 @@ void DataProcessor::process_data(AntennaData &data, AntennaConfig &config)
         datapt->m_visibility = datapt->m_color_visibility / max_vis;
     }
 
-    build_antenna_visibility_object(data, config);
+//    build_antenna_visibility_object(data, config);
 
-//    build_antenna_effective_object(data, config);
+    build_antenna_effective_object(data, config);
 }
 
 void DataProcessor::build_antenna_visibility_object(AntennaData &data, const AntennaConfig &config)
@@ -136,26 +136,40 @@ void DataProcessor::build_antenna_effective_object(AntennaData &data, const Ante
         for(int x_step=0; x_step < data.m_x_axis_steps; x_step++){
             datapt = data.get_antenna_datapoint(x_step, z_step);
             Q_ASSERT(datapt != NULL);
-            QVector3D rot = datapt->m_rotation * QVector3D(-1.0, 1.0, 1.0);
-            rot += QVector3D(0.0, 0.0, -90.0);
-            float x_angle = degToRad(rot.x());
-            float z_angle = degToRad(rot.z());
             int vect_index = 2 * 3 * data.data_index(z_step, x_step);
-            float x_theta = sin(z_angle);
-            float y_theta = cos(z_angle);
-            float x_phi = cos(x_angle);
-            float z_phi = sin(x_angle);
-            float radius = 1.0;
 
-            QVector3D radrot = datapt->m_rotation * QVector3D(1.0, 1.0, 1.0);
-            radrot += QVector3D(0.0, 0.0, 0.0);
-            float intensity = get_rad_intensity(pattern, datapt->m_rotation);
-            radius =  intensity;    //datapt->m_visibility *
+            QMatrix4x4 rot;
+            rot.rotate(datapt->m_rotation.z(), QVector3D(0.0, 0.0, -1.0));
+            rot.rotate(datapt->m_rotation.x(), QVector3D(-1.0, 0.0, 0.0));
+
+//            QVector3D rot = datapt->m_rotation * QVector3D(-1.0, 1.0, 1.0);
+//            rot += QVector3D(0.0, 0.0, -90.0);
+//            float x_angle = degToRad(rot.x());
+//            float z_angle = degToRad(rot.z());
+//            int vect_index = 2 * 3 * data.data_index(z_step, x_step);
+//            float x_theta = sin(z_angle);
+//            float y_theta = cos(z_angle);
+//            float x_phi = cos(x_angle);
+//            float z_phi = sin(x_angle);
+//            float radius = 1.0;
+
+//            QVector3D radrot = datapt->m_rotation * QVector3D(1.0, 1.0, 1.0);
+//            radrot += QVector3D(0.0, 0.0, 0.0);
+
+            auto vect = QVector4D(0.0, -1.0, 0, 0);
+            vect = vect * rot;
+
+            float intensity = get_rad_intensity(pattern, vect);
+//            radius =  intensity;    //datapt->m_visibility *
 //                radius =  datapt->m_visibility;
 
-            flat_verts[vect_index] =  radius * y_theta * x_phi;
-            flat_verts[vect_index+1] = radius * x_theta * x_phi;
-            flat_verts[vect_index+2] = radius * z_phi;
+            vect = QVector4D(0.0, -intensity, 0, 0);
+            vect = vect * rot;
+
+
+            flat_verts[vect_index] =  vect.x();
+            flat_verts[vect_index+1] = vect.y();
+            flat_verts[vect_index+2] = vect.z();
             float color_scale = datapt->m_visibility * datapt->m_visibility;
             flat_verts[vect_index+3] = color_scale * viscolor.redF();
             flat_verts[vect_index+4] = color_scale * viscolor.greenF();
@@ -193,11 +207,12 @@ void DataProcessor::build_antenna_effective_object(AntennaData &data, const Ante
 }
 
 
-float DataProcessor::get_rad_intensity(RadPatternSet* pattern, QVector3D rot)
+float DataProcessor::get_rad_intensity(RadPatternSet* pattern, QVector4D quat)
 {
     //find closest measurement
-    RadPatternPoint* pt = pattern->nearest_point(rot.x(), rot.z());
-    if(pt == NULL)
-        return 0.0;
-    return pt->get_amplitude();
+//    RadPatternPoint* pt = pattern->nearest_point(rot.x(), rot.z());
+//    if(pt == NULL)
+//        return 0.0;
+//    return pt->get_amplitude();
+    return NULL;
 }

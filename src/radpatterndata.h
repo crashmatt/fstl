@@ -10,6 +10,7 @@
 #include <QMultiMap>
 
 class Vertex;
+class QVector4D;
 
 class RadPatternPoint
 {
@@ -53,7 +54,7 @@ public:
     bool build_maps();
     RadPatternPoint* get_point(int phi, int theta);
     RadPatternPoint* get_point_at_index(uint phi_index, uint theta_index);
-    RadPatternPoint* nearest_point(float phi, float theta);
+    RadPatternPoint* nearest_point(QVector4D quat);
 
 protected:
     index_id get_id(int phi, int theta);

@@ -29,9 +29,9 @@ public slots:
     void set_status(const QString& s);
     void clear_status();
     void load_mesh(Mesh* m, const ObjectConfig &config);
-    void set_rotation(QVector3D rotation, int ref_index);
+    void set_rotation(QQuaternion view_rotation, int ref_index);
     void set_object_pos(const QString& obj_name, const QVector3D& pos);
-    void set_object_rot(const QString& obj_name, const QVector3D& rot);
+    void set_object_rot(const QString& obj_name, const QQuaternion& rot);
     void set_view_pos(const QVector3D& pos);
     void set_zoom(float zm);
     void set_object_visible(const QString& obj_name, bool visible);
@@ -39,7 +39,7 @@ public slots:
     void reset_rotation();
 
 signals:
-    void antenna_visibility(int index, QVector3D rotation, float center_visibility , float color_visibility);
+    void antenna_visibility(int index, QQuaternion view_rotation, float center_visibility , float color_visibility);
     void loaded_object(const QString& obj_name);
 
 protected:
@@ -60,7 +60,7 @@ protected:
 private:
     void draw_obj(GLObject* gl_obj);
 
-    QMatrix4x4 transform_matrix( QVector3D offset = QVector3D(0.0, 0.0, 0.0), QVector3D rotation = QVector3D(0.0, 0.0, 0.0) ) const;
+    QMatrix4x4 transform_matrix( QVector3D offset = QVector3D(0.0, 0.0, 0.0), QQuaternion view_rotation = QQuaternion(0.0, 0.0, 0.0, 0.0) ) const;
     QMatrix4x4 view_matrix() const;
 
     QOpenGLShaderProgram mesh_shader;
@@ -79,9 +79,7 @@ private:
     float scale;
     float requested_zoom;
     float zoom;
-    float tilt;
-    float yaw;
-    float roll;
+    QQuaternion view_rotation;
     int   ref_index;
     float fps;
     uint  fps_count;

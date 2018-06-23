@@ -16,12 +16,10 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     , scale(1)
     , zoom(2.0)
     , requested_zoom(2.0)
-    , tilt(0)
-    , yaw(0)
+    , view_rotation(0.0, 0.0, 0.0, 0.0)
     , perspective(0.0)
     , anim(this, "perspective")
     , status(" ")
-    , roll(0)
     , ref_index(-1)
     , fps(0)
     , fps_count(0)
@@ -99,11 +97,9 @@ void Canvas::load_mesh(Mesh* m, const ObjectConfig &config)
     delete m;
 }
 
-void Canvas::set_rotation(QVector3D rotation, int index)
+void Canvas::set_rotation(QQuaternion rotation, int index)
 {
-    tilt = rotation.x();
-    roll = rotation.y();
-    yaw  = rotation.z();
+    Canvas::view_rotation = rotation;
     ref_index = index;
 }
 
@@ -131,7 +127,7 @@ void Canvas::set_object_pos(const QString& obj_name, const QVector3D& pos)
     }
 }
 
-void Canvas::set_object_rot(const QString& obj_name, const QVector3D& rot)
+void Canvas::set_object_rot(const QString& obj_name, const QQuaternion& rot)
 {
     QList<GLObject*> list = get_objs(obj_name);
     foreach(GLObject* obj, list){
@@ -174,9 +170,7 @@ void Canvas::delete_globject(const QString& obj_name)
 
 void Canvas::reset_rotation()
 {
-    roll = 0;
-    tilt = 0;
-    yaw = 0;
+    view_rotation = QQuaternion(0.0, 0.0, 0.0, 0.0);
     update();
 }
 
@@ -280,8 +274,7 @@ void Canvas::paintGL()
     g /= pxcnt;
 
 //    QColor color = QColor(pick_col[0], pick_col[1], pick_col[2]);
-    QVector3D rotation = QVector3D(tilt, roll, yaw);
-    emit antenna_visibility(ref_index, rotation, pick_col[1] , g);
+    emit antenna_visibility(ref_index, view_rotation, pick_col[1] , g);
 
     int elapsed = fps_time.elapsed();
     if(elapsed > 1000){
@@ -292,6 +285,8 @@ void Canvas::paintGL()
         fps_count++;
     }
 
+    QVector3D euler = view_rotation.toEulerAngles();
+
     status = QString("RGB:%1,%2,%3 px:%4 gh:%5 zm:%6 tilt:%7 roll:%8 yaw:%9 fps:%10")
             .arg(pick_col[0],2,16, QChar('0')).toUpper()
             .arg(pick_col[1],2,16, QChar('0')).toUpper()
@@ -299,9 +294,9 @@ void Canvas::paintGL()
             .arg(px)
             .arg(g)
             .arg(zoom)
-            .arg(tilt)
-            .arg(roll)
-            .arg(yaw)
+            .arg(euler.x())
+            .arg(euler.y())
+            .arg(euler.z())
             .arg(fps)
             ;
 
@@ -349,17 +344,11 @@ void Canvas::draw_obj(GLObject* gl_obj)
     shader->release();
 }
 
-QMatrix4x4 Canvas::transform_matrix(QVector3D offset, QVector3D rotation) const
+QMatrix4x4 Canvas::transform_matrix(QVector3D offset, QQuaternion obj_rotation) const
 {
     QMatrix4x4 m;
-    m.rotate(tilt+90.0, QVector3D(1, 0, 0));
-    m.rotate(yaw,  QVector3D(0, 0, 1));
-    m.rotate(roll,  QVector3D(0, 1, 0));
-
-    m.rotate(rotation.x(), QVector3D(1, 0, 0));
-    m.rotate(rotation.z(),  QVector3D(0, 0, 1));
-    m.rotate(rotation.y(),  QVector3D(0, 1, 0));
-
+    m.rotate(obj_rotation);
+    m.rotate(view_rotation);
     m.scale(-scale, scale, -scale);
     m.translate(-center + offset);
     return m;
@@ -407,13 +396,20 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
 
 
     if (event->buttons() & Qt::LeftButton)
-    {
-        yaw = fmod(yaw - d.x(), 360);
-        tilt = fmod(tilt - d.y(), 360);
+    {        
+        view_rotation *= (QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), 0.0) * d.x());
+        view_rotation *= (QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), 0.0) * d.y());
+//        QMatrix4x4 m;
+//        m.rotate(d.x(), QVector3D(0.0, 0.0, 1.0));
+//        m.rotate(d.y(), QVector3D(1.0, 0.0, 0.0));
+//        view_rotation = view_rotation * m;
+//        yaw = fmod(yaw - d.x(), 360);
+//        tilt = fmod(tilt - d.y(), 360);
         update();
     } else if (event->buttons() & Qt::RightButton)
     {
-        roll = fmod(roll + d.x(), 360);
+        view_rotation *= QQuaternion::fromAxisAndAngle(QVector3D(0,0,0), d.x());
+//        roll = fmod(roll + d.x(), 360);
         update();
     }
 //    else if (event->buttons() & Qt::RightButton)

@@ -41,7 +41,7 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
         AntennaDataPoint* datapoint = new AntennaDataPoint(this, rotation);
         datapoint->m_center_color = center_color;
         datapoint->m_color_visibility = color_visibility;
-        data->set_antenna_datapoint(datapoint, m_pitch_index, m_yaw_index);
+        data->set_antenna_datapoint(datapoint, index);
 
         m_pitch_index++;
         if(m_pitch_index > m_pitch_segments){
@@ -70,8 +70,8 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
     float pitch = pitch_ratio * 180.0;
     float yaw_ratio = (float) m_yaw_index / (float) m_yaw_segments;
     float yaw = (yaw_ratio * 180.0) - 90.0;
-    m_rotation = QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), yaw) *
-                 QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), pitch);
+    m_rotation = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), pitch) *
+                 QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), yaw);
     emit set_rotation(m_rotation, data->data_index(m_yaw_index, m_pitch_index));
     emit redraw();
 }

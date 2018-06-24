@@ -18,7 +18,7 @@ TestPattern::TestPattern(QObject *parent) : QObject(parent)
 //                                             ,"cockpit" ) );      //Antenna just behind cockpit cover
 
     const QQuaternion rear_right_rot =
-            QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), 90.0) *
+            QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) *
             QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), 135);
 
     m_antenna_configs.append( AntennaConfig( QVector3D(0.05, -0.1, 0.0)

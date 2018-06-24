@@ -10,7 +10,10 @@ RadPatternPoint::RadPatternPoint(int i, float t, float p, float v, float h, floa
   , hor(h)
   , total(tot)
   , index(i)
+  , rot()
 {
+    rot =   QQuaternion::fromAxisAndAngle(0.0, 0.0, 1.0, theta) *
+            QQuaternion::fromAxisAndAngle(1.0, 0.0, 0.0, phi);
 };
 
 float RadPatternPoint::get_amplitude()
@@ -20,18 +23,22 @@ float RadPatternPoint::get_amplitude()
 
 Vertex RadPatternPoint::make_vertex()
 {
-    float x_angle = degToRad(theta-90);
-    float z_angle = degToRad(phi);
-    float x_theta = sin(z_angle);
-    float y_theta = cos(z_angle);
-    float x_phi = cos(x_angle);
-    float z_phi = sin(x_angle);
-    float radius = get_amplitude();
-    float x =  radius * y_theta * x_phi;
-    float y = radius * x_theta * x_phi;
-    float z = radius * z_phi;
+//    float x_angle = degToRad(theta-90);
+//    float z_angle = degToRad(phi);
+//    float x_theta = sin(z_angle);
+//    float y_theta = cos(z_angle);
+//    float x_phi = cos(x_angle);
+//    float z_phi = sin(x_angle);
+//    float radius = get_amplitude();
+//    float x =  radius * y_theta * x_phi;
+//    float y = radius * x_theta * x_phi;
+//    float z = radius * z_phi;
 
-    return Vertex(x, y, z, index);
+//    return Vertex(x, y, z, index);
+
+    auto vect = rot.inverted().rotatedVector(QVector3D(1.0, 0.0, 0.0));
+    vect *= get_amplitude();
+    return Vertex(vect.z(), vect.y(), vect.x(), index);
 }
 
 QColor RadPatternPoint::get_color()
@@ -121,8 +128,19 @@ RadPatternPoint* RadPatternSet::get_point_at_index(uint phi_index, uint theta_in
     return index_point_map.value(id.id, NULL);
 }
 
-RadPatternPoint* RadPatternSet::nearest_point(QVector4D quat)
+RadPatternPoint* RadPatternSet::nearest_point(QQuaternion rot)
 {
+    if(rad_data.isEmpty()) return NULL;
+    double nearest_angle = 0;
+    RadPatternPoint* nearest = rad_data[0];
+
+    foreach(RadPatternPoint* pt, rad_data){
+        auto rotdiff = rot * pt->rot.inverted();
+        auto vectdiff = rotdiff.rotatedVector(QVector3D(0.0, 1.0, 0.0));
+        auto diff = vectdiff.length();
+    }
+
+
 //    auto phi_min = phis[0];
 //    auto theta_min = thetas[0];
 //    auto phi_max = phis.last();

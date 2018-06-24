@@ -57,8 +57,7 @@ void DataProcessor::build_antenna_visibility_object(AntennaData &data, const Ant
     int vect_index = 0;
     foreach(datapt ,data.m_antenna_data){
         Q_ASSERT(datapt != NULL);
-        auto vect = datapt->m_rotation.inverted().rotatedVector(QVector3D(0.0, 1.0, 0.0)) * datapt->m_visibility; //QVector4D(0.0, -, 0, 0);
-
+        auto vect = datapt->m_rotation.inverted().rotatedVector(QVector3D(0.0, 1.0, 0.0)) * datapt->m_visibility;
         flat_verts[vect_index] =  vect.x();
         flat_verts[vect_index+1] = vect.y();
         flat_verts[vect_index+2] = vect.z();
@@ -68,29 +67,6 @@ void DataProcessor::build_antenna_visibility_object(AntennaData &data, const Ant
         flat_verts[vect_index+5] = color_scale * viscolor.blueF();
         vect_index += 6;
     }
-
-//    for(int z_step=0; z_step < data.m_z_axis_steps; z_step++){
-//        for(int x_step=0; x_step < data.m_x_axis_steps; x_step++){
-//            datapt = data.get_antenna_datapoint(x_step, z_step);
-//            Q_ASSERT(datapt != NULL);
-//            int vect_index = 2 * 3 * data.data_index(z_step, x_step);
-
-////            QMatrix4x4 rot;
-////            rot.rotate(datapt->m_rotation.z(), QVector3D(0.0, 0.0, -1.0));
-////            rot.rotate(datapt->m_rotation.x(), QVector3D(-1.0, 0.0, 0.0));
-
-//            auto vect = datapt->m_rotation; // * datapt->m_visibility; //QVector4D(0.0, -, 0, 0);
-////            vect = vect * rot;
-
-//            flat_verts[vect_index] =  vect.x();
-//            flat_verts[vect_index+1] = vect.y();
-//            flat_verts[vect_index+2] = vect.z();
-//            float color_scale = datapt->m_visibility * datapt->m_visibility;
-//            flat_verts[vect_index+3] = color_scale * viscolor.redF();
-//            flat_verts[vect_index+4] = color_scale * viscolor.greenF();
-//            flat_verts[vect_index+5] = color_scale * viscolor.blueF();
-//        }
-//    }
 
     int tri_count = (data.m_z_axis_steps) * (data.m_x_axis_steps) * 2;
     // This vector will store triangles as sets of 3 indices
@@ -147,50 +123,45 @@ void DataProcessor::build_antenna_effective_object(AntennaData &data, const Ante
     Q_ASSERT(pattern != NULL);
 
     AntennaDataPoint* datapt;
-    for(int z_step=0; z_step < data.m_z_axis_steps; z_step++){
-        for(int x_step=0; x_step < data.m_x_axis_steps; x_step++){
-            datapt = data.get_antenna_datapoint(x_step, z_step);
-            Q_ASSERT(datapt != NULL);
-            int vect_index = 2 * 3 * data.data_index(z_step, x_step);
-
-            QMatrix4x4 rot;
-            rot.rotate(datapt->m_rotation.z(), QVector3D(0.0, 0.0, -1.0));
-            rot.rotate(datapt->m_rotation.x(), QVector3D(-1.0, 0.0, 0.0));
-
-//            QVector3D rot = datapt->m_rotation * QVector3D(-1.0, 1.0, 1.0);
-//            rot += QVector3D(0.0, 0.0, -90.0);
-//            float x_angle = degToRad(rot.x());
-//            float z_angle = degToRad(rot.z());
-//            int vect_index = 2 * 3 * data.data_index(z_step, x_step);
-//            float x_theta = sin(z_angle);
-//            float y_theta = cos(z_angle);
-//            float x_phi = cos(x_angle);
-//            float z_phi = sin(x_angle);
-//            float radius = 1.0;
-
-//            QVector3D radrot = datapt->m_rotation * QVector3D(1.0, 1.0, 1.0);
-//            radrot += QVector3D(0.0, 0.0, 0.0);
-
-            auto vect = QVector4D(0.0, -1.0, 0, 0);
-            vect = vect * rot;
-
-            float intensity = get_rad_intensity(pattern, vect);
-//            radius =  intensity;    //datapt->m_visibility *
-//                radius =  datapt->m_visibility;
-
-            vect = QVector4D(0.0, -intensity, 0, 0);
-            vect = vect * rot;
-
-
-            flat_verts[vect_index] =  vect.x();
-            flat_verts[vect_index+1] = vect.y();
-            flat_verts[vect_index+2] = vect.z();
-            float color_scale = datapt->m_visibility * datapt->m_visibility;
-            flat_verts[vect_index+3] = color_scale * viscolor.redF();
-            flat_verts[vect_index+4] = color_scale * viscolor.greenF();
-            flat_verts[vect_index+5] = color_scale * viscolor.blueF();
-        }
+    int vect_index = 0;
+    foreach(datapt ,data.m_antenna_data){
+        Q_ASSERT(datapt != NULL);
+        auto intensity = get_rad_intensity(pattern, datapt->m_rotation);
+        auto vect = datapt->m_rotation.inverted().rotatedVector(QVector3D(0.0, 1.0, 0.0)) * intensity;
+        flat_verts[vect_index] =  vect.x();
+        flat_verts[vect_index+1] = vect.y();
+        flat_verts[vect_index+2] = vect.z();
+        float color_scale = datapt->m_visibility * datapt->m_visibility;
+        flat_verts[vect_index+3] = color_scale * viscolor.redF();
+        flat_verts[vect_index+4] = color_scale * viscolor.greenF();
+        flat_verts[vect_index+5] = color_scale * viscolor.blueF();
+        vect_index += 6;
     }
+
+//    AntennaDataPoint* datapt;
+//    for(int z_step=0; z_step < data.m_z_axis_steps; z_step++){
+//        for(int x_step=0; x_step < data.m_x_axis_steps; x_step++){
+//            datapt = data.get_antenna_datapoint(x_step, z_step);
+//            Q_ASSERT(datapt != NULL);
+//            int vect_index = 2 * 3 * data.data_index(z_step, x_step);
+
+//            auto vect = datapt->m_rotation.inverted().rotatedVector(QVector3D(0.0, 1.0, 0.0)) * datapt->m_visibility;
+
+//            float intensity = get_rad_intensity(pattern, vect);
+
+//            vect = QVector4D(0.0, -intensity, 0, 0);
+//            vect = vect * rot;
+
+
+//            flat_verts[vect_index] =  vect.x();
+//            flat_verts[vect_index+1] = vect.y();
+//            flat_verts[vect_index+2] = vect.z();
+//            float color_scale = datapt->m_visibility * datapt->m_visibility;
+//            flat_verts[vect_index+3] = color_scale * viscolor.redF();
+//            flat_verts[vect_index+4] = color_scale * viscolor.greenF();
+//            flat_verts[vect_index+5] = color_scale * viscolor.blueF();
+//        }
+//    }
 
     int tri_count = (data.m_z_axis_steps) * (data.m_x_axis_steps) * 2;
     // This vector will store triangles as sets of 3 indices
@@ -222,12 +193,11 @@ void DataProcessor::build_antenna_effective_object(AntennaData &data, const Ante
 }
 
 
-float DataProcessor::get_rad_intensity(RadPatternSet* pattern, QVector4D quat)
+float DataProcessor::get_rad_intensity(RadPatternSet* pattern, QQuaternion rot)
 {
     //find closest measurement
-//    RadPatternPoint* pt = pattern->nearest_point(rot.x(), rot.z());
-//    if(pt == NULL)
-//        return 0.0;
-//    return pt->get_amplitude();
-    return NULL;
+    RadPatternPoint* pt = pattern->nearest_point(rot);
+    if(pt == NULL)
+        return 0.0;
+    return pt->get_amplitude();
 }

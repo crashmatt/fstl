@@ -2,6 +2,7 @@
 #define DATAPROCESSOR_H
 
 #include <QObject>
+#include <QQuaternion>
 #include "mesh.h"
 
 #include "antennadata.h"
@@ -22,7 +23,7 @@ protected:
 
     RadPatternData* m_patterns;
 
-    float get_rad_intensity(RadPatternSet* pattern, QVector4D quat);
+    float get_rad_intensity(RadPatternSet* pattern, QQuaternion rot);
 
 signals:
     void built_mesh(Mesh* m, const ObjectConfig& config);

@@ -4,13 +4,13 @@
 #include <QObject>
 #include <QColor>
 #include <QVector>
+#include <QQuaternion>
 #include <QMap>
 #include <QSharedData>
 #include <QExplicitlySharedDataPointer>
 #include <QMultiMap>
 
 class Vertex;
-class QVector4D;
 
 class RadPatternPoint
 {
@@ -21,12 +21,13 @@ public:
     QColor get_color();
     float get_amplitude();
 
-    float theta;
-    float phi;
-    float ver;
-    float hor;
-    float total;
-    int   index;
+    const float theta;
+    const float phi;
+    const float ver;
+    const float hor;
+    const float total;
+    const int   index;
+    QQuaternion rot;
 };
 
 
@@ -54,7 +55,7 @@ public:
     bool build_maps();
     RadPatternPoint* get_point(int phi, int theta);
     RadPatternPoint* get_point_at_index(uint phi_index, uint theta_index);
-    RadPatternPoint* nearest_point(QVector4D quat);
+    RadPatternPoint* nearest_point(QQuaternion rot);
 
 protected:
     index_id get_id(int phi, int theta);

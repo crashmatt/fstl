@@ -128,19 +128,30 @@ RadPatternPoint* RadPatternSet::get_point_at_index(uint phi_index, uint theta_in
     return index_point_map.value(id.id, NULL);
 }
 
-RadPatternPoint* RadPatternSet::nearest_point(QQuaternion rot)
+RadPatternPoint* RadPatternSet::nearest_point(QQuaternion rot, int phi, int theta)
 {
+    Q_UNUSED(phi)
+    Q_UNUSED(theta)
+
     if(rad_data.isEmpty()) return NULL;
-    double nearest_angle = 0;
+    double nearest_dist = 1000;
     RadPatternPoint* nearest = rad_data[0];
+    const auto vect = rot.inverted().rotatedVector(QVector3D(0.0, 1.0, 0.0));
 
     foreach(RadPatternPoint* pt, rad_data){
-        auto rotdiff = rot * pt->rot.inverted();
-        auto vectdiff = rotdiff.rotatedVector(QVector3D(0.0, 1.0, 0.0));
-        auto diff = vectdiff.length();
+        auto ptvect = pt->rot.inverted().rotatedVector(QVector3D(1.0, 0.0, 0.0));
+//        auto rotdiff = rot * pt->rot.inverted();
+//        auto vectdiff = rotdiff.rotatedVector(QVector3D(0.0, 0.0, 1.0));
+        auto diffs = (ptvect - vect);
+        diffs *= diffs;
+        auto diff = diffs.length();
+        if(diff < nearest_dist){
+            nearest_dist = diff;
+            nearest = pt;
+        }
     }
 
-
+    return nearest;
 //    auto phi_min = phis[0];
 //    auto theta_min = thetas[0];
 //    auto phi_max = phis.last();
@@ -159,7 +170,6 @@ RadPatternPoint* RadPatternSet::nearest_point(QQuaternion rot)
 
 //    const auto id = get_id(phi_index, theta_index);
 //    return index_point_map[id.id];
-    return NULL;
 }
 
 

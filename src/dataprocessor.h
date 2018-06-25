@@ -23,7 +23,7 @@ protected:
 
     RadPatternData* m_patterns;
 
-    float get_rad_intensity(RadPatternSet* pattern, QQuaternion rot);
+    float get_rad_intensity(RadPatternSet* pattern, AntennaDataPoint* antpt);
 
 signals:
     void built_mesh(Mesh* m, const ObjectConfig& config);

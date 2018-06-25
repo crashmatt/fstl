@@ -55,7 +55,7 @@ public:
     bool build_maps();
     RadPatternPoint* get_point(int phi, int theta);
     RadPatternPoint* get_point_at_index(uint phi_index, uint theta_index);
-    RadPatternPoint* nearest_point(QQuaternion rot);
+    RadPatternPoint* nearest_point(QQuaternion rot, int phi=-1, int theta=-1);
 
 protected:
     index_id get_id(int phi, int theta);

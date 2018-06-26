@@ -9,17 +9,6 @@
 #include <QList>
 #include <QVector>
 
-class AntennaConfig
-{
-public:
-    explicit AntennaConfig(QVector3D pos, QQuaternion rot, QString m_type, QString m_name);
-
-    QVector3D   m_pos;
-    QQuaternion m_rotation;
-    QString     m_type;
-    QString     m_name;
-};
-
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -28,14 +17,14 @@ class AntennaDataPoint : public QObject
 {
     Q_OBJECT
 public:
-    explicit AntennaDataPoint(QObject *parent, QQuaternion rotation);
+    explicit AntennaDataPoint(QObject *parent, const QQuaternion &rot, float center, float visibility);
 
 public:
-    QQuaternion m_rotation;
-    QColor      m_center_color;
-    float       m_center_visibility;
-    float       m_color_visibility;
-    float       m_visibility;
+    const QQuaternion   m_rot;
+    const QColor        m_center_color;
+    const float         m_color_visibility;
+    float               m_center_visibility;
+    float               m_visibility;
 
 signals:
 
@@ -46,33 +35,25 @@ public slots:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class AntennaData : public QObject
-{
-    Q_OBJECT
 
+
+class Antenna
+{
 public:
-    explicit AntennaData(QObject *parent, QVector3D ant_pos, int x_steps, int z_steps, int index);
+    explicit Antenna(QVector3D pos, QQuaternion rot, QString m_type, QString m_name);
+
+    QVector3D   m_pos;
+    QQuaternion m_rotation;
+    QString     m_type;
+    QString     m_name;
 
     QVector<AntennaDataPoint*> m_antenna_data;
-    const int   m_x_axis_steps;
-    const int   m_z_axis_steps;
-    void set_antenna_datapoint(AntennaDataPoint* datapt, int x_step, int z_step);
-    void set_antenna_datapoint(AntennaDataPoint* datapt, int index);
-    AntennaDataPoint* get_antenna_datapoint(int x_step, int z_step);
-    int data_index(int z_step, int x_step) {return z_step + (x_step * m_z_axis_steps);}
-    int index() {return m_index;};
 
-    const int   m_index;
-
-protected:
-
-signals:
-
-protected:
-    void clear(void);
-
-public slots:
-
+    void deleteAntennaData();
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+
 
 #endif // ANTENNADATA_H

@@ -42,7 +42,7 @@ Window::Window(QWidget *parent) :
     setCentralWidget(canvas);
 
     rad_patterns = new RadPatternData(this);
-    test_pattern = new TestPattern(this);
+    test_pattern = new TestPattern(this, rad_patterns);
     data_processor = new DataProcessor(this, rad_patterns);
 
     QObject::connect(canvas, &Canvas::antenna_visibility, test_pattern, &TestPattern::antenna_visibility);
@@ -53,7 +53,7 @@ Window::Window(QWidget *parent) :
     QObject::connect(test_pattern, &TestPattern::set_zoom, canvas, &Canvas::set_zoom);
     connect(test_pattern, SIGNAL(redraw()), canvas, SLOT(update()));
 
-    connect(test_pattern, &TestPattern::antenna_data, data_processor, &DataProcessor::process_data);
+//    connect(test_pattern, &TestPattern::antenna_data, data_processor, &DataProcessor::process_data);
     connect(test_pattern, &TestPattern::delete_object, canvas, &Canvas::delete_globject);
 
     connect(canvas, &Canvas::loaded_object, this, &Window::loaded_object);

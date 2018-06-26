@@ -18,19 +18,19 @@ public:
     explicit DataProcessor(QObject *parent, RadPatternData* patterns);
 
 protected:
-    void build_antenna_visibility_object(AntennaData &data, const AntennaConfig &config);
-    void build_antenna_effective_object(AntennaData &data, const AntennaConfig &config);
+//    void build_antenna_visibility_object(AntennaData &data, const Antenna &config);
+//    void build_antenna_effective_object(AntennaData &data, const Antenna &config);
 
     RadPatternData* m_patterns;
 
-    float get_rad_intensity(RadPatternSet* pattern, AntennaDataPoint* antpt);
+//    float get_rad_intensity(RadPatternSet* pattern, AntennaDataPoint* antpt);
 
 signals:
     void built_mesh(Mesh* m, const ObjectConfig& config);
     void set_obj_pos(const QString& obj_name, const QVector3D& pos);
 
 public slots:
-    void process_data(AntennaData &data, AntennaConfig &config);
+//    void process_data(AntennaData &data, Antenna &config);
 };
 
 #endif // DATAPROCESSOR_H

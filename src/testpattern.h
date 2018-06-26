@@ -10,24 +10,24 @@
 
 #include "antennadata.h"
 
+class RadPatternData;
+
 
 class TestPattern : public QObject
 {
     Q_OBJECT
 public:
-    explicit TestPattern(QObject *parent = 0);
+    explicit TestPattern(QObject *parent = 0, RadPatternData* rad_patterns = 0);
 
 protected:
     bool                m_pattern_running;
     QQuaternion         m_rotation;
-    QList<AntennaConfig> m_antenna_configs;
+    QList<Antenna>      m_antennas;
     int                 m_ant_pos_index;
-    int                 m_pitch_segments;
-    int                 m_pitch_index;
-    int                 m_yaw_segments;
-    int                 m_yaw_index;
-    QVector<AntennaData*> m_results;
+    int                 m_test_index;
     bool                m_high_speed;
+
+    RadPatternData*     m_rad_patterns;
 
     bool set_antenna_pos_to_index(int index);
     void reset();
@@ -40,7 +40,7 @@ signals:
     void set_zoom(float zm);
     void redraw();
     void test_completed();
-    void antenna_data(AntennaData &data, AntennaConfig &config);
+//    void antenna_data(AntennaData &data, Antenna &config);
     void delete_object(QString& obj_name);
     void set_object_visible(QString& obj_name, bool visible);
 

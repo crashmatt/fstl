@@ -18,11 +18,12 @@ class TestPattern : public QObject
     Q_OBJECT
 public:
     explicit TestPattern(QObject *parent = 0, RadPatternData* rad_patterns = 0);
+    ~TestPattern();
 
 protected:
     bool                m_pattern_running;
     QQuaternion         m_rotation;
-    QList<Antenna>      m_antennas;
+    QList<Antenna*>     m_antennas;
     int                 m_ant_pos_index;
     int                 m_test_index;
     bool                m_high_speed;
@@ -40,7 +41,7 @@ signals:
     void set_zoom(float zm);
     void redraw();
     void test_completed();
-//    void antenna_data(AntennaData &data, Antenna &config);
+    void antenna_data(Antenna* antenna);
     void delete_object(QString& obj_name);
     void set_object_visible(QString& obj_name, bool visible);
 

@@ -20,12 +20,22 @@ TestPattern::TestPattern(QObject *parent, RadPatternData* rad_patterns) : QObjec
             QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) *
             QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), 135);
 
-    m_antennas.append( Antenna( QVector3D(0.05, -0.1, 0.0)
-                                             ,rear_right_rot
-                                             ,"rad_monopole"
-                                             ,"rear_right" ) );       //Antenna on side behind wing
+    //Antenna on side behind wing
+    auto antenna = new Antenna( QVector3D(0.05, -0.1, 0.0)
+                                , rear_right_rot
+                                , "rad_monopole"
+                                ,"rear_right" );
+    m_antennas.append( antenna );
+
     reset();
 }
+
+TestPattern::~TestPattern()
+{
+    qDeleteAll(m_antennas);
+    m_antennas.clear();
+}
+
 
 void TestPattern::antenna_visibility(int index, QQuaternion rotation, float center_color, float color_visibility)
 {
@@ -37,22 +47,27 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
         m_ant_pos_index = 0;
         set_antenna_pos_to_index(0);
     } else {
-        Antenna &antenna = m_antennas[m_ant_pos_index];
+        Antenna* antenna = m_antennas[m_ant_pos_index];
+        Q_ASSERT(antenna != NULL);
         auto datapoint = new AntennaDataPoint(this, rotation, center_color, color_visibility);
-        antenna.m_antenna_data.append(datapoint);
+        antenna->m_antenna_data.append(datapoint);
         m_test_index++;
     }
 
-    Antenna &antenna = m_antennas[m_ant_pos_index];
-    RadPatternSet* pattern = m_rad_patterns->get_data(antenna.m_type).data();
+    Antenna* antenna = m_antennas[m_ant_pos_index];
+    Q_ASSERT(antenna != NULL);
+    RadPatternSet* pattern = antenna->m_rad_pattern.data();
+    Q_ASSERT(pattern != NULL);
 
     if(m_test_index >= pattern->rad_data.size()){
 //        if(m_ant_pos_index >= m_antennas.size()-1) {
 //            m_ant_pos_index = 0;
-//            foreach(data, m_results){
+//            foreach(data, m_antennas){
 //                emit antenna_data(*data, m_antenna_configs[m_ant_pos_index]);
 //                m_ant_pos_index++;
 //            }
+            emit antenna_data(m_antennas[m_ant_pos_index]);
+
             m_ant_pos_index = -1;
             m_test_index = -1;
             m_pattern_running = false;
@@ -67,7 +82,7 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
     auto radpt = pattern->rad_data[m_test_index];
     Q_ASSERT(radpt != NULL);
 
-    m_rotation = antenna.m_rotation * radpt->rot;
+    m_rotation = antenna->m_rotation * radpt->rot;
 
     emit set_rotation(m_rotation, m_test_index);
     emit redraw();
@@ -86,8 +101,8 @@ void TestPattern::reset()
     emit delete_object(del_pattern);
 
     //Delete any previous antenna data
-    foreach(Antenna antenna, m_antennas){
-        antenna.deleteAntennaData();
+    foreach(auto antenna, m_antennas){
+        antenna->deleteAntennaData();
     }
 
     emit set_zoom(16.0);
@@ -108,9 +123,17 @@ void TestPattern::reset()
 void TestPattern::start_pattern(void)
 {
     if(!m_pattern_running){
+        //Connect patterns
+        foreach(auto antenna, m_antennas){
+            auto type = antenna->m_type;
+            auto pattern = m_rad_patterns->get_data(type).data();
+            if(pattern == NULL) return;
+            antenna->m_rad_pattern = pattern;
+        }
+
         m_pattern_running = true;
         reset();
-        emit set_view_pos( m_antennas[m_ant_pos_index].m_pos );
+        emit set_view_pos( m_antennas[m_ant_pos_index]->m_pos );
         emit set_rotation(m_rotation, -1);
         emit redraw();
     }
@@ -137,13 +160,18 @@ bool TestPattern::set_antenna_pos_to_index(int index)
     } else {
         m_ant_pos_index = index;
         if(!m_pattern_running){
-            Antenna* config = &m_antennas[m_ant_pos_index];
-            emit set_obj_rotation( config->m_type, config->m_rotation);
-            emit set_obj_pos( config->m_type, config->m_pos);
+            Antenna* antenna = m_antennas[m_ant_pos_index];
+            Q_ASSERT(antenna != NULL);
+            auto pattern = antenna->m_rad_pattern.data();
+            if(pattern != NULL){
+                auto rad_name = antenna->m_rad_pattern.data()->set_name;
+                emit set_obj_rotation( rad_name, antenna->m_rotation);
+                emit set_obj_pos( rad_name, antenna->m_pos);
+            }
         }
     }
     QString name = "antenna";
-    QVector3D antenna_offset = m_antennas[m_ant_pos_index].m_pos;
+    QVector3D antenna_offset = m_antennas[m_ant_pos_index]->m_pos;
     emit set_obj_pos(name, antenna_offset);
     emit set_view_pos(antenna_offset);
     return true;

@@ -5,23 +5,20 @@
 #include <QQuaternion>
 #include "mesh.h"
 
-#include "antennadata.h"
-
-class RadPatternData;
-class RadPatternSet;
+class Antenna;
 class ObjectConfig;
 
 class DataProcessor : public QObject
 {
     Q_OBJECT
 public:
-    explicit DataProcessor(QObject *parent, RadPatternData* patterns);
+    explicit DataProcessor(QObject *parent);
 
 protected:
 //    void build_antenna_visibility_object(AntennaData &data, const Antenna &config);
 //    void build_antenna_effective_object(AntennaData &data, const Antenna &config);
 
-    RadPatternData* m_patterns;
+//    RadPatternData* m_patterns;
 
 //    float get_rad_intensity(RadPatternSet* pattern, AntennaDataPoint* antpt);
 
@@ -31,6 +28,7 @@ signals:
 
 public slots:
 //    void process_data(AntennaData &data, Antenna &config);
+    void process_data(Antenna *antenna);
 };
 
 #endif // DATAPROCESSOR_H

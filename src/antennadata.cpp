@@ -1,13 +1,19 @@
 #include "antennadata.h"
-
+#include "radpatterndata.h"
 
 Antenna::Antenna(QVector3D pos, QQuaternion rot, QString type, QString name)
   : m_pos(pos)
   , m_rotation(rot)
-  , m_type(type)
   , m_name(name)
+  , m_type(type)
+  , m_rad_pattern()
 {
 
+}
+
+Antenna::~Antenna()
+{
+    deleteAntennaData();
 }
 
 

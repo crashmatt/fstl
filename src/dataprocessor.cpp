@@ -7,12 +7,15 @@
 
 #define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
 
-DataProcessor::DataProcessor(QObject *parent, RadPatternData* patterns) : QObject(parent)
-  , m_patterns(patterns)
-
+DataProcessor::DataProcessor(QObject *parent) : QObject(parent)
 {
 
 }
+
+void DataProcessor::process_data(Antenna *antenna)
+{
+}
+
 
 //void DataProcessor::process_data(AntennaData &data, Antenna &config)
 //{

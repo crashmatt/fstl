@@ -61,8 +61,8 @@ RadPatternSet::RadPatternSet(QString name)
 RadPatternSet::~RadPatternSet()
 {
     //Clear these so referenced contents are not automatically deleted
-    index_point_map.clear();
-    angle_point_map.clear();
+    angle_index_map.clear();
+    id_index_map.clear();
     phis.clear();
     thetas.clear();
 }
@@ -77,18 +77,19 @@ RadPatternSet::index_id RadPatternSet::get_id(int phi, int theta)
 
 bool RadPatternSet::build_maps()
 {
-    index_point_map.clear();
-    angle_point_map.clear();
+    angle_index_map.clear();
+    id_index_map.clear();
     phis.clear();
     thetas.clear();
 
     int phi_index = 0;
     int theta_index = 0;
+    int pt_index = 0;
     foreach(RadPatternPoint* pt, rad_data){
         const int phi     = (int) pt->phi;
         const int theta   = (int) pt->theta;
         auto id = get_id(phi, theta);
-        angle_point_map[id.id] = pt;
+        angle_index_map[id.id] = pt_index;
 
         if(!phis.contains(phi)){
             phis.append(phi);
@@ -102,13 +103,14 @@ bool RadPatternSet::build_maps()
         }
 
         id = get_id(phi_index, theta_index);
-        index_point_map[id.id] = pt;
+        id_index_map[id.id] = pt_index;
+        pt_index++;
     }
 
     auto total = phis.count() * thetas.count();
     if(rad_data.count() != total){
-        index_point_map.clear();
-        angle_point_map.clear();
+        id_index_map.clear();
+        angle_index_map.clear();
         phis.clear();
         thetas.clear();
         return false;
@@ -119,13 +121,13 @@ bool RadPatternSet::build_maps()
 RadPatternPoint* RadPatternSet::get_point(int phi, int theta)
 {
     const auto id = get_id(phi, theta);
-    return angle_point_map.value(id.id, NULL);
+    return rad_data[angle_index_map.value(id.id, NULL)];
 }
 
 RadPatternPoint* RadPatternSet::get_point_at_index(uint phi_index, uint theta_index)
 {
     const auto id = get_id(phi_index, theta_index);
-    return index_point_map.value(id.id, NULL);
+    return rad_data[id_index_map.value(id.id, NULL)];
 }
 
 RadPatternPoint* RadPatternSet::nearest_point(QQuaternion rot, int phi, int theta)

@@ -1,11 +1,12 @@
 #include "antennadata.h"
 #include "radpatterndata.h"
 
-Antenna::Antenna(QVector3D pos, QQuaternion rot, QString type, QString name)
+Antenna::Antenna(QVector3D pos, QQuaternion rot, QString type, QString name, QColor color)
   : m_pos(pos)
   , m_rotation(rot)
   , m_name(name)
   , m_type(type)
+  , m_color(color)
   , m_rad_pattern()
 {
 

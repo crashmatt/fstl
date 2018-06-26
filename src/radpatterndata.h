@@ -59,8 +59,8 @@ public:
 
 protected:
     index_id get_id(int phi, int theta);
-    QMap<uint32_t, RadPatternPoint*>    angle_point_map;
-    QMap<uint32_t, RadPatternPoint*>    index_point_map;
+    QMap<uint32_t, int>    angle_index_map;
+    QMap<uint32_t, int>    id_index_map;
     QVector<int> phis;
     QVector<int> thetas;
 };

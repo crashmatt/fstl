@@ -15,7 +15,7 @@ public:
     explicit DataProcessor(QObject *parent);
 
 protected:
-//    void build_antenna_visibility_object(AntennaData &data, const Antenna &config);
+    void build_antenna_visibility_object(Antenna *antenna);
 //    void build_antenna_effective_object(AntennaData &data, const Antenna &config);
 
 //    RadPatternData* m_patterns;

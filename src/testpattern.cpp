@@ -24,7 +24,8 @@ TestPattern::TestPattern(QObject *parent, RadPatternData* rad_patterns) : QObjec
     auto antenna = new Antenna( QVector3D(0.05, -0.1, 0.0)
                                 , rear_right_rot
                                 , "rad_monopole"
-                                ,"rear_right" );
+                                ,"rear_right"
+                                , QColor(255,0,0,120));
     m_antennas.append( antenna );
 
     reset();

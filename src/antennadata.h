@@ -41,13 +41,14 @@ public slots:
 class Antenna
 {
 public:
-    explicit Antenna(QVector3D pos, QQuaternion rot, QString m_type, QString m_name);
+    explicit Antenna(QVector3D pos, QQuaternion rot, QString m_type, QString m_name, QColor color);
     ~Antenna();
 
     QVector3D   m_pos;
     QQuaternion m_rotation;
     QString     m_type;
     QString     m_name;
+    QColor      m_color;
 
     QVector<AntennaDataPoint*>                  m_antenna_data;
     QExplicitlySharedDataPointer<RadPatternSet> m_rad_pattern;

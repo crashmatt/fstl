@@ -1,5 +1,4 @@
 #include "radpatterndata.h"
-#include "vertex.h"
 #include "mesh.h"
 
 #define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
@@ -183,12 +182,23 @@ Mesh* RadPatternSet::create_mesh()
         index += 6;
     }
 
+    std::vector<GLuint> indices;
+    make_indices(indices);
+
+    Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
+    return mesh;
+}
+
+
+void RadPatternSet::make_indices(std::vector<GLuint>& indices)
+{
     const int theta_cnt = thetas.size();
     const int phi_cnt = phis.size();
     int tri_count = (theta_cnt-1) * (phi_cnt-1) * 2;
-    std::vector<GLuint> indices(tri_count*3);
 
-    index = 0;
+    indices.resize(tri_count*3);
+
+    int index = 0;
     uint index00, index01, index11, index10;
     for(int t=0; t<(theta_cnt-1); t++){
         for(int p=0; p<(phi_cnt-1); p++){
@@ -205,12 +215,7 @@ Mesh* RadPatternSet::create_mesh()
             index +=6;
         }
     }
-
-    Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
-    return mesh;
 }
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -10,6 +10,8 @@
 #include <QExplicitlySharedDataPointer>
 #include <QMultiMap>
 
+#include "vertex.h"
+
 class Vertex;
 class Mesh;
 
@@ -58,6 +60,7 @@ public:
     RadPatternPoint* get_point_at_index(uint phi_index, uint theta_index);
     RadPatternPoint* nearest_point(QQuaternion rot, int phi=-1, int theta=-1);
     Mesh* create_mesh();
+    void make_indices(std::vector<GLuint>& indices);
 
 protected:
     index_id get_id(int phi, int theta);

@@ -1,5 +1,6 @@
 #include "radpatterndata.h"
 #include "vertex.h"
+#include "mesh.h"
 
 #define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
 
@@ -23,19 +24,6 @@ float RadPatternPoint::get_amplitude()
 
 Vertex RadPatternPoint::make_vertex()
 {
-//    float x_angle = degToRad(theta-90);
-//    float z_angle = degToRad(phi);
-//    float x_theta = sin(z_angle);
-//    float y_theta = cos(z_angle);
-//    float x_phi = cos(x_angle);
-//    float z_phi = sin(x_angle);
-//    float radius = get_amplitude();
-//    float x =  radius * y_theta * x_phi;
-//    float y = radius * x_theta * x_phi;
-//    float z = radius * z_phi;
-
-//    return Vertex(x, y, z, index);
-
     auto vect = rot.inverted().rotatedVector(QVector3D(1.0, 0.0, 0.0));
     vect *= get_amplitude();
     return Vertex(vect.z(), vect.y(), vect.x(), index);
@@ -175,6 +163,56 @@ RadPatternPoint* RadPatternSet::nearest_point(QQuaternion rot, int phi, int thet
 }
 
 
+Mesh* RadPatternSet::create_mesh()
+{
+    if(rad_data.isEmpty())
+        return NULL;
+
+    const int vertcount = rad_data.size();
+    std::vector<GLfloat> flat_verts(6*vertcount);
+    int index = 0;
+    for(int i=0; i<vertcount; i++){
+        Vertex vertex = rad_data[i]->make_vertex();
+        QColor color = rad_data[i]->get_color();
+        flat_verts[index] = vertex.x;
+        flat_verts[index+1] = vertex.y;
+        flat_verts[index+2] = vertex.z;
+        flat_verts[index+3] = color.redF();
+        flat_verts[index+4] = color.greenF();
+        flat_verts[index+5] = color.blueF();
+        index += 6;
+    }
+
+    const int theta_cnt = thetas.size();
+    const int phi_cnt = phis.size();
+    int tri_count = (theta_cnt-1) * (phi_cnt-1) * 2;
+    std::vector<GLuint> indices(tri_count*3);
+
+    index = 0;
+    uint index00, index01, index11, index10;
+    for(int t=0; t<(theta_cnt-1); t++){
+        for(int p=0; p<(phi_cnt-1); p++){
+            index00 = id_index_map.value(get_id(p, t).id, 0);
+            index01 = id_index_map.value(get_id(p, t+1).id, 0);
+            index11 = id_index_map.value(get_id(p+1, t+1).id, 0);
+            index10 = id_index_map.value(get_id(p+1, t).id, 0);
+            indices[index+0] = index00;
+            indices[index+1] = index01;
+            indices[index+2] = index10;
+            indices[index+3] = index01;
+            indices[index+4] = index11;
+            indices[index+5] = index10;
+            index +=6;
+        }
+    }
+
+    Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
+    return mesh;
+}
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -187,7 +225,7 @@ QExplicitlySharedDataPointer<RadPatternSet> RadPatternData::get_data(const QStri
     return pattern_data.value( pattern_name, QExplicitlySharedDataPointer<RadPatternSet>() );
 }
 
-void RadPatternData::new_pattern_data(RadPatternSet* data)
+void RadPatternData::add_pattern_data(RadPatternSet* data)
 {
     Q_ASSERT(data != NULL);
     if(pattern_data.contains(data->set_name)){

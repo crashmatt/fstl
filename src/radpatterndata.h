@@ -11,6 +11,7 @@
 #include <QMultiMap>
 
 class Vertex;
+class Mesh;
 
 class RadPatternPoint
 {
@@ -56,6 +57,7 @@ public:
     RadPatternPoint* get_point(int phi, int theta);
     RadPatternPoint* get_point_at_index(uint phi_index, uint theta_index);
     RadPatternPoint* nearest_point(QQuaternion rot, int phi=-1, int theta=-1);
+    Mesh* create_mesh();
 
 protected:
     index_id get_id(int phi, int theta);
@@ -79,7 +81,7 @@ public:
 signals:
 
 public slots:
-    void new_pattern_data(RadPatternSet* data);
+    void add_pattern_data(RadPatternSet* data);
 
 protected:
     QMap< QString, QExplicitlySharedDataPointer<RadPatternSet> > pattern_data;

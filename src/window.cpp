@@ -279,7 +279,7 @@ bool Window::load_rad_pattern(const QString& filename, const ObjectConfig& confi
             canvas, &Canvas::load_mesh, Qt::ConnectionType::BlockingQueuedConnection);
 
     connect(loader, &RadPatternLoader::got_rad_pattern,
-                rad_patterns, &RadPatternData::new_pattern_data, Qt::ConnectionType::BlockingQueuedConnection);
+                rad_patterns, &RadPatternData::add_pattern_data, Qt::ConnectionType::BlockingQueuedConnection);
 
 //    connect(loader, &Loader::error_bad_stl,
 //              this, &Window::on_bad_stl);

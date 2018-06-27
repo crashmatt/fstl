@@ -24,7 +24,6 @@ public:
 
 protected:
     RadPatternSet* load_rad_pattern();
-    Mesh* create_mesh(RadPatternSet* pattern);
     RadPatternPoint* point_from_line(QObject* parent, QByteArray &line, int index);
 
 signals:

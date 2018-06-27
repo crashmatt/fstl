@@ -30,7 +30,7 @@ void DataProcessor::process_data(Antenna *antenna)
         datapt->m_visibility = datapt->m_color_visibility / max_vis;
     }
 
-//    build_antenna_visibility_object(antenna);
+    build_antenna_visibility_object(antenna);
 //    build_antenna_effective_object(data, config);
 }
 

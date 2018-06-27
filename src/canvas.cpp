@@ -72,6 +72,10 @@ void Canvas::load_mesh(Mesh* m, const ObjectConfig &config)
         new_mesh = new GLColorMesh(m);
     }
 
+//    if(config.m_show_order == -1){
+
+//    }
+
     QVector3D lower(m->xmin(), m->ymin(), m->zmin());
     QVector3D upper(m->xmax(), m->ymax(), m->zmax());
     center = QVector3D(0.0, 0.0, 0.0);

@@ -47,7 +47,8 @@ void DataProcessor::build_antenna_visibility_object(Antenna *antenna)
     int vect_index = 0;
     foreach(datapt , antenna->m_antenna_data){
         Q_ASSERT(datapt != NULL);
-        auto vect = datapt->m_rot.inverted().rotatedVector(QVector3D(1.0, 0.0, 0.0)) * datapt->m_visibility;
+//        auto vect = datapt->m_rot.inverted().rotatedVector(QVector3D(1.0, 0.0, 0.0)) * datapt->m_visibility;
+        auto vect = datapt->m_rot.inverted().rotatedVector(QVector3D(0.0, 1.0, 0.0)) * datapt->m_visibility;
         flat_verts[vect_index] =  vect.x();
         flat_verts[vect_index+1] = vect.y();
         flat_verts[vect_index+2] = vect.z();
@@ -58,9 +59,12 @@ void DataProcessor::build_antenna_visibility_object(Antenna *antenna)
         vect_index += 6;
     }
 
-    int tri_count = antenna->m_antenna_data.size() * 2;
+//    int tri_count = antenna->m_antenna_data.size() * 2;
     // This vector will store triangles as sets of 3 indices
-    std::vector<GLuint> indices(tri_count*3);
+    std::vector<GLuint> indices;
+
+    auto pattern = antenna->m_rad_pattern.data();
+    pattern->make_indices(indices);
 
 //    index = 0;
 //    uint index00, index01, index11, index10;
@@ -98,12 +102,12 @@ void DataProcessor::build_antenna_visibility_object(Antenna *antenna)
 //        }
 //    }
 
-//    Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
-//    QString name = QString("ant_vis%1").arg(data.index());
+    Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
+    QString name = QString("ant_vis_%1").arg(antenna->m_name);
 
-//    auto mesh_config = ObjectConfig(config.m_name, "visi", QColor(255,0,0,128), 20+data.index());
-//    emit built_mesh(mesh, mesh_config);
-//    emit set_obj_pos(name, config.m_pos);
+    auto mesh_config = ObjectConfig(antenna->m_name, "visi", QColor(255,0,0,128), 20);
+    emit built_mesh(mesh, mesh_config);
+    emit set_obj_pos(name, antenna->m_pos);
 }
 
 

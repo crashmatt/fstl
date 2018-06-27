@@ -11,22 +11,28 @@ TestPattern::TestPattern(QObject *parent, RadPatternData* rad_patterns) : QObjec
   , m_high_speed(false)
   , m_rad_patterns(rad_patterns)
 {
-//    m_antenna_configs.append( AntennaConfig( QVector3D(0.00, 0.35, 0.05)
-//                                             ,QVector3D(0.0, 0.0, 0.0)
-//                                             ,"rad_monopole"
-//                                             ,"cockpit" ) );      //Antenna just behind cockpit cover
+//    //Antenna just behind cockpit cover
+//    const QQuaternion cockpit_rot = QQuaternion();
+//    auto cp_antenna = new Antenna( QVector3D(0.00, 0.35, 0.05)
+//                                , cockpit_rot
+//                                , "rad_monopole"
+//                                ,"rear_right"
+//                                , QColor(0,255,0,120) );
 
+//    m_antennas.append( cp_antenna );
+
+    //Antenna on side behind wing
     const QQuaternion rear_right_rot =
             QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) *
             QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), 135);
+//    const QQuaternion rear_right_rot = QQuaternion();
 
-    //Antenna on side behind wing
-    auto antenna = new Antenna( QVector3D(0.05, -0.1, 0.0)
+    auto rr_antenna = new Antenna( QVector3D(0.05, -0.1, 0.0)
                                 , rear_right_rot
                                 , "rad_monopole"
-                                ,"rear_right"
+                                , "rear_right"
                                 , QColor(255,0,0,120));
-    m_antennas.append( antenna );
+    m_antennas.append( rr_antenna );
 
     reset();
 }
@@ -83,7 +89,7 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
     auto radpt = pattern->rad_data[m_test_index];
     Q_ASSERT(radpt != NULL);
 
-    m_rotation = antenna->m_rotation * radpt->rot;
+    m_rotation = radpt->rot.inverted() * antenna->m_rotation.inverted();
 
     emit set_rotation(m_rotation, m_test_index);
     emit redraw();

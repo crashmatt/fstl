@@ -406,8 +406,8 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
     if (event->buttons() & Qt::LeftButton)
     {
         QQuaternion delta_rot =
-                (QQuaternion::fromAxisAndAngle(0.0, 1.0, 0.0, d.x())) *
-                (QQuaternion::fromAxisAndAngle(1.0, 0.0, 0.0, -d.y()));
+                (QQuaternion::fromAxisAndAngle(0.0, 1.0, 0.0, -d.x())) *
+                (QQuaternion::fromAxisAndAngle(1.0, 0.0, 0.0, d.y()));
         view_rotation = view_rotation * delta_rot;
         update();
     } else if (event->buttons() & Qt::RightButton)

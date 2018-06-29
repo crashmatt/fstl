@@ -5,7 +5,6 @@
 
 TestPattern::TestPattern(QObject *parent, RadPatternData* rad_patterns) : QObject(parent)
   , m_pattern_running(false)
-  , m_rotation()
   , m_ant_pos_index(-1)
   , m_test_index(-1)
   , m_high_speed(false)
@@ -87,15 +86,11 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
     auto radpt = pattern->rad_data[m_test_index];
     Q_ASSERT(radpt != NULL);
 
-    m_rotation =  antenna->m_rotation * radpt->rot;
-    m_rotation.setVector(m_rotation.vector() * -1.0);
-//    m_rotation.setX(-m_rotation.x());
-//    m_rotation.setY(-m_rotation.y());
-//    m_rotation.setZ(-m_rotation.z());
-//    m_rotation.setScalar(-m_rotation.scalar());
-//    m_rotation.normalize();
+    //get rotation and mirror it to look in the opposite direction.
+    auto new_rotation =  antenna->m_rotation * radpt->rot;
+    new_rotation.setVector(new_rotation.vector() * -1.0);
 
-    emit set_rotation(m_rotation, m_test_index);
+    emit set_rotation(new_rotation, m_test_index);
     emit redraw();
 }
 
@@ -120,12 +115,12 @@ void TestPattern::reset()
 
     emit set_zoom(16.0);
     set_antenna_pos_to_index(0);
-    m_rotation = QQuaternion();
+    auto rotation = QQuaternion();
 
     QString vis_pattern = "rad*";
     emit set_object_visible(vis_pattern, false);
 
-    emit set_rotation(m_rotation, -1);
+    emit set_rotation(rotation, -1);
     emit redraw();
 }
 
@@ -144,7 +139,6 @@ void TestPattern::start_pattern(void)
         m_pattern_running = true;
         reset();
         emit set_view_pos( m_antennas[m_ant_pos_index]->m_pos );
-        emit set_rotation(m_rotation, -1);
         emit redraw();
     }
 }

@@ -22,7 +22,6 @@ public:
 
 protected:
     bool                m_pattern_running;
-    QQuaternion         m_rotation;
     QList<Antenna*>     m_antennas;
     int                 m_ant_pos_index;
     int                 m_test_index;

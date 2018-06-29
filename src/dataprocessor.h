@@ -16,18 +16,13 @@ public:
 
 protected:
     void build_antenna_visibility_object(Antenna *antenna);
-//    void build_antenna_effective_object(AntennaData &data, const Antenna &config);
-
-//    RadPatternData* m_patterns;
-
-//    float get_rad_intensity(RadPatternSet* pattern, AntennaDataPoint* antpt);
+    void build_antenna_effective_object(Antenna *antenna);
 
 signals:
     void built_mesh(Mesh* m, const ObjectConfig& config);
     void set_obj_pos(const QString& obj_name, const QVector3D& pos);
 
 public slots:
-//    void process_data(AntennaData &data, Antenna &config);
     void process_data(Antenna *antenna);
 };
 

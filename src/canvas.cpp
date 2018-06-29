@@ -351,7 +351,7 @@ void Canvas::draw_obj(GLObject* gl_obj)
 QMatrix4x4 Canvas::transform_matrix(QVector3D offset, QQuaternion obj_rotation) const
 {
     QMatrix4x4 m;
-    auto rot = QQuaternion::fromAxisAndAngle(1.0, 0.0, 0.0, -90) * view_rotation * obj_rotation;
+    auto rot = view_rotation; //QQuaternion::fromAxisAndAngle(1.0, 0.0, 0.0, -90) * view_rotation * obj_rotation;
     rot.normalize();
     m.rotate(rot);
     m.scale(scale, scale, scale);

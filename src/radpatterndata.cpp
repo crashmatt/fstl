@@ -12,8 +12,7 @@ RadPatternPoint::RadPatternPoint(int i, float t, float p, float v, float h, floa
   , index(i)
   , rot()
 {
-    rot =   QQuaternion::fromAxisAndAngle(0.0, 0.0, 1.0, theta) *
-            QQuaternion::fromAxisAndAngle(1.0, 0.0, 0.0, phi);
+    rot =   QQuaternion::fromAxisAndAngle(0.0, 0.0, 1.0, phi) * QQuaternion::fromAxisAndAngle(1.0, 0.0, 0.0, theta);
 };
 
 float RadPatternPoint::get_amplitude()
@@ -23,9 +22,9 @@ float RadPatternPoint::get_amplitude()
 
 Vertex RadPatternPoint::make_vertex()
 {
-    auto vect = rot.inverted().rotatedVector(QVector3D(1.0, 0.0, 0.0));
+    auto vect = rot.rotatedVector(QVector3D(0.0, 0.0, -1.0));
     vect *= get_amplitude();
-    return Vertex(vect.z(), vect.y(), vect.x(), index);
+    return Vertex(vect.x(), vect.y(), vect.z(), index);
 }
 
 QColor RadPatternPoint::get_color()
@@ -117,49 +116,31 @@ RadPatternPoint* RadPatternSet::get_point_at_index(uint phi_index, uint theta_in
     return rad_data[id_index_map.value(id.id, NULL)];
 }
 
-RadPatternPoint* RadPatternSet::nearest_point(QQuaternion rot, int phi, int theta)
-{
-    Q_UNUSED(phi)
-    Q_UNUSED(theta)
+//RadPatternPoint* RadPatternSet::nearest_point(QQuaternion rot, int phi, int theta)
+//{
+//    Q_UNUSED(phi)
+//    Q_UNUSED(theta)
 
-    if(rad_data.isEmpty()) return NULL;
-    double nearest_dist = 1000;
-    RadPatternPoint* nearest = rad_data[0];
-    const auto vect = rot.inverted().rotatedVector(QVector3D(0.0, 1.0, 0.0));
+//    if(rad_data.isEmpty()) return NULL;
+//    double nearest_dist = 1000;
+//    RadPatternPoint* nearest = rad_data[0];
+//    const auto vect = rot.inverted().rotatedVector(QVector3D(0.0, 1.0, 0.0));
 
-    foreach(RadPatternPoint* pt, rad_data){
-        auto ptvect = pt->rot.inverted().rotatedVector(QVector3D(1.0, 0.0, 0.0));
-//        auto rotdiff = rot * pt->rot.inverted();
-//        auto vectdiff = rotdiff.rotatedVector(QVector3D(0.0, 0.0, 1.0));
-        auto diffs = (ptvect - vect);
-        diffs *= diffs;
-        auto diff = diffs.length();
-        if(diff < nearest_dist){
-            nearest_dist = diff;
-            nearest = pt;
-        }
-    }
+//    foreach(RadPatternPoint* pt, rad_data){
+//        auto ptvect = pt->rot.inverted().rotatedVector(QVector3D(1.0, 0.0, 0.0));
+////        auto rotdiff = rot * pt->rot.inverted();
+////        auto vectdiff = rotdiff.rotatedVector(QVector3D(0.0, 0.0, 1.0));
+//        auto diffs = (ptvect - vect);
+//        diffs *= diffs;
+//        auto diff = diffs.length();
+//        if(diff < nearest_dist){
+//            nearest_dist = diff;
+//            nearest = pt;
+//        }
+//    }
 
-    return nearest;
-//    auto phi_min = phis[0];
-//    auto theta_min = thetas[0];
-//    auto phi_max = phis.last();
-//    auto theta_max = thetas.last();
-//    auto delta_phi = phi_max - phi_min;
-//    auto delta_theta = theta_max - theta_min;
-
-//    auto phi_point = (phi - phi_min) / delta_phi;
-//    auto theta_point = (theta - theta_min) / delta_theta;
-
-//    phi_point *= (float) phis.count();
-//    theta_point *= (float) thetas.count();
-
-//    int phi_index = floor(phi_point + 0.5);
-//    int theta_index = floor(theta_point + 0.5);
-
-//    const auto id = get_id(phi_index, theta_index);
-//    return index_point_map[id.id];
-}
+//    return nearest;
+//}
 
 
 Mesh* RadPatternSet::create_mesh()
@@ -200,8 +181,8 @@ void RadPatternSet::make_indices(std::vector<GLuint>& indices)
 
     int index = 0;
     uint index00, index01, index11, index10;
-    for(int t=0; t<(theta_cnt-1); t++){
-        for(int p=0; p<(phi_cnt-1); p++){
+    for(int p=0; p<(phi_cnt-1); p++){
+        for(int t=0; t<(theta_cnt-1); t++){
             index00 = id_index_map.value(get_id(p, t).id, 0);
             index01 = id_index_map.value(get_id(p, t+1).id, 0);
             index11 = id_index_map.value(get_id(p+1, t+1).id, 0);

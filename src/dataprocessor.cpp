@@ -91,10 +91,10 @@ void DataProcessor::build_antenna_effective_object(Antenna *antenna)
     foreach(auto datapt , antenna->m_antenna_data){
         Q_ASSERT(datapt != NULL);
         vect_index = index * 6;
+        auto rad_strength = pattern->rad_data[index]->get_amplitude();
         auto radpt = pattern->rad_data.at(index);
         auto rot = antenna->m_rotation * radpt->rot;
 //        auto rot = pattern->rad_data[index]->rot;
-        auto rad_strength = pattern->rad_data[index]->get_amplitude();
         auto vect = rot.rotatedVector(QVector3D(0.0, 0.0, -1.0)) * rad_strength * datapt->m_visibility;
         flat_verts[vect_index] =  vect.x();
         flat_verts[vect_index+1] = vect.y();

@@ -88,7 +88,6 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
 
     //get rotation and mirror it to look in the opposite direction.
     auto new_rotation =  antenna->m_rotation * radpt->rot;
-    new_rotation.setVector(new_rotation.vector() * -1.0);
 
     emit set_rotation(new_rotation, m_test_index);
     emit redraw();

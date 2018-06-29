@@ -292,7 +292,7 @@ void Canvas::paintGL()
 
     QVector3D euler = view_rotation.toEulerAngles();
 
-    status = QString("RGB:%1,%2,%3 px:%4 gh:%5 zm:%6 tilt:%7 roll:%8 yaw:%9 fps:%10")
+    status = QString("RGB:%1,%2,%3 px:%4 gh:%5 zm:%6 x:%7 y:%8 z:%9 fps:%10")
             .arg(pick_col[0],2,16, QChar('0')).toUpper()
             .arg(pick_col[1],2,16, QChar('0')).toUpper()
             .arg(pick_col[2],2,16, QChar('0')).toUpper()
@@ -354,7 +354,7 @@ QMatrix4x4 Canvas::transform_matrix(QVector3D offset, QQuaternion obj_rotation) 
     QMatrix4x4 m;
     auto vr = view_rotation;
     vr.setVector(view_rotation.vector() * -1.0);
-    auto rot = vr * obj_rotation; //QQuaternion::fromAxisAndAngle(1.0, 0.0, 0.0, -90) * view_rotation
+    auto rot = vr * obj_rotation;
     rot.normalize();
     m.rotate(rot);
     m.scale(scale, scale, scale);
@@ -415,7 +415,6 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
         view_rotation  = view_rotation * QQuaternion::fromAxisAndAngle(0.0, 0.0, 1.0, -d.x());
         update();
     }
-
     mouse_pos = p;
 }
 

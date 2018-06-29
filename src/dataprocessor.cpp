@@ -8,6 +8,7 @@
 #define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
 
 DataProcessor::DataProcessor(QObject *parent) : QObject(parent)
+  , m_sequence(20)
 {
 
 }
@@ -69,7 +70,7 @@ void DataProcessor::build_antenna_visibility_object(Antenna *antenna)
     Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
     QString name = QString("ant_vis_%1").arg(antenna->m_name);
 
-    auto mesh_config = ObjectConfig(name, "visi", antenna->m_color, 20);
+    auto mesh_config = ObjectConfig(name, "visi", antenna->m_color, m_sequence++);
     mesh_config.m_offset = antenna->m_pos;
     emit built_mesh(mesh, mesh_config);
 }
@@ -108,7 +109,7 @@ void DataProcessor::build_antenna_effective_object(Antenna *antenna)
     Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
     QString name = QString("ant_eff_%1").arg(antenna->m_name);
 
-    auto mesh_config = ObjectConfig(name, "visi", antenna->m_color, 21);
+    auto mesh_config = ObjectConfig(name, "visi", antenna->m_color, m_sequence++);
     mesh_config.m_offset = antenna->m_pos;
     emit built_mesh(mesh, mesh_config);
 }

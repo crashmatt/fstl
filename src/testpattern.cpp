@@ -10,14 +10,14 @@ TestPattern::TestPattern(QObject *parent, RadPatternData* rad_patterns) : QObjec
   , m_high_speed(false)
   , m_rad_patterns(rad_patterns)
 {
-//    //Antenna just behind cockpit cover
-//    const QQuaternion cockpit_rot = QQuaternion();
-//    auto cp_antenna = new Antenna( QVector3D(0.00, 0.35, 0.05)
-//                                , cockpit_rot
-//                                , "rad_monopole"
-//                                ,"rear_right"
-//                                , QColor(0,255,0,120) );
-//    m_antennas.append( cp_antenna );
+    //Antenna just behind cockpit cover
+    const QQuaternion cockpit_rot = QQuaternion();
+    auto cp_antenna = new Antenna( QVector3D(0.00, 0.35, 0.05)
+                                , cockpit_rot
+                                , "rad_monopole"
+                                ,"cockpit"
+                                , QColor(0,255,0,120) );
+    m_antennas.append( cp_antenna );
 
     //Antenna on side behind wing
     const QQuaternion rear_right_rot =
@@ -64,23 +64,26 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
     Q_ASSERT(pattern != NULL);
 
     if(m_test_index >= pattern->rad_data.size()){
-//        if(m_ant_pos_index >= m_antennas.size()-1) {
-//            m_ant_pos_index = 0;
-//            foreach(data, m_antennas){
-//                emit antenna_data(*data, m_antenna_configs[m_ant_pos_index]);
-//                m_ant_pos_index++;
-//            }
-            emit antenna_data(m_antennas[m_ant_pos_index]);
+        if(m_ant_pos_index >= m_antennas.size()-1) {
+            m_ant_pos_index = 0;
+            foreach(antenna, m_antennas){
+                emit antenna_data(m_antennas[m_ant_pos_index]);
+                m_ant_pos_index++;
+            }
 
             m_ant_pos_index = -1;
             m_test_index = -1;
             m_pattern_running = false;
             emit test_completed();
             return;
-//        } else {
-//            set_antenna_pos_to_index(m_ant_pos_index+1);
-//            m_test_index = 0;
-//        }
+        } else {
+            set_antenna_pos_to_index(m_ant_pos_index+1);
+            antenna = m_antennas[m_ant_pos_index];
+            Q_ASSERT(antenna != NULL);
+            pattern = antenna->m_rad_pattern.data();
+            Q_ASSERT(pattern != NULL);
+            m_test_index = 0;
+        }
     }
 
     auto radpt = pattern->rad_data[m_test_index];

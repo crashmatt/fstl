@@ -161,7 +161,8 @@ void Canvas::delete_globject(const QString& obj_name)
 {
     QRegExp exp(obj_name);
     foreach(QString name, obj_name_map.keys()){
-        if(exp.indexIn(name) != -1){
+        auto index = exp.indexIn(name);
+        if(index != -1){
             GLObject *obj = obj_name_map.value(name);
             int index = obj_map.key(obj);
             obj_map.remove(index);
@@ -351,7 +352,7 @@ void Canvas::draw_obj(GLObject* gl_obj)
 QMatrix4x4 Canvas::transform_matrix(QVector3D offset, QQuaternion obj_rotation) const
 {
     QMatrix4x4 m;
-    auto rot = view_rotation; //QQuaternion::fromAxisAndAngle(1.0, 0.0, 0.0, -90) * view_rotation * obj_rotation;
+    auto rot = view_rotation * obj_rotation; //QQuaternion::fromAxisAndAngle(1.0, 0.0, 0.0, -90) * view_rotation
     rot.normalize();
     m.rotate(rot);
     m.scale(scale, scale, scale);

@@ -87,7 +87,7 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
     auto radpt = pattern->rad_data[m_test_index];
     Q_ASSERT(radpt != NULL);
 
-    m_rotation = radpt->rot; //* antenna->m_rotation.inverted();
+    m_rotation =  antenna->m_rotation * radpt->rot;
     m_rotation.setVector(m_rotation.vector() * -1.0);
 //    m_rotation.setX(-m_rotation.x());
 //    m_rotation.setY(-m_rotation.y());
@@ -110,6 +110,8 @@ void TestPattern::reset()
 {
     QString del_pattern("ant_vis*");
     emit delete_object(del_pattern);
+    del_pattern = "ant_eff*";
+    emit delete_object(del_pattern);
 
     //Delete any previous antenna data
     foreach(auto antenna, m_antennas){
@@ -119,9 +121,6 @@ void TestPattern::reset()
     emit set_zoom(16.0);
     set_antenna_pos_to_index(0);
     m_rotation = QQuaternion();
-
-    QString name = "ant_vis*";
-    emit set_object_visible(name, false);
 
     QString vis_pattern = "rad*";
     emit set_object_visible(vis_pattern, false);
@@ -166,19 +165,22 @@ bool TestPattern::set_antenna_pos_to_index(int index)
 
         QString name = "antenna";
         emit set_obj_pos(name, pos);
+
+        auto rad_rot = QQuaternion();
+        QString rad_name = "rad_*";
+        emit set_obj_rotation( rad_name, rad_rot);
+        emit set_obj_pos( rad_name, pos);
+
         return false;
     } else {
         m_ant_pos_index = index;
-//        if(!m_pattern_running){
-//            Antenna* antenna = m_antennas[m_ant_pos_index];
-//            Q_ASSERT(antenna != NULL);
-//            auto pattern = antenna->m_rad_pattern.data();
-//            if(pattern != NULL){
-//                auto rad_name = antenna->m_rad_pattern.data()->set_name;
-//                emit set_obj_rotation( rad_name, antenna->m_rotation);
-//                emit set_obj_pos( rad_name, antenna->m_pos);
-//            }
-//        }
+        if(!m_pattern_running){
+            Antenna* antenna = m_antennas[m_ant_pos_index];
+            Q_ASSERT(antenna != NULL);
+            QString rad_name = "rad_*";
+            emit set_obj_rotation( rad_name, antenna->m_rotation);
+            emit set_obj_pos( rad_name, antenna->m_pos);
+        }
     }
     QString name = "antenna";
     QVector3D antenna_offset = m_antennas[m_ant_pos_index]->m_pos;

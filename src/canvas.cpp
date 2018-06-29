@@ -406,31 +406,16 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
     if (event->buttons() & Qt::LeftButton)
     {
         QQuaternion delta_rot =
-                (QQuaternion::fromAxisAndAngle(0.0, 0.0, 1.0, d.x())) *
-                (QQuaternion::fromAxisAndAngle(1.0, 0.0, 0.0, d.y()));
+                (QQuaternion::fromAxisAndAngle(0.0, 1.0, 0.0, d.x())) *
+                (QQuaternion::fromAxisAndAngle(1.0, 0.0, 0.0, -d.y()));
         view_rotation = view_rotation * delta_rot;
-//        view_rotation = rot;
-//        QMatrix4x4 m;
-//        m.rotate(d.x(), QVector3D(0.0, 0.0, 1.0));
-//        m.rotate(d.y(), QVector3D(1.0, 0.0, 0.0));
-//        view_rotation = view_rotation * m;
-//        yaw = fmod(yaw - d.x(), 360);
-//        tilt = fmod(tilt - d.y(), 360);
         update();
     } else if (event->buttons() & Qt::RightButton)
     {
-        view_rotation  = view_rotation * QQuaternion::fromAxisAndAngle(0.0, 1.0, 0.0, d.x());
-//        roll = fmod(roll + d.x(), 360);
+        view_rotation  = view_rotation * QQuaternion::fromAxisAndAngle(0.0, 0.0, 1.0, -d.x());
         update();
     }
-//    else if (event->buttons() & Qt::RightButton)
-//    {
-//        center = transform_matrix().inverted() *
-//                 view_matrix().inverted() *
-//                 QVector3D(-d.x() / (0.5*width()),
-//                            d.y() / (0.5*height()), 0);
-//        update();
-//    }
+
     mouse_pos = p;
 }
 

@@ -22,7 +22,8 @@ SOURCES += \
     ../src/dataprocessor.cpp \
     ../src/glcolormesh.cpp \
     ../src/radpatternloader.cpp \
-    ../src/radpatterndata.cpp
+    ../src/radpatterndata.cpp \
+    ../src/glradpatternmesh.cpp
 
 HEADERS  += \
     ../src/app.h\
@@ -38,7 +39,8 @@ HEADERS  += \
     ../src/dataprocessor.h \
     ../src/glcolormesh.h \
     ../src/radpatternloader.h \
-    ../src/radpatterndata.h
+    ../src/radpatterndata.h \
+    ../src/glradpatternmesh.h
 
 CONFIG += c++11
 

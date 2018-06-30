@@ -10,5 +10,7 @@
         <file>antenna.vert</file>
         <file>visi.frag</file>
         <file>visi.vert</file>
+        <file>radpattern.vert</file>
+        <file>radpattern.frag</file>
     </qresource>
 </RCC>

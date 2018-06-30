@@ -216,6 +216,11 @@ void Canvas::initializeGL()
     visi_shader.link();
     shader_map["visi"] =  &visi_shader;
 
+    visi_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/radpattern.vert");
+    visi_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/radpattern.frag");
+    visi_shader.link();
+    shader_map["radpattern"] =  &visi_shader;
+
 //    antenna_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/antenna.vert");
 //    antenna_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/antenna.frag");
 //    antenna_shader.link();
@@ -331,12 +336,6 @@ void Canvas::draw_obj(GLObject* gl_obj)
 
     // Compensate for z-flattening when zooming
     glUniform1f(shader->uniformLocation("zoom"), 1/zoom);
-
-
-
-//    // Find and enable the attribute location for color position
-//    const GLuint vc = shader->attributeLocation("vertex_color");
-//    glEnableVertexAttribArray(vc);
 
     // Then draw the mesh with that vertex position
     mesh->draw(shader);

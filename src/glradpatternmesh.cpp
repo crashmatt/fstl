@@ -29,12 +29,15 @@ void GLRadPatternMesh::draw(QOpenGLShaderProgram* shader)
 
     glVertexAttribPointer(vp, 3, GL_FLOAT, false,
                           12 * sizeof(GLfloat), 0);
+
     glVertexAttribPointer(vc, 3, GL_FLOAT, false,
                           12 * sizeof(GLfloat),
                           (GLvoid*)(3 * sizeof(GLfloat)));
+
     glVertexAttribPointer(vertical, 3, GL_FLOAT, false,
                           12 * sizeof(GLfloat),
                           (GLvoid*)(6 * sizeof(GLfloat)));
+
     glVertexAttribPointer(horizontal, 3, GL_FLOAT, false,
                           12 * sizeof(GLfloat),
                           (GLvoid*)(9 * sizeof(GLfloat)));

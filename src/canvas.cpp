@@ -8,6 +8,7 @@
 #include "mesh.h"
 #include "glmesh.h"
 #include "glcolormesh.h"
+#include "glradpatternmesh.h"
 #include "globject.h"
 
 
@@ -66,10 +67,12 @@ void Canvas::view_perspective()
 void Canvas::load_mesh(Mesh* m, const ObjectConfig &config)
 {
     GLMesh *new_mesh = NULL;
-    if(config.m_shadername != "visi"){
-        new_mesh = new GLMesh(m);
-    } else {
+    if(config.m_shadername == "visi"){
         new_mesh = new GLColorMesh(m);
+    } else if(config.m_shadername == "radpattern"){
+        new_mesh = new GLRadPatternMesh(m);
+    } else {
+        new_mesh = new GLMesh(m);
     }
 
 //    if(config.m_show_order == -1){
@@ -216,10 +219,10 @@ void Canvas::initializeGL()
     visi_shader.link();
     shader_map["visi"] =  &visi_shader;
 
-    visi_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/radpattern.vert");
-    visi_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/radpattern.frag");
-    visi_shader.link();
-    shader_map["radpattern"] =  &visi_shader;
+    radpattern_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/radpattern.vert");
+    radpattern_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/radpattern.frag");
+    radpattern_shader.link();
+    shader_map["radpattern"] =  &radpattern_shader;
 
 //    antenna_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/antenna.vert");
 //    antenna_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/antenna.frag");

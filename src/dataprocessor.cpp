@@ -67,7 +67,7 @@ void DataProcessor::build_antenna_visibility_object(Antenna *antenna)
 
     pattern->make_indices(indices);
 
-    Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 12);
+    Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
     QString name = QString("ant_vis_%1").arg(antenna->m_name);
 
     auto mesh_config = ObjectConfig(name, "visi", antenna->m_color, m_sequence++);
@@ -81,7 +81,7 @@ void DataProcessor::build_antenna_effective_object(Antenna *antenna)
     RadPatternSet* pattern = antenna->m_rad_pattern.data();
     Q_ASSERT(pattern != NULL);
 
-    std::vector<GLfloat> flat_verts(4 * 3 * antenna->m_antenna_data.size());
+    std::vector<GLfloat> flat_verts(12 * antenna->m_antenna_data.size());
 
     QColor viscolor = antenna->m_color;
 
@@ -96,6 +96,7 @@ void DataProcessor::build_antenna_effective_object(Antenna *antenna)
         flat_verts[vect_index] =  vect.x();
         flat_verts[vect_index+1] = vect.y();
         flat_verts[vect_index+2] = vect.z();
+
         float color_scale = datapt->m_visibility * datapt->m_visibility;
         flat_verts[vect_index+3] = color_scale * viscolor.redF();
         flat_verts[vect_index+4] = color_scale * viscolor.greenF();
@@ -114,7 +115,7 @@ void DataProcessor::build_antenna_effective_object(Antenna *antenna)
     std::vector<GLuint> indices;
     pattern->make_indices(indices);
 
-    Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
+    Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 12);
     QString name = QString("ant_eff_%1").arg(antenna->m_name);
 
     auto mesh_config = ObjectConfig(name, "radpattern", antenna->m_color, m_sequence++);

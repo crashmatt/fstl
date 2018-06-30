@@ -332,20 +332,16 @@ void Canvas::draw_obj(GLObject* gl_obj)
     // Compensate for z-flattening when zooming
     glUniform1f(shader->uniformLocation("zoom"), 1/zoom);
 
-    // Find and enable the attribute location for vertex position
-    const GLuint vp = shader->attributeLocation("vertex_position");
-    glEnableVertexAttribArray(vp);
 
-    // Find and enable the attribute location for color position
-    const GLuint vc = shader->attributeLocation("vertex_color");
-    glEnableVertexAttribArray(vc);
+
+//    // Find and enable the attribute location for color position
+//    const GLuint vc = shader->attributeLocation("vertex_color");
+//    glEnableVertexAttribArray(vc);
 
     // Then draw the mesh with that vertex position
-    mesh->draw(vp, vc);
+    mesh->draw(shader);
 
     // Clean up state machine
-    glDisableVertexAttribArray(vp);
-    glDisableVertexAttribArray(vc);
     shader->release();
 }
 

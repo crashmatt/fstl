@@ -5,8 +5,16 @@ GLColorMesh::GLColorMesh(const Mesh* const mesh) : GLMesh(mesh)
 {
 }
 
-void GLColorMesh::draw(GLuint vp, GLuint vc)
+void GLColorMesh::draw(QOpenGLShaderProgram* shader)
 {
+    // Find and enable the attribute location for vertex position
+    const GLuint vp = shader->attributeLocation("vertex_position");
+    glEnableVertexAttribArray(vp);
+
+    // Find and enable the attribute location for color position
+    const GLuint vc = shader->attributeLocation("vertex_color");
+    glEnableVertexAttribArray(vc);
+
     vertices.bind();
     indices.bind();
 
@@ -21,4 +29,8 @@ void GLColorMesh::draw(GLuint vp, GLuint vc)
 
     indices.release();
     vertices.release();
+
+    // Clean up state machine
+    glDisableVertexAttribArray(vp);
+    glDisableVertexAttribArray(vc);
 }

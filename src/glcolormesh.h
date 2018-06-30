@@ -7,7 +7,7 @@ class GLColorMesh : public GLMesh
 {
 public:
     GLColorMesh(const Mesh* const mesh);
-    void draw(GLuint vp, GLuint vc);
+    void draw(QOpenGLShaderProgram* shader);
 
 protected:
     QOpenGLBuffer colors;

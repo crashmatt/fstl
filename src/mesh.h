@@ -31,6 +31,7 @@ protected:
 
     friend class GLMesh;
     friend class GLColorMesh;
+    friend class GLRadPatternMesh;
 };
 
 #endif // MESH_H

@@ -8,7 +8,7 @@ uniform mat4 transform_matrix;
 uniform mat4 view_matrix;
 uniform float zoom;
 
-varying vec3 frag_color;
+varying vec4 frag_color;
 
 void main() {
     mat4 matrix = view_matrix * transform_matrix;
@@ -17,7 +17,9 @@ void main() {
     vec4 horiz = matrix * vec4(vertical, 1.0);
     float vert_color    = abs( (vert.y+horiz.y) * zoom * 2.0);
     float horiz_color   = abs( (vert.x+horiz.x) * zoom * 2.0);
-    frag_color = vec3(vert_color, horiz_color, 0.0);
-
-//    frag_color = abs(vertex_color * vert.y * zoom * 2.0);
+    vec2 color_vect;
+    color_vect[0] = vert_color;
+    color_vect[1] = horiz_color;
+    float transparency = length(color_vect) * 0.75;
+    frag_color = vec4(vert_color, horiz_color, 0.0, transparency);
 }

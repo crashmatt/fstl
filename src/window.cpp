@@ -56,7 +56,8 @@ Window::Window(QWidget *parent) :
     connect(test_pattern, &TestPattern::antenna_data, data_processor, &DataProcessor::process_data);
     connect(test_pattern, &TestPattern::delete_object, canvas, &Canvas::delete_globject);
 
-    connect(canvas, &Canvas::loaded_object, this, &Window::loaded_object);
+    connect(canvas, &Canvas::loaded_object, this, &Window::add_object);
+    connect(canvas, &Canvas::deleted_object, this, &Window::remove_object);
 
     connect(data_processor, &DataProcessor::built_mesh, canvas, &Canvas::load_mesh);
     connect(data_processor, &DataProcessor::set_obj_pos, canvas, &Canvas::set_object_pos);
@@ -223,7 +224,7 @@ void Window::object_visible(QAction* a)
 }
 
 
-void Window::loaded_object(const QString &obj_name)
+void Window::add_object(const QString &obj_name)
 {
     auto list = objects_visibility->actions();
     foreach(QAction* a, list){
@@ -241,6 +242,16 @@ void Window::loaded_object(const QString &obj_name)
     visibility->addAction(a);
 }
 
+void Window::remove_object(const QString &obj_name)
+{
+    auto actions = visibility->actions();
+    foreach(auto action, actions){
+        if(action->text() == obj_name){
+            visibility->removeAction(action);
+            delete action;
+        }
+    }
+}
 
 
 bool Window::load_stl(const QString& filename, const ObjectConfig& config)

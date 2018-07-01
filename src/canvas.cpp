@@ -170,6 +170,7 @@ void Canvas::delete_globject(const QString& obj_name)
             int index = obj_map.key(obj);
             obj_map.remove(index);
             obj_name_map.remove(name);
+            deleted_object(name);
             delete obj;
         }
     }

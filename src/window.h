@@ -34,7 +34,8 @@ public slots:
     void visibility_visibile(bool visible);
     void rad_pattern_visibile(bool visible);
     void object_visible(QAction* a);
-    void loaded_object(const QString &obj_name);
+    void add_object(const QString &obj_name);
+    void remove_object(const QString &obj_name);
 
 signals:
     void set_object_visible(QString& obj_name, bool visible);

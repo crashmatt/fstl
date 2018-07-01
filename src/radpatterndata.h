@@ -23,6 +23,8 @@ public:
     Vertex make_vertex();
     QColor get_color();
     float get_amplitude();
+    float get_vertical();
+    float get_horizontal();
 
     const float theta;
     const float phi;

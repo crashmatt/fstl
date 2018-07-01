@@ -90,24 +90,28 @@ void DataProcessor::build_antenna_effective_object(Antenna *antenna)
     foreach(auto datapt , antenna->m_antenna_data){
         Q_ASSERT(datapt != NULL);
         vect_index = index * 12;
-        auto rad_strength = pattern->rad_data[index]->get_amplitude();
+        auto rad = pattern->rad_data[index];
+        Q_ASSERT(rad != NULL);
+        auto rad_strength = rad->get_amplitude();
+
         auto rot = datapt->m_rot;
         auto vect = rot.rotatedVector(QVector3D(0.0, 0.0, -1.0)) * rad_strength * datapt->m_visibility;
         flat_verts[vect_index] =  vect.x();
         flat_verts[vect_index+1] = vect.y();
         flat_verts[vect_index+2] = vect.z();
 
-        float color_scale = datapt->m_visibility * datapt->m_visibility;
-        flat_verts[vect_index+3] = color_scale * viscolor.redF();
-        flat_verts[vect_index+4] = color_scale * viscolor.greenF();
-        flat_verts[vect_index+5] = color_scale * viscolor.blueF();
+//        float color_scale = datapt->m_visibility * datapt->m_visibility;
+        auto color = rad->get_color();
+        flat_verts[vect_index+3] = color.redF();
+        flat_verts[vect_index+4] = color.greenF();
+        flat_verts[vect_index+5] = color.blueF();
 
-        auto vertical = rot.rotatedVector(QVector3D(0.0, 1.0, 0.0));
+        auto vertical = rot.rotatedVector(QVector3D(0.0, 1.0, 0.0)) * pattern->rad_data[index]->get_vertical();
         flat_verts[vect_index+6] = vertical.x();
         flat_verts[vect_index+7] = vertical.y();
         flat_verts[vect_index+8] = vertical.z();
 
-        auto horizontal = rot.rotatedVector(QVector3D(1.0, 0.0, 0.0));
+        auto horizontal = rot.rotatedVector(QVector3D(1.0, 0.0, 0.0)) * pattern->rad_data[index]->get_horizontal();;
         flat_verts[vect_index+9] = horizontal.x();
         flat_verts[vect_index+10] = horizontal.y();
         flat_verts[vect_index+11] = horizontal.z();

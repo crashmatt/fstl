@@ -20,6 +20,16 @@ float RadPatternPoint::get_amplitude()
     return pow(10, total*0.1);
 }
 
+float RadPatternPoint::get_vertical()
+{
+    return pow(10, ver*0.1);
+}
+
+float RadPatternPoint::get_horizontal()
+{
+    return pow(10, hor*0.1);
+}
+
 Vertex RadPatternPoint::make_vertex()
 {
     auto vect = rot.rotatedVector(QVector3D(0.0, 0.0, 1.0));

@@ -85,7 +85,7 @@ Window::Window(QWidget *parent) :
     QObject::connect(reset_test, &QAction::triggered,
                      test_pattern, &TestPattern::reset_pattern);
 
-    step_antenna->setShortcut(QKeySequence(Qt::Key_A));
+    step_antenna->setShortcut(QKeySequence(Qt::Key_N));
     QObject::connect(step_antenna, &QAction::triggered,
                      test_pattern, &TestPattern::step_antenna_pos);
 
@@ -237,7 +237,12 @@ void Window::add_object(const QString &obj_name)
 //    a->setCheckable(true);
 //    a->setChecked(true);
     a->setData(obj_name);
-    a->setShortcut(QKeySequence(Qt::Key_0+list.count()));
+    auto next = list.count();
+    if(next < 9){
+        a->setShortcut(QKeySequence(Qt::Key_0+next));
+    } else {
+        a->setShortcut(QKeySequence(Qt::Key_A+next-9));
+    }
     objects_visibility->addAction(a);
     visibility->addAction(a);
 }

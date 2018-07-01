@@ -70,7 +70,7 @@ void DataProcessor::build_antenna_visibility_object(Antenna *antenna)
     Mesh *mesh = new Mesh(std::move(flat_verts), std::move(indices), 6);
     QString name = QString("ant_vis_%1").arg(antenna->m_name);
 
-    auto mesh_config = ObjectConfig(name, "visi", antenna->m_color, m_sequence++);
+    auto mesh_config = ObjectConfig(name, "visi", antenna->m_color, m_sequence++, false);
     mesh_config.m_offset = antenna->m_pos;
     emit built_mesh(mesh, mesh_config);
 }

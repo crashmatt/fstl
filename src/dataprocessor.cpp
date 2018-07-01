@@ -102,13 +102,15 @@ void DataProcessor::build_antenna_effective_object(Antenna *antenna)
         flat_verts[vect_index+4] = color_scale * viscolor.greenF();
         flat_verts[vect_index+5] = color_scale * viscolor.blueF();
 
-        flat_verts[vect_index+6] = 0.0;
-        flat_verts[vect_index+7] = 0.0;
-        flat_verts[vect_index+8] = 1.0;
+        auto vertical = rot.rotatedVector(QVector3D(0.0, 1.0, 0.0));
+        flat_verts[vect_index+6] = vertical.x();
+        flat_verts[vect_index+7] = vertical.y();
+        flat_verts[vect_index+8] = vertical.z();
 
-        flat_verts[vect_index+9] = 0.0;
-        flat_verts[vect_index+10] = 1.0;
-        flat_verts[vect_index+11] = 0.0;
+        auto horizontal = rot.rotatedVector(QVector3D(1.0, 0.0, 0.0));
+        flat_verts[vect_index+9] = horizontal.x();
+        flat_verts[vect_index+10] = horizontal.y();
+        flat_verts[vect_index+11] = horizontal.z();
         index++;
     }
 

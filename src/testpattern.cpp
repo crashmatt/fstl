@@ -10,14 +10,14 @@ TestPattern::TestPattern(QObject *parent, RadPatternData* rad_patterns) : QObjec
   , m_high_speed(false)
   , m_rad_patterns(rad_patterns)
 {
-    //Antenna just behind cockpit cover
-    const QQuaternion cockpit_rot = QQuaternion();
-    auto cp_antenna = new Antenna( QVector3D(0.00, 0.35, 0.05)
-                                , cockpit_rot
-                                , "rad_monopole"
-                                ,"cockpit"
-                                , QColor(0,255,0,120) );
-    m_antennas.append( cp_antenna );
+//    //Antenna just behind cockpit cover
+//    const QQuaternion cockpit_rot = QQuaternion();
+//    auto cp_antenna = new Antenna( QVector3D(0.00, 0.35, 0.05)
+//                                , cockpit_rot
+//                                , "rad_monopole"
+//                                ,"cockpit"
+//                                , QColor(0,255,0,120) );
+//    m_antennas.append( cp_antenna );
 
     //Antenna on side behind wing
     const QQuaternion rear_right_rot =

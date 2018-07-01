@@ -102,9 +102,9 @@ void DataProcessor::build_antenna_effective_object(Antenna *antenna)
         flat_verts[vect_index+4] = color_scale * viscolor.greenF();
         flat_verts[vect_index+5] = color_scale * viscolor.blueF();
 
-        flat_verts[vect_index+6] = 1.0;
+        flat_verts[vect_index+6] = 0.0;
         flat_verts[vect_index+7] = 0.0;
-        flat_verts[vect_index+8] = 0.0;
+        flat_verts[vect_index+8] = 1.0;
 
         flat_verts[vect_index+9] = 0.0;
         flat_verts[vect_index+10] = 1.0;

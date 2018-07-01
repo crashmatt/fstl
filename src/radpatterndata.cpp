@@ -22,7 +22,7 @@ float RadPatternPoint::get_amplitude()
 
 Vertex RadPatternPoint::make_vertex()
 {
-    auto vect = rot.rotatedVector(QVector3D(0.0, 0.0, -1.0));
+    auto vect = rot.rotatedVector(QVector3D(0.0, 0.0, 1.0));
     vect *= get_amplitude();
     return Vertex(vect.x(), vect.y(), vect.z(), index);
 }

@@ -12,7 +12,8 @@
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
     about_action(new QAction("About", this)),
-    save_action(new QAction("Save", this)),
+    save_action(new QAction("Save antennas", this)),
+    load_action(new QAction("Load antennas", this)),
     quit_action(new QAction("Quit", this)),
     start_test(new QAction("Start test", this)),
     stop_test(new QAction("Stop test", this)),
@@ -77,6 +78,10 @@ Window::Window(QWidget *parent) :
     QObject::connect(save_action, &QAction::triggered,
                      this, &Window::save_antennas);
 
+    load_action->setShortcut(QKeySequence::Open);
+    QObject::connect(load_action, &QAction::triggered,
+                     this, &Window::load_antennas);
+
     QObject::connect(about_action, &QAction::triggered,
                      this, &Window::on_about);
 
@@ -103,6 +108,11 @@ Window::Window(QWidget *parent) :
                      test_pattern, &TestPattern::set_speed);
 
     auto file_menu = menuBar()->addMenu("File");
+    file_menu->addSeparator();
+    file_menu->addAction(load_action);
+    file_menu->addSeparator();
+    file_menu->addAction(save_action);
+    file_menu->addSeparator();
     file_menu->addAction(quit_action);
 
     fast_mode->setCheckable(true);
@@ -339,8 +349,24 @@ void Window::save_antennas()
         qWarning("Couldn't open save file.");
         return;
     }
-//    saveFile << test_pattern;
+
+    QDataStream out(&saveFile);
+    out << *test_pattern;
     saveFile.close();
+}
+
+void Window::load_antennas()
+{
+    QFile loadFile(QStringLiteral("antennas.dat"));
+
+    if (!loadFile.open(QIODevice::ReadOnly)) {
+        qWarning("Couldn't open save file.");
+        return;
+    }
+
+    QDataStream in(&loadFile);
+    in >> *test_pattern;
+    loadFile.close();
 }
 
 bool Window::save(Window::SaveFormat saveFormat) const

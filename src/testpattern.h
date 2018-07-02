@@ -20,6 +20,8 @@ public:
     explicit TestPattern(QObject *parent = 0, RadPatternData* rad_patterns = 0);
     ~TestPattern();
 
+    void add_antenna(Antenna &antenna);
+
 protected:
     bool                m_pattern_running;
     QList<Antenna*>     m_antennas;
@@ -51,6 +53,10 @@ public slots:
     void stop_pattern(void);
     void step_antenna_pos(void);
     void set_speed(bool high_speed);
+
+private:
+    friend QDataStream & operator<<(QDataStream &os, const TestPattern& p);
+    friend QDataStream & operator>>(QDataStream &os, TestPattern& p);
 };
 
 

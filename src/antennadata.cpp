@@ -1,6 +1,18 @@
 #include "antennadata.h"
 #include "radpatterndata.h"
 
+
+Antenna::Antenna()
+    : m_pos()
+    , m_rotation()
+    , m_type("none")
+    , m_name("no-name")
+    , m_color("black")
+    , m_rad_pattern()
+{
+
+}
+
 Antenna::Antenna(QVector3D pos, QQuaternion rot, QString type, QString name, QColor color)
   : m_pos(pos)
   , m_rotation(rot)
@@ -8,6 +20,18 @@ Antenna::Antenna(QVector3D pos, QQuaternion rot, QString type, QString name, QCo
   , m_name(name)
   , m_color(color)
   , m_rad_pattern()
+{
+
+}
+
+Antenna::Antenna(const Antenna& antenna)
+    : m_pos(antenna.m_pos)
+    , m_rotation(antenna.m_rotation)
+    , m_type(antenna.m_type)
+    , m_name(antenna.m_name)
+    , m_color(antenna.m_color)
+    , m_rad_pattern(antenna.m_rad_pattern)
+    , m_antenna_data(antenna.m_antenna_data)
 {
 
 }
@@ -40,12 +64,18 @@ QDataStream &operator>>(QDataStream &in, Antenna &antenna)
     QString     type;
     QString     name;
     QColor      color;
-    int         size;
     QVector<AntennaDataPoint> antenna_data;
 
-    in << pos << rotation
-        << type << name
-        << color << antenna_data;
+    in >> pos >> rotation
+        >> type >> name
+        >> color >> antenna_data;
+
+    antenna.m_pos = pos;
+    antenna.m_rotation = rotation;
+    antenna.m_type = type;
+    antenna.m_name = name;
+    antenna.m_color = color;
+    antenna.m_antenna_data = antenna_data;
 
     return in;
 }

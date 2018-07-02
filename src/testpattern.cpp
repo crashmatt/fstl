@@ -219,30 +219,41 @@ void TestPattern::set_speed(bool high_speed)
     }
 }
 
+void TestPattern::add_antenna(Antenna &antenna)
+{
+    auto pattern = m_rad_patterns->get_data(antenna.m_type);
+    if(pattern.data() == NULL) return;
+
+    antenna.m_rad_pattern = pattern;
+
+    auto new_antenna = new Antenna(antenna);
+    m_antennas.append(new_antenna);
+    antenna_data(new_antenna);
+}
 
 
 QDataStream &operator<<(QDataStream &out, const TestPattern &pattern)
 {
-//    out << antenna.m_pos << antenna.m_rotation
-//        << antenna.m_type << antenna.m_name
-//        << antenna.m_color << antenna.m_antenna_data;
+    const int count = pattern.m_antennas.size();    //pattern.antenna_count();
+    out << count;
+
+    for(int index=0; index < count; index++){
+        out << *pattern.m_antennas[index];
+    }
 
     return out;
 }
 
 QDataStream &operator>>(QDataStream &in, TestPattern &pattern)
 {
-//    QVector3D   pos;
-//    QQuaternion rotation;
-//    QString     type;
-//    QString     name;
-//    QColor      color;
-//    int         size;
-//    QVector<AntennaDataPoint> antenna_data;
+    int count;
+    Antenna antenna;
 
-//    in << pos << rotation
-//        << type << name
-//        << color << antenna_data;
+    in >> count;
 
+    for(int index=0; index<count; index++){
+        in >> antenna;
+        pattern.add_antenna(antenna);
+    }
     return in;
 }

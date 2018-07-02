@@ -52,10 +52,12 @@ private slots:
     void save_json();
     void save_bsjson();
     void save_antennas();
+    void load_antennas();
 
 private:
     QAction* const about_action;
     QAction* const save_action;
+    QAction* const load_action;
     QAction* const quit_action;
     QAction* const start_test;
     QAction* const stop_test;

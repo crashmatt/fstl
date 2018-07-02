@@ -19,29 +19,29 @@ TestPattern::TestPattern(QObject *parent, RadPatternData* rad_patterns) : QObjec
                                 , QColor(0,128,128,120) );
     m_antennas.append( cp_antenna );
 
-    //Antenna on right side behind wing
-    const QQuaternion rear_right_rot =
-            QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) *
-            QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), 135);
+//    //Antenna on right side behind wing
+//    const QQuaternion rear_right_rot =
+//            QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) *
+//            QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), 135);
 
-    auto rr_antenna = new Antenna( QVector3D(0.05, -0.1, 0.0)
-                                , rear_right_rot
-                                , "rad_monopole"
-                                , "rear_right"
-                                , QColor(128,128,0,120));
-    m_antennas.append( rr_antenna );
+//    auto rr_antenna = new Antenna( QVector3D(0.05, -0.1, 0.0)
+//                                , rear_right_rot
+//                                , "rad_monopole"
+//                                , "rear_right"
+//                                , QColor(128,128,0,120));
+//    m_antennas.append( rr_antenna );
 
-    //Antenna on right side behind wing
-    const QQuaternion rear_left_rot =
-            QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) *
-            QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), -135);
+//    //Antenna on right side behind wing
+//    const QQuaternion rear_left_rot =
+//            QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) *
+//            QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), -135);
 
-    auto rl_antenna = new Antenna( QVector3D(-0.05, -0.1, 0.0)
-                                , rear_left_rot
-                                , "rad_monopole"
-                                , "rear_left"
-                                , QColor(128,0,128,120));
-    m_antennas.append( rl_antenna );
+//    auto rl_antenna = new Antenna( QVector3D(-0.05, -0.1, 0.0)
+//                                , rear_left_rot
+//                                , "rad_monopole"
+//                                , "rear_left"
+//                                , QColor(128,0,128,120));
+//    m_antennas.append( rl_antenna );
 
     reset();
 }
@@ -65,8 +65,7 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
     } else {
         Antenna* antenna = m_antennas[m_ant_pos_index];
         Q_ASSERT(antenna != NULL);
-        auto datapoint = new AntennaDataPoint(this, rotation, center_color, color_visibility);
-        antenna->m_antenna_data.append(datapoint);
+        antenna->m_antenna_data.append(AntennaDataPoint(this, rotation, center_color, color_visibility));
         m_test_index++;
     }
 
@@ -220,3 +219,30 @@ void TestPattern::set_speed(bool high_speed)
     }
 }
 
+
+
+QDataStream &operator<<(QDataStream &out, const TestPattern &pattern)
+{
+//    out << antenna.m_pos << antenna.m_rotation
+//        << antenna.m_type << antenna.m_name
+//        << antenna.m_color << antenna.m_antenna_data;
+
+    return out;
+}
+
+QDataStream &operator>>(QDataStream &in, TestPattern &pattern)
+{
+//    QVector3D   pos;
+//    QQuaternion rotation;
+//    QString     type;
+//    QString     name;
+//    QColor      color;
+//    int         size;
+//    QVector<AntennaDataPoint> antenna_data;
+
+//    in << pos << rotation
+//        << type << name
+//        << color << antenna_data;
+
+    return in;
+}

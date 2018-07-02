@@ -18,12 +18,16 @@ class AntennaDataPoint : public QObject
 {
     Q_OBJECT
 public:
-    explicit AntennaDataPoint(QObject *parent, const QQuaternion &rot, float center, float visibility);
+    AntennaDataPoint();
+    AntennaDataPoint(QObject *parent, const QQuaternion &rot, float center, float visibility);
+    AntennaDataPoint(const AntennaDataPoint&);
+
+    AntennaDataPoint& operator=(const AntennaDataPoint&);
 
 public:
-    const QQuaternion   m_rot;
-    const QColor        m_center_color;
-    const float         m_color_visibility;
+    QQuaternion         m_rot;
+    QColor              m_center_color;
+    float               m_color_visibility;
     float               m_center_visibility;
     float               m_visibility;
 
@@ -33,6 +37,8 @@ public slots:
 
 };
 
+QDataStream &operator<<(QDataStream &, const AntennaDataPoint &);
+QDataStream &operator>>(QDataStream &, AntennaDataPoint &);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -50,11 +56,15 @@ public:
     QString     m_name;
     QColor      m_color;
 
-    QVector<AntennaDataPoint*>                  m_antenna_data;
+    QVector<AntennaDataPoint>                   m_antenna_data;
     QExplicitlySharedDataPointer<RadPatternSet> m_rad_pattern;
 
     void deleteAntennaData();
 };
+
+
+QDataStream &operator<<(QDataStream &, const Antenna &);
+QDataStream &operator>>(QDataStream &, Antenna &);
 
 
 ////////////////////////////////////////////////////////////////////////////////

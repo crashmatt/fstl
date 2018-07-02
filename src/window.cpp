@@ -12,6 +12,7 @@
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
     about_action(new QAction("About", this)),
+    save_action(new QAction("Save", this)),
     quit_action(new QAction("Quit", this)),
     start_test(new QAction("Start test", this)),
     stop_test(new QAction("Stop test", this)),
@@ -71,6 +72,10 @@ Window::Window(QWidget *parent) :
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,
                      this, &Window::close);
+
+    save_action->setShortcut(QKeySequence::Save);
+    QObject::connect(save_action, &QAction::triggered,
+                     this, &Window::save_antennas);
 
     QObject::connect(about_action, &QAction::triggered,
                      this, &Window::on_about);
@@ -314,4 +319,55 @@ bool Window::load_rad_pattern(const QString& filename, const ObjectConfig& confi
 //            canvas, &Canvas::clear_status);
     loader->start();
     return true;
+}
+
+void Window::save_json()
+{
+    save(Json);
+}
+
+void Window::save_bsjson()
+{
+    save(BJson);
+}
+
+void Window::save_antennas()
+{
+    QFile saveFile(QStringLiteral("antennas.dat"));
+
+    if (!saveFile.open(QIODevice::WriteOnly)) {
+        qWarning("Couldn't open save file.");
+        return;
+    }
+//    saveFile << test_pattern;
+    saveFile.close();
+}
+
+bool Window::save(Window::SaveFormat saveFormat) const
+{
+    QFile saveFile(saveFormat == Json
+        ? QStringLiteral("save.json")
+        : QStringLiteral("save.dat"));
+
+    if (!saveFile.open(QIODevice::WriteOnly)) {
+        qWarning("Couldn't open save file.");
+        return false;
+    }
+
+    QJsonObject antennasObject;
+    write(antennasObject);
+    QJsonDocument saveDoc(antennasObject);
+    saveFile.write(saveFormat == Json
+        ? saveDoc.toJson()
+        : saveDoc.toBinaryData());
+
+    return true;
+}
+
+
+void Window::write(QJsonObject &json) const
+{
+    QJsonObject radpatternsObject;
+    rad_patterns->write(radpatternsObject);
+    json["rad_patterns"] = radpatternsObject;
 }

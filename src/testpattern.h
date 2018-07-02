@@ -53,4 +53,9 @@ public slots:
     void set_speed(bool high_speed);
 };
 
+
+QDataStream &operator<<(QDataStream &, const TestPattern &);
+QDataStream &operator>>(QDataStream &, TestPattern &);
+
+
 #endif // TESTPATTERN_H

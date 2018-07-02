@@ -208,6 +208,9 @@ void RadPatternSet::make_indices(std::vector<GLuint>& indices)
     }
 }
 
+void RadPatternSet::write(QJsonObject &json) const
+{
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -228,4 +231,25 @@ void RadPatternData::add_pattern_data(RadPatternSet* data)
         pattern_data.remove(data->set_name);
     }
     pattern_data[data->set_name] = data;
+}
+
+void RadPatternData::write(QJsonObject &json) const
+{
+//    QJsonArray patterns;
+
+//    foreach (const auto pattern, pattern_data.values()) {
+//        QJsonObject patternObject;
+//        pattern.write(patternObject);
+//        patterns.append(patternObject);
+//    }
+//    json["levels"] = levelArray;
+}
+
+QDataStream &operator<<(QDataStream &, const RadPatternData &)
+{
+
+}
+
+QDataStream &operator>>(QDataStream &, RadPatternData &){
+
 }

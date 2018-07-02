@@ -32,6 +32,7 @@ App::App(int& argc, char *argv[]) :
 ////    window->load_stl(":gl/sphere.stl", "ball", "solid", QColor(50,200,50,50), 3);
     auto mono_config = ObjectConfig("rad_monopole" , "visi", QColor(255,0,0,200), 8);
     window->load_rad_pattern("../models/coax_monopole_15deg.csv", mono_config);
+//    window->load_rad_pattern("../models/coax_monopole.csv", mono_config);
 
     window->show();
 }

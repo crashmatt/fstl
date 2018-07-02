@@ -18,10 +18,18 @@ class Window : public QMainWindow
 public:
     explicit Window(QWidget* parent=0);
     bool load_stl(const QString& filename, const ObjectConfig& config);
-    bool load_rad_pattern(const QString& filename, const ObjectConfig& config);
+    bool load_rad_pattern(const QString& filename, const ObjectConfig& config);    
 
-protected:
+protected:    
+    typedef enum{
+        Json,
+        BJson
+    } SaveFormat;
+
     QMap<QString, bool> object_visibilities;
+
+    bool save(Window::SaveFormat saveFormat) const;
+    void write(QJsonObject &json) const;
 
 public slots:
     void on_about();
@@ -41,10 +49,13 @@ signals:
     void set_object_visible(QString& obj_name, bool visible);
 
 private slots:
-
+    void save_json();
+    void save_bsjson();
+    void save_antennas();
 
 private:
     QAction* const about_action;
+    QAction* const save_action;
     QAction* const quit_action;
     QAction* const start_test;
     QAction* const stop_test;

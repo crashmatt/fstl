@@ -63,6 +63,7 @@ public:
 //    RadPatternPoint* nearest_point(QQuaternion rot, int phi=-1, int theta=-1);
     Mesh* create_mesh();
     void make_indices(std::vector<GLuint>& indices);
+    void write(QJsonObject &json) const;
 
 protected:
     index_id get_id(int phi, int theta);
@@ -82,6 +83,8 @@ class RadPatternData : public QObject
 public:
     explicit RadPatternData(QObject *parent = 0);
     QExplicitlySharedDataPointer<RadPatternSet> get_data(const QString &pattern_name);
+
+    void write(QJsonObject &json) const;
 
 signals:
 

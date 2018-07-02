@@ -20,15 +20,16 @@ void DataProcessor::process_data(Antenna *antenna)
     Q_ASSERT(pattern != NULL);
 
     float max_vis = 0.01;
-    foreach(AntennaDataPoint* datapt , antenna->m_antenna_data){
-        Q_ASSERT(datapt != NULL);
-        if(datapt->m_color_visibility > max_vis){
-            max_vis = datapt->m_color_visibility;
+    for(auto& datapt : antenna->m_antenna_data) {
+//    foreach(AntennaDataPoint &datapt , antenna->m_antenna_data){
+        if(datapt.m_color_visibility > max_vis){
+            max_vis = datapt.m_color_visibility;
         }
     }
-    foreach(AntennaDataPoint* datapt, antenna->m_antenna_data){
-        datapt->m_center_visibility = datapt->m_center_color.greenF();
-        datapt->m_visibility = datapt->m_color_visibility / max_vis;
+    for(auto& datapt : antenna->m_antenna_data) {
+//    foreach(AntennaDataPoint &datapt, antenna->m_antenna_data){
+        datapt.m_center_visibility = datapt.m_center_color.greenF();
+        datapt.m_visibility = datapt.m_color_visibility / max_vis;
     }
 
     build_antenna_visibility_object(antenna);
@@ -45,18 +46,17 @@ void DataProcessor::build_antenna_visibility_object(Antenna *antenna)
 
     QColor viscolor = antenna->m_color;
 
-    AntennaDataPoint* datapt;
     int index = 0;
     int vect_index = 0;
-    foreach(datapt , antenna->m_antenna_data){
-        Q_ASSERT(datapt != NULL);
+    for(auto& datapt : antenna->m_antenna_data) {
+//    foreach(auto& datapt , antenna->m_antenna_data){
         vect_index = index * 6;
-        auto rot = datapt->m_rot;
-        auto vect = rot.rotatedVector(QVector3D(0.0, 0.0, -1.0)) * datapt->m_visibility;
+        auto rot = datapt.m_rot;
+        auto vect = rot.rotatedVector(QVector3D(0.0, 0.0, -1.0)) * datapt.m_visibility;
         flat_verts[vect_index] =  vect.x();
         flat_verts[vect_index+1] = vect.y();
         flat_verts[vect_index+2] = vect.z();
-        float color_scale = datapt->m_visibility * datapt->m_visibility;
+        float color_scale = datapt.m_visibility * datapt.m_visibility;
         flat_verts[vect_index+3] = color_scale * viscolor.redF();
         flat_verts[vect_index+4] = color_scale * viscolor.greenF();
         flat_verts[vect_index+5] = color_scale * viscolor.blueF();
@@ -87,15 +87,15 @@ void DataProcessor::build_antenna_effective_object(Antenna *antenna)
 
     int index = 0;
     int vect_index = 0;
-    foreach(auto datapt , antenna->m_antenna_data){
-        Q_ASSERT(datapt != NULL);
+    for(auto& datapt : antenna->m_antenna_data) {
+//    foreach(auto &datapt , antenna->m_antenna_data){
         vect_index = index * 12;
         auto rad = pattern->rad_data[index];
         Q_ASSERT(rad != NULL);
         auto rad_strength = rad->get_amplitude();
 
-        auto rot = datapt->m_rot;
-        auto vect = rot.rotatedVector(QVector3D(0.0, 0.0, -1.0)) * rad_strength * datapt->m_visibility;
+        auto rot = datapt.m_rot;
+        auto vect = rot.rotatedVector(QVector3D(0.0, 0.0, -1.0)) * rad_strength * datapt.m_visibility;
         flat_verts[vect_index] =  vect.x();
         flat_verts[vect_index+1] = vect.y();
         flat_verts[vect_index+2] = vect.z();
@@ -106,12 +106,12 @@ void DataProcessor::build_antenna_effective_object(Antenna *antenna)
         flat_verts[vect_index+4] = color.greenF();
         flat_verts[vect_index+5] = color.blueF();
 
-        auto vertical = rot.rotatedVector(QVector3D(0.0, 1.0, 0.0)) * pattern->rad_data[index]->get_vertical() * datapt->m_visibility;
+        auto vertical = rot.rotatedVector(QVector3D(0.0, 1.0, 0.0)) * pattern->rad_data[index]->get_vertical() * datapt.m_visibility;
         flat_verts[vect_index+6] = vertical.x();
         flat_verts[vect_index+7] = vertical.y();
         flat_verts[vect_index+8] = vertical.z();
 
-        auto horizontal = rot.rotatedVector(QVector3D(1.0, 0.0, 0.0)) * pattern->rad_data[index]->get_horizontal() * datapt->m_visibility;
+        auto horizontal = rot.rotatedVector(QVector3D(1.0, 0.0, 0.0)) * pattern->rad_data[index]->get_horizontal() * datapt.m_visibility;
         flat_verts[vect_index+9] = horizontal.x();
         flat_verts[vect_index+10] = horizontal.y();
         flat_verts[vect_index+11] = horizontal.z();

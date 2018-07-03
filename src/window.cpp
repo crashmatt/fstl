@@ -343,7 +343,12 @@ void Window::save_bsjson()
 
 void Window::save_antennas()
 {
-    QFile saveFile(QStringLiteral("antennas.dat"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                    "antennas.dat",
+                                                    tr("Antenna data (*.dat)"));
+    if(fileName == "") return;
+
+    QFile saveFile(fileName);
 
     if (!saveFile.open(QIODevice::WriteOnly)) {
         qWarning("Couldn't open save file.");
@@ -357,7 +362,12 @@ void Window::save_antennas()
 
 void Window::load_antennas()
 {
-    QFile loadFile(QStringLiteral("antennas.dat"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                    "antennas.dat",
+                                                    tr("Antenna data (*.dat)"));
+    if(fileName == "") return;
+
+    QFile loadFile(fileName);
 
     if (!loadFile.open(QIODevice::ReadOnly)) {
         qWarning("Couldn't open save file.");

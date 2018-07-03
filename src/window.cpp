@@ -204,6 +204,23 @@ void Window::on_missing_file()
                           "The target file is missing.<br>");
 }
 
+void Window::pattern_loaded()
+{
+    QObject *obj = QObject::sender();
+    RadPatternLoader* loader =  qobject_cast<RadPatternLoader*>(obj);
+    auto loaded_filename = loader->filename();
+    pending_radpattern_loads.removeAll(loaded_filename);
+
+    if(pending_radpattern_loads.isEmpty()){
+        QSettings settings(QString("Antenna"), QSettings::IniFormat, this);
+        if (settings.contains("last_filepath")){
+            QString file = settings.value("last_filepath").toString();
+            load_antennas_file(file);
+        }
+
+    }
+}
+
 void Window::solid_visibile(bool visible)
 {
     QString name = "solid*";
@@ -308,6 +325,7 @@ bool Window::load_stl(const QString& filename, const ObjectConfig& config)
 
 bool Window::load_rad_pattern(const QString& filename, const ObjectConfig& config)
 {
+    pending_radpattern_loads.append(filename);
     RadPatternLoader* loader = new RadPatternLoader(this, filename, config);
 
     connect(loader, &RadPatternLoader::got_mesh,
@@ -325,6 +343,9 @@ bool Window::load_rad_pattern(const QString& filename, const ObjectConfig& confi
 
     connect(loader, &RadPatternLoader::error_missing_file,
               this, &Window::on_missing_file);
+
+    connect(loader, &RadPatternLoader::finished,
+            this, &Window::pattern_loaded, Qt::ConnectionType::BlockingQueuedConnection);
 
     connect(loader, &RadPatternLoader::finished,
             loader, &Loader::deleteLater);
@@ -362,26 +383,40 @@ void Window::save_antennas()
     QDataStream out(&saveFile);
     out << *test_pattern;
     saveFile.close();
+
+    QSettings settings(QString("Antenna"), QSettings::IniFormat, this);
+    settings.setValue("last_filepath", fileName);
 }
 
 void Window::load_antennas()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     "antennas.dat",
                                                     tr("Antenna data (*.dat)"));
-    if(fileName == "") return;
+    if(filename == "") return;
 
-    QFile loadFile(fileName);
+    if(load_antennas_file(filename)){
+        QSettings settings(QString("Antenna"), QSettings::IniFormat, this);
+        settings.setValue("last_filepath", filename);
+    }
+
+}
+
+bool Window::load_antennas_file(QString &filename)
+{
+    QFile loadFile(filename);
 
     if (!loadFile.open(QIODevice::ReadOnly)) {
         qWarning("Couldn't open save file.");
-        return;
+        return false;
     }
 
     QDataStream in(&loadFile);
     in >> *test_pattern;
     loadFile.close();
+    return true;
 }
+
 
 bool Window::save(Window::SaveFormat saveFormat) const
 {

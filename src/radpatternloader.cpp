@@ -9,7 +9,7 @@
 
 RadPatternLoader::RadPatternLoader(QObject* parent, const QString& filename, const ObjectConfig& config)
     : QThread(parent)
-    , filename(filename)
+    , m_filename(filename)
     , m_config(config)
 {
 
@@ -28,7 +28,7 @@ void RadPatternLoader::run()
         if (mesh)
         {
             emit got_mesh(mesh, m_config);
-            emit loaded_file(filename);
+            emit loaded_file(m_filename);
         }
         emit got_rad_pattern(pattern);
     }
@@ -66,7 +66,7 @@ RadPatternSet* RadPatternLoader::load_rad_pattern()
     QVector<RadPatternPoint*>& rad_data = rad_pattern->rad_data;
     rad_data.reserve(36*36);
 
-    QFile file(filename);
+    QFile file(m_filename);
     if (!file.open(QIODevice::ReadOnly))
     {
         emit error_missing_file();

@@ -36,6 +36,7 @@ public slots:
     void on_bad_stl();
     void on_empty_mesh();
     void on_missing_file();
+    void pattern_loaded();
     void on_confusing_stl();
     void solid_visibile(bool visible);
     void transparent_visibile(bool visible);
@@ -55,6 +56,8 @@ private slots:
     void load_antennas();
 
 private:
+    bool load_antennas_file(QString &filename);
+
     QAction* const about_action;
     QAction* const save_action;
     QAction* const load_action;
@@ -78,6 +81,8 @@ private:
 
     QMenu* const visibility;
     QActionGroup* const objects_visibility;
+
+    QStringList pending_radpattern_loads;
 };
 
 #endif // WINDOW_H

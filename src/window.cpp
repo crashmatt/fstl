@@ -210,24 +210,28 @@ void Window::solid_visibile(bool visible)
     emit set_object_visible(name, visible);
     name = "shadow*";
     emit set_object_visible(name, visible);
+    emit update();
 }
 
 void Window::transparent_visibile(bool visible)
 {
     QString name = "fuselage*";
     emit set_object_visible(name, visible);
+    emit update();
 }
 
 void Window::visibility_visibile(bool visible)
 {
     QString name = "ant_vis*";
     emit set_object_visible(name, visible);
+    emit update();
 }
 
 void Window::rad_pattern_visibile(bool visible)
 {
     QString name = "monopole";
     emit set_object_visible(name, visible);
+    emit update();
 }
 
 void Window::object_visible(QAction* a)

@@ -96,7 +96,7 @@ Window::Window(QWidget *parent) :
     QObject::connect(reset_test, &QAction::triggered,
                      test_pattern, &TestPattern::reset_pattern);
 
-    step_antenna->setShortcut(QKeySequence(Qt::RightArrow));
+    step_antenna->setShortcut(QKeySequence(Qt::Key_N));
     QObject::connect(step_antenna, &QAction::triggered,
                      test_pattern, &TestPattern::step_antenna_pos);
 
@@ -220,6 +220,7 @@ void Window::pattern_loaded()
         QSettings settings(QString("Antenna"), QSettings::IniFormat, this);
         if (settings.contains("last_filepath")){
             QString file = settings.value("last_filepath").toString();
+            test_pattern->delete_antennas();
             load_antennas_file(file);
         }
 
@@ -419,10 +420,11 @@ bool Window::load_antennas_file(QString &filename)
     QFile loadFile(filename);
 
     if (!loadFile.open(QIODevice::ReadOnly)) {
-        qWarning("Couldn't open save file.");
+        qWarning("Couldn't open load file.");
         return false;
     }
 
+    test_pattern->delete_antennas();
     QDataStream in(&loadFile);
     in >> *test_pattern;
     loadFile.close();

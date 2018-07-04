@@ -21,6 +21,7 @@ public:
     ~TestPattern();
 
     void add_antenna(Antenna &antenna);
+    void delete_antennas(void);
 
 protected:
     bool                m_pattern_running;

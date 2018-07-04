@@ -221,14 +221,31 @@ void TestPattern::set_speed(bool high_speed)
 
 void TestPattern::add_antenna(Antenna &antenna)
 {
+    foreach(auto ant, m_antennas){
+        if(ant->m_name == antenna.m_name){
+            return;
+        }
+    }
+
     auto pattern = m_rad_patterns->get_data(antenna.m_type);
     if(pattern.data() == NULL) return;
 
     antenna.m_rad_pattern = pattern;
 
-    auto new_antenna = new Antenna(antenna);
-    m_antennas.append(new_antenna);
-    antenna_data(new_antenna);
+    //Check size of pattern and anetnna data matches
+    if(antenna.m_rad_pattern.data()->rad_data.size() == antenna.m_antenna_data.size()){
+        auto new_antenna = new Antenna(antenna);
+        m_antennas.append(new_antenna);
+        antenna_data(new_antenna);
+    }
+}
+
+void TestPattern::delete_antennas(void)
+{
+    qDeleteAll(m_antennas);
+    m_antennas.clear();
+    QString del_objs = "ant*";
+    emit delete_object(del_objs);
 }
 
 

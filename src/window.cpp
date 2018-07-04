@@ -22,11 +22,12 @@ Window::Window(QWidget *parent) :
     test_pattern(NULL),
     reset_rotation(new QAction("Reset rotation", this)),
     fast_mode(new QAction("Fast mode", this)),
-    solid_visible(new QAction("Soild", this)),
-    transparent_visible(new QAction("Transparent", this)),
-    visibility_visible(new QAction("Visibility", this)),
-    rad_pattern_visible(new QAction("Rad Pattern", this)),
-    visibility(new QMenu("Object visibility", this)),
+    solid_visible(new QAction("&Soild", this)),
+    transparent_visible(new QAction("&Transparent", this)),
+    visibility_visible(new QAction("&Visibility", this)),
+    rad_pattern_visible(new QAction("&Rad Pattern", this)),
+    effective_visible(new QAction("&Effective", this)),
+    visibility(new QMenu("&Object visibility", this)),
     objects_visibility(new QActionGroup(this))
 {
     setWindowTitle("fstl");
@@ -95,7 +96,7 @@ Window::Window(QWidget *parent) :
     QObject::connect(reset_test, &QAction::triggered,
                      test_pattern, &TestPattern::reset_pattern);
 
-    step_antenna->setShortcut(QKeySequence(Qt::Key_N));
+    step_antenna->setShortcut(QKeySequence(Qt::RightArrow));
     QObject::connect(step_antenna, &QAction::triggered,
                      test_pattern, &TestPattern::step_antenna_pos);
 
@@ -129,25 +130,29 @@ Window::Window(QWidget *parent) :
     test_menu->addSeparator();
     test_menu->addAction(fast_mode);
 
-    auto view_menu = menuBar()->addMenu("View");
+    auto view_menu = menuBar()->addMenu("&View");
 
-    solid_visible->setShortcut(QKeySequence(Qt::Key_S));
+//    solid_visible->setShortcut(QKeySequence(Qt::Key_S));
     QObject::connect(solid_visible, &QAction::toggled,
                      this, &Window::solid_visibile);
 
-    transparent_visible->setShortcut(QKeySequence(Qt::Key_T));
+//    transparent_visible->setShortcut(QKeySequence(Qt::Key_T));
     QObject::connect(transparent_visible, &QAction::toggled,
                      this, &Window::transparent_visibile);
 
-    visibility_visible->setShortcut(QKeySequence(Qt::Key_V));
+//    visibility_visible->setShortcut(QKeySequence(Qt::Key_V));
     QObject::connect(visibility_visible, &QAction::toggled,
                      this, &Window::visibility_visibile);
 
-    rad_pattern_visible->setShortcut(QKeySequence(Qt::Key_D));
+//    rad_pattern_visible->setShortcut(QKeySequence(Qt::Key_P));
     QObject::connect(rad_pattern_visible, &QAction::toggled,
                      this, &Window::rad_pattern_visibile);
 
-    for (auto p : {solid_visible, transparent_visible, visibility_visible, rad_pattern_visible})
+//    effective_visible->setShortcut(QKeySequence(Qt::Key_Shift + Qt::Key_E));
+    QObject::connect(effective_visible, &QAction::toggled,
+                     this, &Window::effective_visibile);
+
+    for (auto p : {solid_visible, transparent_visible, visibility_visible, rad_pattern_visible, effective_visible})
     {
         p->setCheckable(true);
         p->setChecked(true);
@@ -247,6 +252,13 @@ void Window::visibility_visibile(bool visible)
 void Window::rad_pattern_visibile(bool visible)
 {
     QString name = "monopole";
+    emit set_object_visible(name, visible);
+    emit update();
+}
+
+void Window::effective_visibile(bool visible)
+{
+    QString name = "ant_eff*";
     emit set_object_visible(name, visible);
     emit update();
 }

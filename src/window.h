@@ -42,6 +42,7 @@ public slots:
     void transparent_visibile(bool visible);
     void visibility_visibile(bool visible);
     void rad_pattern_visibile(bool visible);
+    void effective_visibile(bool visible);
     void object_visible(QAction* a);
     void add_object(const QString &obj_name);
     void remove_object(const QString &obj_name);
@@ -73,6 +74,7 @@ private:
     QAction* const transparent_visible;
     QAction* const visibility_visible;
     QAction* const rad_pattern_visible;
+    QAction* const effective_visible;
 
     Canvas*        canvas;
     TestPattern*   test_pattern;

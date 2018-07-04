@@ -20,7 +20,7 @@ public:
     explicit TestPattern(QObject *parent = 0, RadPatternData* rad_patterns = 0);
     ~TestPattern();
 
-    void add_antenna(Antenna &antenna);
+    bool add_antenna(Antenna &antenna);
     void delete_antennas(void);
 
 protected:

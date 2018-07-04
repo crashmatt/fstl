@@ -218,12 +218,48 @@ void Window::pattern_loaded()
 
     if(pending_radpattern_loads.isEmpty()){
         QSettings settings(QString("Antenna"), QSettings::IniFormat, this);
+        bool loaded = false;
+        test_pattern->delete_antennas();
+
         if (settings.contains("last_filepath")){
             QString file = settings.value("last_filepath").toString();
-            test_pattern->delete_antennas();
-            load_antennas_file(file);
+            loaded = load_antennas_file(file);
         }
 
+        if(!loaded){
+            //Antenna just behind cockpit cover
+            const QQuaternion cockpit_rot = QQuaternion();
+            auto cp_antenna = Antenna( QVector3D(0.00, 0.35, 0.05)
+                                        , cockpit_rot
+                                        , "rad_monopole"
+                                        ,"cockpit"
+                                        , QColor(0,128,128,120) );
+            test_pattern->add_antenna(cp_antenna);
+
+            //Antenna on right side behind wing
+            const QQuaternion rear_right_rot =
+                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) *
+                    QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), 135);
+
+            auto rr_antenna = Antenna( QVector3D(0.05, -0.1, 0.0)
+                                        , rear_right_rot
+                                        , "rad_monopole"
+                                        , "rear_right"
+                                        , QColor(128,128,0,120));
+            test_pattern->add_antenna(rr_antenna);
+
+            //Antenna on right side behind wing
+            const QQuaternion rear_left_rot =
+                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) *
+                    QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), -135);
+
+            auto rl_antenna = Antenna( QVector3D(-0.05, -0.1, 0.0)
+                                        , rear_left_rot
+                                        , "rad_monopole"
+                                        , "rear_left"
+                                        , QColor(128,0,128,120));
+            test_pattern->add_antenna(rl_antenna);
+        }
     }
 }
 

@@ -10,39 +10,6 @@ TestPattern::TestPattern(QObject *parent, RadPatternData* rad_patterns) : QObjec
   , m_high_speed(false)
   , m_rad_patterns(rad_patterns)
 {
-    //Antenna just behind cockpit cover
-    const QQuaternion cockpit_rot = QQuaternion();
-    auto cp_antenna = new Antenna( QVector3D(0.00, 0.35, 0.05)
-                                , cockpit_rot
-                                , "rad_monopole"
-                                ,"cockpit"
-                                , QColor(0,128,128,120) );
-    m_antennas.append( cp_antenna );
-
-    //Antenna on right side behind wing
-    const QQuaternion rear_right_rot =
-            QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) *
-            QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), 135);
-
-    auto rr_antenna = new Antenna( QVector3D(0.05, -0.1, 0.0)
-                                , rear_right_rot
-                                , "rad_monopole"
-                                , "rear_right"
-                                , QColor(128,128,0,120));
-    m_antennas.append( rr_antenna );
-
-    //Antenna on right side behind wing
-    const QQuaternion rear_left_rot =
-            QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) *
-            QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), -135);
-
-    auto rl_antenna = new Antenna( QVector3D(-0.05, -0.1, 0.0)
-                                , rear_left_rot
-                                , "rad_monopole"
-                                , "rear_left"
-                                , QColor(128,0,128,120));
-    m_antennas.append( rl_antenna );
-
     reset();
 }
 
@@ -219,32 +186,39 @@ void TestPattern::set_speed(bool high_speed)
     }
 }
 
-void TestPattern::add_antenna(Antenna &antenna)
+bool TestPattern::add_antenna(Antenna &antenna)
 {
+    //Don't add an atenna that already exists
     foreach(auto ant, m_antennas){
         if(ant->m_name == antenna.m_name){
-            return;
+            return false;
         }
     }
 
+    //If no radiation pattern is available for antenna then exit
     auto pattern = m_rad_patterns->get_data(antenna.m_type);
-    if(pattern.data() == NULL) return;
+    if(pattern.data() == NULL) return false;
 
+    //Set antenna rad pattern reference
     antenna.m_rad_pattern = pattern;
 
-    //Check size of pattern and anetnna data matches
+    auto new_antenna = new Antenna(antenna);
+    m_antennas.append(new_antenna);
+
+    //If size of pattern and antenna data matches then announce it
     if(antenna.m_rad_pattern.data()->rad_data.size() == antenna.m_antenna_data.size()){
-        auto new_antenna = new Antenna(antenna);
-        m_antennas.append(new_antenna);
         antenna_data(new_antenna);
     }
+    return true;
 }
 
 void TestPattern::delete_antennas(void)
 {
     qDeleteAll(m_antennas);
     m_antennas.clear();
-    QString del_objs = "ant*";
+    QString del_objs = "ant_vis*";
+    emit delete_object(del_objs);
+    del_objs = "ant_rad*";
     emit delete_object(del_objs);
 }
 

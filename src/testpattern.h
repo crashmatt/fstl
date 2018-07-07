@@ -53,9 +53,6 @@ protected:
     rotation_segment    m_rotation_segment;
     double              m_last_rotation_time;
     double              m_rotation_timeout;
-    double              m_min_timestep;
-    double              m_max_timestep;
-    double              m_max_rate;
     bool                m_rotations_running;
     QQuaternion         m_rotation;
 
@@ -82,7 +79,7 @@ public slots:
     void stop_pattern(void);
     void step_antenna_pos(void);
     void set_speed(bool high_speed);
-    void start_rotations(const double timeout, const double min_time, const double max_time,const double max_rate);
+    void start_rotations(const double timeout);
 
 private:
     friend QDataStream & operator<<(QDataStream &os, const TestPattern& p);

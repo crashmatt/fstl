@@ -16,7 +16,7 @@ Window::Window(QWidget *parent) :
     load_action(new QAction("Load antennas", this)),
     quit_action(new QAction("Quit", this)),
     start_test(new QAction("Start test", this)),
-    stop_test(new QAction("Stop test", this)),
+    stop_test(new QAction("Sto&p test", this)),
     reset_test(new QAction("Reset test", this)),
     step_antenna(new QAction("Step antenna", this)),
     test_pattern(NULL),
@@ -91,6 +91,7 @@ Window::Window(QWidget *parent) :
     QObject::connect(start_test, &QAction::triggered,
                      test_pattern, &TestPattern::start_pattern);
 
+    stop_test->setShortcut(QKeySequence(Qt::Key_P));
     QObject::connect(stop_test, &QAction::triggered,
                      test_pattern, &TestPattern::stop_pattern);
 
@@ -294,7 +295,7 @@ void Window::visibility_visibile(bool visible)
 
 void Window::rad_pattern_visibile(bool visible)
 {
-    QString name = "monopole";
+    QString name = "rad_*";
     emit set_object_visible(name, visible);
     emit update();
 }
@@ -459,7 +460,11 @@ void Window::load_antennas()
 
 void Window::start_random_rotations()
 {
-    test_pattern->start_rotations(10.0, 0.1, 2.0, 180.0);
+    //Hide radiation patterns for better visibility
+    QString vis_pattern = "rad_*";
+    emit set_object_visible(vis_pattern, false);
+
+    test_pattern->start_rotations(10.0);
 }
 
 

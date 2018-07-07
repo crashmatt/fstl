@@ -15,9 +15,6 @@ TestPattern::TestPattern(QObject *parent, RadPatternData* rad_patterns) : QObjec
   , m_rotation_segment()
   , m_last_rotation_time(0)
   , m_rotation_timeout(0)
-  , m_min_timestep(100)
-  , m_max_timestep(1000)
-  , m_max_rate(360.0)
   , m_rotations_running(false)
   , m_rotation()
 
@@ -114,16 +111,11 @@ void TestPattern::reset()
     set_antenna_pos_to_index(0);
     auto rotation = QQuaternion();
 
-    QString vis_pattern = "rad*";
+    QString vis_pattern = "rad_*";
     emit set_object_visible(vis_pattern, false);
 
     emit set_rotation(rotation, -1);
     emit redraw();
-}
-
-void rotation_step()
-{
-
 }
 
 
@@ -210,7 +202,7 @@ void TestPattern::set_speed(bool high_speed)
     }
 }
 
-void TestPattern::start_rotations(const double timeout, const double min_time, const double max_time,const double max_rate)
+void TestPattern::start_rotations(const double timeout)
 {
     if(m_pattern_running) return;
     m_rotations_running = true;
@@ -223,9 +215,6 @@ void TestPattern::start_rotations(const double timeout, const double min_time, c
     m_rotation_segment.start_time = 0;
     m_rotation_segment.rate = 0;
 
-    m_min_timestep = min_time;
-    m_max_timestep = max_time;
-    m_max_rate = max_rate;
     m_rotation = QQuaternion();
 
     emit set_rotation(m_rotation , -1);
@@ -270,23 +259,42 @@ void TestPattern::delete_antennas(void)
 
 void TestPattern::rotation_step(double delta_time)
 {
-
     double now = m_last_rotation_time + delta_time;
 
     while(m_rotation_segment.end_time < now){
-        double delta = m_rotation_segment.end_time - m_last_rotation_time;
-        double angle = delta * m_rotation_segment.rate;
+        //Complete the remaining rotation for this segment
+        double delta_time = m_rotation_segment.end_time - m_last_rotation_time;
+        double delta_angle = delta_time * m_rotation_segment.rate;
         //Rotation axis is a 90deg rotation. Scale it to a 360deg/s
-        QQuaternion rot = QQuaternion::fromAxisAndAngle(m_rotation_segment.direction, angle*4);
+        QQuaternion rot = QQuaternion::fromAxisAndAngle(m_rotation_segment.direction, delta_angle);
         m_rotation = m_rotation * rot;
         m_last_rotation_time = m_rotation_segment.end_time;
-        int timestep;
-        do{
-            timestep = qrand() * m_max_timestep * (1/(double) RAND_MAX);
-        } while(timestep < m_min_timestep);
-        m_rotation_segment.start_time = m_rotation_segment.end_time;
-        m_rotation_segment.end_time += timestep;
 
+        double angle_ratio = (double) rand() / (double) RAND_MAX;
+        angle_ratio = pow(angle_ratio, 3);
+        const double angle = angle_ratio * 720.0;
+
+        const double max_angle_max_time = 6.0;
+        const double max_angle_min_time = 3.0;
+        const double min_angle_max_time = 1.0;
+        const double min_angle_min_time = 0.25;
+
+        const double min_angle_time_range = min_angle_max_time - min_angle_min_time;
+        const double max_angle_time_range = max_angle_max_time - max_angle_min_time;
+
+        const double angle_time_range = ((1-angle_ratio)*min_angle_time_range) + (angle_ratio*max_angle_time_range);
+        const double angle_time_offset = ((1-angle_ratio)*min_angle_min_time) + (angle_ratio*max_angle_min_time);
+
+        const double time_ratio = (double) rand() / (double) RAND_MAX;
+        const double time = (time_ratio * angle_time_range) + angle_time_offset;
+
+        const double rate = angle / time;
+        m_rotation_segment.rate = rate;
+
+        m_rotation_segment.start_time = m_rotation_segment.end_time;
+        m_rotation_segment.end_time += time;
+
+        //New direction
         do{
             double dx = ((double) rand() / (double) RAND_MAX) - 0.5;
             double dy = ((double) rand() / (double) RAND_MAX) - 0.5;
@@ -295,17 +303,13 @@ void TestPattern::rotation_step(double delta_time)
             if(vect.length() > 0.1){
                 vect.normalize();
                 m_rotation_segment.direction = vect;
-                m_rotation_segment.rate = (double) rand() * (1.0/RAND_MAX);
-                m_rotation_segment.rate *= m_rotation_segment.rate;
-                m_rotation_segment.rate *= m_rotation_segment.rate;
-                m_rotation_segment.rate *= m_max_rate;
             }
         } while (m_rotation_segment.direction.length() < 0.1);
     }
     double delta = now - m_last_rotation_time;
     double angle = (double) delta * m_rotation_segment.rate;
     //Rotation axis is a 90deg rotation. Scale it to a 360deg/s
-    QQuaternion rot = QQuaternion::fromAxisAndAngle(m_rotation_segment.direction, angle*4);
+    QQuaternion rot = QQuaternion::fromAxisAndAngle(m_rotation_segment.direction, angle);
     m_rotation = m_rotation * rot;
 
     m_last_rotation_time = now;

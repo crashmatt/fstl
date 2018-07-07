@@ -9,6 +9,7 @@
 #include <QQuaternion>
 
 #include "antennadata.h"
+#include "time.h"
 
 class RadPatternData;
 
@@ -16,12 +17,28 @@ class RadPatternData;
 class TestPattern : public QObject
 {
     Q_OBJECT
-public:
+public:    
+//    typedef struct {
+//        double      timestep;
+//        double      timestamp;
+//        double      angle;
+//        QVector3D   direction;
+//    } rotation_step;
+
+    typedef struct {
+        double      start_time;
+        double      end_time;
+        double      rate;
+        QVector3D   direction;
+    } rotation_segment;
+
     explicit TestPattern(QObject *parent = 0, RadPatternData* rad_patterns = 0);
     ~TestPattern();
 
     bool add_antenna(Antenna &antenna);
     void delete_antennas(void);
+
+    void generate_rotations(const double timeout, const double min_time, const double max_time,const double max_rate);
 
 protected:
     bool                m_pattern_running;
@@ -31,9 +48,20 @@ protected:
     bool                m_high_speed;
 
     RadPatternData*     m_rad_patterns;
+//    QList<rotation_step> m_rotation_steps;
+
+    rotation_segment    m_rotation_segment;
+    double              m_last_rotation_time;
+    double              m_rotation_timeout;
+    double              m_min_timestep;
+    double              m_max_timestep;
+    double              m_max_rate;
+    bool                m_rotations_running;
+    QQuaternion         m_rotation;
 
     bool set_antenna_pos_to_index(int index);
     void reset();
+    void rotation_step(double delta_time_ms);
 
 signals:
     void set_rotation(QQuaternion rotation, int index);
@@ -54,6 +82,7 @@ public slots:
     void stop_pattern(void);
     void step_antenna_pos(void);
     void set_speed(bool high_speed);
+    void start_rotations(const double timeout, const double min_time, const double max_time,const double max_rate);
 
 private:
     friend QDataStream & operator<<(QDataStream &os, const TestPattern& p);

@@ -22,6 +22,7 @@ Window::Window(QWidget *parent) :
     test_pattern(NULL),
     reset_rotation(new QAction("Reset rotation", this)),
     fast_mode(new QAction("Fast mode", this)),
+    start_rotations(new QAction("&Start Rotations", this)),
     solid_visible(new QAction("&Soild", this)),
     transparent_visible(new QAction("&Transparent", this)),
     visibility_visible(new QAction("&Visibility", this)),
@@ -104,6 +105,10 @@ Window::Window(QWidget *parent) :
     QObject::connect(reset_rotation, &QAction::triggered,
                      canvas, &Canvas::reset_rotation);
 
+    start_rotations->setShortcut(QKeySequence(Qt::Key_S));
+    QObject::connect(start_rotations, &QAction::triggered,
+                     this, &Window::start_random_rotations);
+
     fast_mode->setShortcut(QKeySequence(Qt::Key_F));
     QObject::connect(fast_mode, &QAction::toggled,
                      test_pattern, &TestPattern::set_speed);
@@ -120,6 +125,7 @@ Window::Window(QWidget *parent) :
 
     auto test_menu = menuBar()->addMenu("Test");
     test_menu->addAction(start_test);
+    test_menu->addAction(start_rotations);
     test_menu->addAction(stop_test);
     test_menu->addSeparator();
     test_menu->addAction(step_antenna);
@@ -450,6 +456,12 @@ void Window::load_antennas()
     }
 
 }
+
+void Window::start_random_rotations()
+{
+    test_pattern->start_rotations(10.0, 0.1, 2.0, 180.0);
+}
+
 
 bool Window::load_antennas_file(QString &filename)
 {

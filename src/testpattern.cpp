@@ -2,6 +2,9 @@
 #include "radpatterndata.h"
 #include <QQuaternion>
 #include <QExplicitlySharedDataPointer>
+#include <random>
+#include <QTime>
+#include "time.h"
 
 TestPattern::TestPattern(QObject *parent, RadPatternData* rad_patterns) : QObject(parent)
   , m_pattern_running(false)
@@ -9,6 +12,15 @@ TestPattern::TestPattern(QObject *parent, RadPatternData* rad_patterns) : QObjec
   , m_test_index(-1)
   , m_high_speed(false)
   , m_rad_patterns(rad_patterns)
+  , m_rotation_segment()
+  , m_last_rotation_time(0)
+  , m_rotation_timeout(0)
+  , m_min_timestep(100)
+  , m_max_timestep(1000)
+  , m_max_rate(360.0)
+  , m_rotations_running(false)
+  , m_rotation()
+
 {
     reset();
 }
@@ -24,6 +36,11 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
 {
     if(!m_pattern_running)
         return;
+
+    if(m_rotations_running){
+        rotation_step(1/60.0);
+        return;
+    }
 
     if(index < 0){
         m_test_index = 0;
@@ -104,6 +121,11 @@ void TestPattern::reset()
     emit redraw();
 }
 
+void rotation_step()
+{
+
+}
+
 
 void TestPattern::start_pattern(void)
 {
@@ -117,6 +139,7 @@ void TestPattern::start_pattern(void)
         }
 
         m_pattern_running = true;
+        m_rotations_running = false;
         reset();
         emit set_view_pos( m_antennas[m_ant_pos_index]->m_pos );
         emit redraw();
@@ -126,6 +149,7 @@ void TestPattern::start_pattern(void)
 void TestPattern::stop_pattern(void)
 {
     m_pattern_running = false;
+    m_rotations_running = false;
 }
 
 
@@ -186,6 +210,28 @@ void TestPattern::set_speed(bool high_speed)
     }
 }
 
+void TestPattern::start_rotations(const double timeout, const double min_time, const double max_time,const double max_rate)
+{
+    if(m_pattern_running) return;
+    m_rotations_running = true;
+    m_pattern_running = true;
+    m_rotation_timeout = timeout;
+    m_last_rotation_time = 0;
+
+    m_rotation_segment.direction = QVector3D(0.0, 0.0, 0.0);
+    m_rotation_segment.end_time = 0;
+    m_rotation_segment.start_time = 0;
+    m_rotation_segment.rate = 0;
+
+    m_min_timestep = min_time;
+    m_max_timestep = max_time;
+    m_max_rate = max_rate;
+    m_rotation = QQuaternion();
+
+    emit set_rotation(m_rotation , -1);
+    emit redraw();
+}
+
 bool TestPattern::add_antenna(Antenna &antenna)
 {
     //Don't add an atenna that already exists
@@ -222,6 +268,80 @@ void TestPattern::delete_antennas(void)
     emit delete_object(del_objs);
 }
 
+void TestPattern::rotation_step(double delta_time)
+{
+
+    double now = m_last_rotation_time + delta_time;
+
+    while(m_rotation_segment.end_time < now){
+        double delta = m_rotation_segment.end_time - m_last_rotation_time;
+        double angle = delta * m_rotation_segment.rate;
+        //Rotation axis is a 90deg rotation. Scale it to a 360deg/s
+        QQuaternion rot = QQuaternion::fromAxisAndAngle(m_rotation_segment.direction, angle*4);
+        m_rotation = m_rotation * rot;
+        m_last_rotation_time = m_rotation_segment.end_time;
+        int timestep;
+        do{
+            timestep = qrand() * m_max_timestep * (1/(double) RAND_MAX);
+        } while(timestep < m_min_timestep);
+        m_rotation_segment.start_time = m_rotation_segment.end_time;
+        m_rotation_segment.end_time += timestep;
+
+        do{
+            double dx = ((double) rand() / (double) RAND_MAX) - 0.5;
+            double dy = ((double) rand() / (double) RAND_MAX) - 0.5;
+            double dz = ((double) rand() / (double) RAND_MAX) - 0.5;
+            QVector3D vect(dx, dy, dz);
+            if(vect.length() > 0.1){
+                vect.normalize();
+                m_rotation_segment.direction = vect;
+                m_rotation_segment.rate = (double) rand() * (1.0/RAND_MAX);
+                m_rotation_segment.rate *= m_rotation_segment.rate;
+                m_rotation_segment.rate *= m_rotation_segment.rate;
+                m_rotation_segment.rate *= m_max_rate;
+            }
+        } while (m_rotation_segment.direction.length() < 0.1);
+    }
+    double delta = now - m_last_rotation_time;
+    double angle = (double) delta * m_rotation_segment.rate;
+    //Rotation axis is a 90deg rotation. Scale it to a 360deg/s
+    QQuaternion rot = QQuaternion::fromAxisAndAngle(m_rotation_segment.direction, angle*4);
+    m_rotation = m_rotation * rot;
+
+    m_last_rotation_time = now;
+
+    emit set_rotation(m_rotation, -1);
+    emit redraw();
+}
+
+void TestPattern::generate_rotations(const double timeout, const double min_time, const double max_time, const double max_rate)
+{
+//    double time = 0.0;
+//    QTime now;
+//    srand(now.msecsSinceStartOfDay());
+
+//    m_rotation_steps.clear();
+
+//    const double max_delta_time = max_time - min_time;
+//    auto rot = QQuaternion();
+//    while(time < timeout ){
+//        const double timestep = ((double) rand() * (max_delta_time) * (1.0/RAND_MAX)) + min_time;
+//        double dx = ((double) rand() / (double) RAND_MAX) - 0.5;
+//        double dy = ((double) rand() / (double) RAND_MAX) - 0.5;
+//        double dz = ((double) rand() / (double) RAND_MAX) - 0.5;
+//        QVector3D vect(dx, dy, dz);
+//        if(vect.length() > 0.1){
+//            vect.normalize();
+//            rotation_step step;
+//            step.direction = vect;
+//            step.timestep = timestep;
+//            step.timestamp = timestamp;
+//            step.angle = (double) rand() * max_rate * (1.0/RAND_MAX);
+//            m_rotation_steps.append(step);
+//            time += timestep;
+//        }
+//    }
+}
 
 QDataStream &operator<<(QDataStream &out, const TestPattern &pattern)
 {

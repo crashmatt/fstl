@@ -55,6 +55,7 @@ private slots:
     void save_bsjson();
     void save_antennas();
     void load_antennas();
+    void start_random_rotations();
 
 private:
     bool load_antennas_file(QString &filename);
@@ -69,6 +70,7 @@ private:
     QAction* const step_antenna;
     QAction* const reset_rotation;
     QAction* const fast_mode;
+    QAction* const start_rotations;
 
     QAction* const solid_visible;
     QAction* const transparent_visible;

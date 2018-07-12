@@ -36,6 +36,8 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
 
     if(m_rotations_running){
         rotation_step(1/60.0);
+        emit set_rotation(m_rotation, -1);
+        emit redraw();
         return;
     }
 
@@ -313,38 +315,6 @@ void TestPattern::rotation_step(double delta_time)
     m_rotation = m_rotation * rot;
 
     m_last_rotation_time = now;
-
-    emit set_rotation(m_rotation, -1);
-    emit redraw();
-}
-
-void TestPattern::generate_rotations(const double timeout, const double min_time, const double max_time, const double max_rate)
-{
-//    double time = 0.0;
-//    QTime now;
-//    srand(now.msecsSinceStartOfDay());
-
-//    m_rotation_steps.clear();
-
-//    const double max_delta_time = max_time - min_time;
-//    auto rot = QQuaternion();
-//    while(time < timeout ){
-//        const double timestep = ((double) rand() * (max_delta_time) * (1.0/RAND_MAX)) + min_time;
-//        double dx = ((double) rand() / (double) RAND_MAX) - 0.5;
-//        double dy = ((double) rand() / (double) RAND_MAX) - 0.5;
-//        double dz = ((double) rand() / (double) RAND_MAX) - 0.5;
-//        QVector3D vect(dx, dy, dz);
-//        if(vect.length() > 0.1){
-//            vect.normalize();
-//            rotation_step step;
-//            step.direction = vect;
-//            step.timestep = timestep;
-//            step.timestamp = timestamp;
-//            step.angle = (double) rand() * max_rate * (1.0/RAND_MAX);
-//            m_rotation_steps.append(step);
-//            time += timestep;
-//        }
-//    }
 }
 
 QDataStream &operator<<(QDataStream &out, const TestPattern &pattern)

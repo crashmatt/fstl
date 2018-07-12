@@ -38,8 +38,6 @@ public:
     bool add_antenna(Antenna &antenna);
     void delete_antennas(void);
 
-    void generate_rotations(const double timeout, const double min_time, const double max_time,const double max_rate);
-
 protected:
     bool                m_pattern_running;
     QList<Antenna*>     m_antennas;

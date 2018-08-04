@@ -42,7 +42,7 @@ public:
     /** get the tranciever state */
     trx_state get_state() {return m_trx_state;}
 
-    /** get the last tranciever state */
+    /** get the last transciever state */
     trx_state get_last_state() {return m_last_trx_state;}
 
     virtual void rx_start(double rx_time) = 0;
@@ -69,8 +69,10 @@ protected:
      */
     void set_state(trx_state state) {
         if(state != m_trx_state){
-            m_last_trx_state=m_trx_state;
+            trx_state last_state = state;
             m_trx_state=state;
+            if( (last_state == rx_on) && (m_trx_state == trx_off))
+                return;
             if(state_change_callback != NULL){
                 state_change_callback(this);
             }
@@ -86,9 +88,6 @@ protected:
 
     /** Tranceiver state */
     trx_state   m_trx_state;
-
-    /** Previous Tranceiver state */
-    trx_state   m_last_trx_state;
 
     void (*state_change_callback) (Transceiver*);
 };

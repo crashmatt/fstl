@@ -8,7 +8,6 @@ Transceiver::Transceiver(QObject* parent, QString name, QVector3D pos) : QObject
   , m_pos(pos)
   , m_next_event_time(0)
   , m_trx_state(trx_off)
-  , m_last_trx_state(trx_off)
   , state_change_callback(NULL)
 {
 }
@@ -122,25 +121,14 @@ void Radios::state_change_callback(Transceiver *trx)
 {
     Q_ASSERT(trx != NULL);
     //Run callback and
-    Transceiver::trx_state trx_state = trx->get_state();
-    Transceiver::trx_state last_trx_state = trx->get_last_state();
 
-    bool update_tx = false;
-    bool update_rx = false;
-    switch(trx_state){
-    case Transceiver::rx_on:{
-        update_rx = true;
-        if(last_trx_state == Transceiver::tx_on) update_tx = true;
-        break;
-    }
-    case Transceiver::tx_on:{
-        update_tx = true;
-        break;
-    }
-    }//switch
-
-    if(update_tx){
-        trx->
+    foreach(auto rx, m_trxs){
+        QMap<QString, QMap<int, QVector3D> > eirp_map;
+        auto active_rx = rx->get_active_rx();
+        foreach(auto tx, m_trxs){
+            if(tx != rx){
+            }
+        }
     }
 
     if(update_rx){

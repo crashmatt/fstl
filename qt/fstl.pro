@@ -24,7 +24,7 @@ SOURCES += \
     ../src/radpatternloader.cpp \
     ../src/radpatterndata.cpp \
     ../src/glradpatternmesh.cpp \
-    ../src/radiochannel.cpp
+    ../src/radio.cpp
 
 HEADERS  += \
     ../src/app.h\
@@ -36,13 +36,13 @@ HEADERS  += \
     ../src/backdrop.h \
     ../src/globject.h \
     ../src/testpattern.h \
-    ../src/antennadata.h \
     ../src/dataprocessor.h \
     ../src/glcolormesh.h \
     ../src/radpatternloader.h \
     ../src/radpatterndata.h \
     ../src/glradpatternmesh.h \
-    ../src/radiochannel.h
+    ../src/radio.h \
+    ../src/antennadata.h
 
 CONFIG += c++11
 

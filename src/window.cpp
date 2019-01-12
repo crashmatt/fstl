@@ -266,6 +266,22 @@ void Window::pattern_loaded()
                                         , "rear_left"
                                         , QColor(128,0,128,120));
             test_pattern->add_antenna(rl_antenna);
+
+            auto aircraft = new Radio( (QObject*) this, QString("aircraft"), QVector3D(1000,0,0));
+            aircraft->add_antenna(&cp_antenna);
+            aircraft->add_antenna(&rr_antenna);
+            aircraft->add_antenna(&rl_antenna);
+            radios.append(aircraft);
+
+            auto controller = new Radio( (QObject*) this, QString("controller"), QVector3D(0,0,0));
+            const QQuaternion controller_rot = QQuaternion();
+
+            auto cont_vert_antenna = Antenna( QVector3D(0.0, 0.0, 0.0)
+                                              , controller_rot
+                                              , "rad_monopole"
+                                              , "controller_vert"
+                                              , QColor(128,128,128,120));
+            controller->add_antenna(&cont_vert_antenna);
         }
     }
 }

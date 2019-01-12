@@ -5,6 +5,7 @@
 #include <QActionGroup>
 #include <QFileSystemWatcher>
 #include <QVector3D>
+#include "radio.h"
 
 class Canvas;
 class TestPattern;
@@ -82,6 +83,7 @@ private:
     TestPattern*   test_pattern;
     DataProcessor* data_processor;
     RadPatternData* rad_patterns;
+    QVector<Radio*> radios;
 
     QMenu* const visibility;
     QActionGroup* const objects_visibility;

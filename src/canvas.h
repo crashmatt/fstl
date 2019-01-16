@@ -27,6 +27,7 @@ public:
 
 public slots:
     void set_status(const QString& s);
+    void set_data_strings(const QStringList& s);
     void clear_status();
     void load_mesh(Mesh* m, const ObjectConfig &config);
     void set_rotation(QQuaternion view_rotation, int ref_index);
@@ -91,8 +92,9 @@ private:
     Q_PROPERTY(float perspective WRITE set_perspective);
     QPropertyAnimation anim;
 
-    QPoint mouse_pos;
-    QString status;
+    QPoint      mouse_pos;
+    QString     status;
+    QStringList data;
 };
 
 #endif // CANVAS_H

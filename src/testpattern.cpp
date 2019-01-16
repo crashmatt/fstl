@@ -31,8 +31,33 @@ TestPattern::~TestPattern()
 
 void TestPattern::antenna_visibility(int index, QQuaternion rotation, float center_color, float color_visibility)
 {
-    if(!m_pattern_running)
+    if(!m_pattern_running){
+        auto data = QStringList();
+        auto angles = rotation.toEulerAngles();
+        auto angles_str = QString("Rot X:%1 Y:%2 Z:%3").
+                arg(angles.x(),3,'f',1).
+                arg(angles.y(),3,'f',1).
+                arg(angles.z(),3,'f',1);
+        data.append(angles_str);
+
+        foreach(auto antenna, m_antennas){
+            auto rad_data = antenna->m_rad_pattern.data();
+            if(rad_data == NULL) return;
+
+            auto& ant_data = antenna->m_antenna_data;
+            if(ant_data.length() != rad_data->rad_data.length()){
+                auto str = QString("%1 has invalid antenna data").arg(antenna->m_name);
+                data.append(str);
+            } else {
+                auto str = QString("%1 %2 %3 %4 %5").
+                        arg(antenna->m_name);
+                data.append(str);
+            }
+
+        }
+        emit antenna_debug_text(data);
         return;
+    }
 
     if(m_rotations_running){
         rotation_step(1/60.0);

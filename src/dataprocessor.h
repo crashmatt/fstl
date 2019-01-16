@@ -17,6 +17,7 @@ public:
 protected:
     void build_antenna_visibility_object(Antenna *antenna);
     void build_antenna_effective_object(Antenna *antenna);
+    void export_antenna_files(Antenna *antenna);
 
     int m_sequence;
 

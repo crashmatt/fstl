@@ -4,6 +4,7 @@
 #include "radpatterndata.h"
 #include "globject.h"
 #include <QMatrix4x4>
+#include <QFile>
 
 #define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
 
@@ -34,6 +35,7 @@ void DataProcessor::process_data(Antenna *antenna)
 
     build_antenna_visibility_object(antenna);
     build_antenna_effective_object(antenna);
+    export_antenna_files(antenna);
 }
 
 
@@ -49,7 +51,6 @@ void DataProcessor::build_antenna_visibility_object(Antenna *antenna)
     int index = 0;
     int vect_index = 0;
     for(auto& datapt : antenna->m_antenna_data) {
-//    foreach(auto& datapt , antenna->m_antenna_data){
         vect_index = index * 6;
         auto rot = datapt.m_rot;
         auto vect = rot.rotatedVector(QVector3D(0.0, 0.0, -1.0)) * datapt.m_visibility;
@@ -88,7 +89,6 @@ void DataProcessor::build_antenna_effective_object(Antenna *antenna)
     int index = 0;
     int vect_index = 0;
     for(auto& datapt : antenna->m_antenna_data) {
-//    foreach(auto &datapt , antenna->m_antenna_data){
         vect_index = index * 12;
         auto rad = pattern->rad_data[index];
         Q_ASSERT(rad != NULL);
@@ -127,5 +127,38 @@ void DataProcessor::build_antenna_effective_object(Antenna *antenna)
     auto mesh_config = ObjectConfig(name, "radpattern", antenna->m_color, m_sequence++);
     mesh_config.m_offset = antenna->m_pos;
     emit built_mesh(mesh, mesh_config);
+}
+
+
+void DataProcessor::export_antenna_files(Antenna *antenna)
+{
+    RadPatternSet* pattern = antenna->m_rad_pattern.data();
+    Q_ASSERT(pattern != NULL);
+
+    QFile file(antenna->m_name + ".txt");
+    if (!file.open(QFile::WriteOnly)) return;
+
+    auto wrstr = QString("theta,phi,vert,horiz,total\r\n");
+    file.write(wrstr.toUtf8());
+
+    int index = 0;
+    for(auto& datapt : antenna->m_antenna_data) {
+        auto rad = pattern->rad_data[index];
+        Q_ASSERT(rad != NULL);
+        auto rad_strength = rad->get_amplitude();
+
+        auto rot = datapt.m_rot;
+
+        wrstr = QString("%1,%2,%3,%4,%5\r\n").
+                arg(rad->phi).
+                arg(rad->theta).
+                arg(rad->ver*datapt.m_visibility).
+                arg(rad->hor*datapt.m_visibility).
+                arg(rad->get_amplitude()*datapt.m_visibility);
+
+        file.write(wrstr.toUtf8());
+        index++;
+    }
+    file.close();
 }
 

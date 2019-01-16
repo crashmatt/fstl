@@ -21,6 +21,7 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     , perspective(0.0)
     , anim(this, "perspective")
     , status(" ")
+    , data("empty")
     , ref_index(-1)
     , fps(0)
     , fps_count(0)
@@ -189,6 +190,12 @@ void Canvas::set_status(const QString &s)
     update();
 }
 
+void Canvas::set_data_strings(const QStringList& s)
+{
+    data = s;
+}
+
+
 void Canvas::set_perspective(float p)
 {
     perspective = p;
@@ -317,6 +324,12 @@ void Canvas::paintGL()
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing);
     painter.drawText(10, height() - 10, status);
+
+    auto vpos = 20;
+    foreach(auto& line, data){
+        painter.drawText((pxwidth/2) + 50, vpos, line);
+        vpos += 30;
+    }
     painter.drawLine( (pxwidth-px)/2, (pxheight-px)/2, (pxwidth+px)/2, (pxheight+px)/2);
 }
 

@@ -69,6 +69,8 @@ Window::Window(QWidget *parent) :
     connect(this, &Window::set_object_visible, canvas, &Canvas::set_object_visible);
     connect(test_pattern, &TestPattern::set_object_visible, canvas, &Canvas::set_object_visible);
 
+    connect(test_pattern, &TestPattern::antenna_debug_text, canvas, &Canvas::set_data_strings);
+
     QObject::connect(objects_visibility, &QActionGroup::triggered,
                      this, &Window::object_visible);
 

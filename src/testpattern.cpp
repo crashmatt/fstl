@@ -34,11 +34,18 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
     if(!m_pattern_running){
         auto data = QStringList();
         auto angles = rotation.toEulerAngles();
-        auto angles_str = QString("Rot X:%1 Y:%2 Z:%3").
-                arg(angles.x(),3,'f',1).
-                arg(angles.y(),3,'f',1).
-                arg(angles.z(),3,'f',1);
+        auto angles_str = QString("      Rot X:%1  Y:%2  Z:%3").
+                arg(angles.x(),4,'F',0,' ').
+                arg(angles.y(),4,'F',0,' ').
+                arg(angles.z(),4,'F',0,' ');
         data.append(angles_str);
+
+        auto vect = rotation.rotatedVector(QVector3D(0.0, 0.0, -1.0));
+        auto vect_str = QString("     Vect X:%1 Y:%2 Z:%3").
+                arg(vect.x(),5,'f',2,' ').
+                arg(vect.y(),5,'f',2,' ').
+                arg(vect.z(),5,'f',2,' ');
+        data.append(vect_str);
 
         foreach(auto antenna, m_antennas){
             auto rad_data = antenna->m_rad_pattern.data();
@@ -49,9 +56,39 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
                 auto str = QString("%1 has invalid antenna data").arg(antenna->m_name);
                 data.append(str);
             } else {
-                auto str = QString("%1 %2 %3 %4 %5").
-                        arg(antenna->m_name);
-                data.append(str);
+//                auto ant_angle = (rotation * antenna->m_rotation).toEulerAngles();
+//                auto ant_angle = antenna->m_rotation.rotatedVector(QVector3D(0.0, 0.0, -1.0));
+//                auto ant_ang_str = QString("%1 Vect  X:%2 Y:%3 Z:%4").
+//                        arg(antenna->m_name,10).
+//                        arg(ant_angle.x(),3,'f',1).
+//                        arg(ant_angle.y(),3,'f',1).
+//                        arg(ant_angle.z(),3,'f',1);
+//                data.append(ant_ang_str);
+
+//                auto ant_delta_angle = (antenna->m_rotation * rotation.inverted()).toEulerAngles();
+//                auto ant_dang_str = QString("%1 Delta X:%2 Y:%3 Z:%4").
+//                        arg(antenna->m_name,10).
+//                        arg(ant_delta_angle.x(),3,'f',1).
+//                        arg(ant_delta_angle.y(),3,'f',1).
+//                        arg(ant_delta_angle.z(),3,'f',1);
+//                data.append(ant_dang_str);
+
+                auto ant_face_angle = antenna->m_rotation.rotatedVector(QVector3D(0.0, 1.0, 0.0));
+                auto ant_face_ang_str = QString("%1 Face vector  X:%2 Y:%3 Z:%4").
+                        arg(antenna->m_name,10).
+                        arg(ant_face_angle.x(),3,'f',1).
+                        arg(ant_face_angle.y(),3,'f',1).
+                        arg(ant_face_angle.z(),3,'f',1);
+                data.append(ant_face_ang_str);
+
+                auto ant_face_delta_angle = (antenna->m_rotation * rotation.inverted()).toEulerAngles();
+                auto ant_fdang_str = QString("%1 Face Delta X:%2 Y:%3 Z:%4").
+                        arg(antenna->m_name,10).
+                        arg(ant_face_delta_angle.x(),3,'f',1).
+                        arg(ant_face_delta_angle.y(),3,'f',1).
+                        arg(ant_face_delta_angle.z(),3,'f',1);
+                data.append(ant_fdang_str);
+
             }
 
         }

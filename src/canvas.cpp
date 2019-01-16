@@ -327,7 +327,8 @@ void Canvas::paintGL()
 
     auto vpos = 20;
     foreach(auto& line, data){
-        painter.drawText((pxwidth/2) + 50, vpos, line);
+        painter.drawText( (pxwidth*0.6), vpos, line);
+//        painter.drawText(pxwidth - 400, vpos, line);
         vpos += 30;
     }
     painter.drawLine( (pxwidth-px)/2, (pxheight-px)/2, (pxwidth+px)/2, (pxheight+px)/2);

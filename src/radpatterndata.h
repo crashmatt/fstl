@@ -58,9 +58,9 @@ public:
     QVector<RadPatternPoint*>   rad_data;
 
     bool build_maps();
-    RadPatternPoint* get_point(int phi, int theta);
-    RadPatternPoint* get_point_at_index(uint phi_index, uint theta_index);
-//    RadPatternPoint* nearest_point(QQuaternion rot, int phi=-1, int theta=-1);
+//    RadPatternPoint* get_point(int phi, int theta);
+//    RadPatternPoint* get_point_at_index(uint phi_index, uint theta_index);
+    RadPatternPoint* nearest_point(QQuaternion rot);
     Mesh* create_mesh();
     void make_indices(std::vector<GLuint>& indices);
     void write(QJsonObject &json) const;

@@ -58,7 +58,8 @@ public:
     QVector<RadPatternPoint*>   rad_data;
 
     bool build_maps();
-//    RadPatternPoint* get_point(int phi, int theta);
+    RadPatternPoint* get_point(int phi, int theta);
+    int get_index(int phi, int theta);
 //    RadPatternPoint* get_point_at_index(uint phi_index, uint theta_index);
     RadPatternPoint* nearest_point(QQuaternion rot);
     Mesh* create_mesh();

@@ -232,7 +232,13 @@ void Window::pattern_loaded()
 
         if (settings.contains("last_filepath")){
             QString file = settings.value("last_filepath").toString();
-            loaded = load_antennas_file(file);
+
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, "", "Load default",
+                                          QMessageBox::Yes|QMessageBox::No);
+            if (reply == QMessageBox::Yes) {
+                loaded = load_antennas_file(file);
+            }
         }
 
         if(!loaded){
@@ -247,9 +253,8 @@ void Window::pattern_loaded()
 
             //Antenna on right side behind wing
             const QQuaternion rear_right_rot =
-                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) *
-                    QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), 135);
-
+                    QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), -135) *
+                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
             auto rr_antenna = Antenna( QVector3D(0.05, -0.1, 0.0)
                                         , rear_right_rot
                                         , "rad_monopole"
@@ -257,11 +262,10 @@ void Window::pattern_loaded()
                                         , QColor(128,128,0,120));
             test_pattern->add_antenna(rr_antenna);
 
-            //Antenna on right side behind wing
+            //Antenna on left side behind wing
             const QQuaternion rear_left_rot =
-                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) *
-                    QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), -135);
-
+                    QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), 135) *
+                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
             auto rl_antenna = Antenna( QVector3D(-0.05, -0.1, 0.0)
                                         , rear_left_rot
                                         , "rad_monopole"

@@ -47,13 +47,23 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
                 arg(vect.z(),5,'f',2,' ');
         data.append(vect_str);
 
-        auto ant_nom_quat = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) * rotation;
-        auto ant_nom_vect = ant_nom_quat.rotatedVector(QVector3D(0.0, 1.0, 0.0));
+//        auto ant_nom_quat = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) * rotation.inverted();
+//        auto ant_nom_vect = ant_nom_quat.rotatedVector(QVector3D(0.0, 1.0, 0.0));
+        auto ant_nom_quat = rotation.inverted();
+        auto ant_nom_vect = ant_nom_quat.rotatedVector(QVector3D(0.0, 0.0, 1.0));
         auto ant_nom_vect_str = QString(" Ant Vect X:%1 Y:%2 Z:%3").
                 arg(ant_nom_vect.x(),5,'f',2,' ').
                 arg(ant_nom_vect.y(),5,'f',2,' ').
                 arg(ant_nom_vect.z(),5,'f',2,' ');
         data.append(ant_nom_vect_str);
+
+//        auto ant_nom_rot = ant_nom_quat.toEulerAngles();
+        auto ant_nom_rot = ant_nom_quat.toEulerAngles();
+        auto ant_nom_rot_str = QString(" Ant Rot X:%1 Y:%2 Z:%3").
+                arg(ant_nom_rot.x(),4,'F',0,' ').
+                arg(ant_nom_rot.y(),4,'F',0,' ').
+                arg(ant_nom_rot.z(),4,'F',0,' ');
+        data.append(ant_nom_rot_str);
 
 
         foreach(auto antenna, m_antennas){
@@ -75,7 +85,7 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
 //                data.append(ant_ang_str);
 
 //                auto ant_quot_rot = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) * antenna->m_rotation.inverted() * rotation;
-                auto ant_quot_rot = antenna->m_rotation.inverted() * rotation;
+                auto ant_quot_rot = rotation * antenna->m_rotation.inverted();
 
                 auto ant_delta_angle = ant_quot_rot.toEulerAngles();
                 auto ant_dang_str = QString("%1 Delta X:%2 Y:%3 Z:%4").
@@ -110,11 +120,20 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
 //                data.append(ant_fdang_str);
 
                 auto nearest = antenna->m_rad_pattern.data()->nearest_point(ant_quot_rot);
-                auto ant_nearest_str = QString("%1 Nearest Phi:%2 theta:%3").
+                auto ant_nearest_str = QString("%1 Rad Phi:%2 theta:%3 amp:%4").
                         arg(antenna->m_name,10).
                         arg(nearest->phi,3,'f',1).
-                        arg(nearest->theta,3,'f',1);
+                        arg(nearest->theta,3,'f',1).
+                        arg(nearest->get_amplitude(),4,'f',2);
                 data.append(ant_nearest_str);
+
+                auto rad_data_index = antenna->m_rad_pattern.data()->get_index(nearest->phi, nearest->theta);
+                auto& rad_data = antenna->m_antenna_data[rad_data_index];
+                auto ant_rad_str = QString("%1 Rad ampl:%2").
+                        arg(antenna->m_name,10).
+                        arg(rad_data.m_visibility,4,'f',2);
+                data.append(ant_rad_str);
+
             }
 
         }

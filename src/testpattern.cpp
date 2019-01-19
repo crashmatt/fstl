@@ -47,23 +47,20 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
                 arg(vect.z(),5,'f',2,' ');
         data.append(vect_str);
 
-//        auto ant_nom_quat = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) * rotation.inverted();
-//        auto ant_nom_vect = ant_nom_quat.rotatedVector(QVector3D(0.0, 1.0, 0.0));
-        auto ant_nom_quat = rotation.inverted();
-        auto ant_nom_vect = ant_nom_quat.rotatedVector(QVector3D(0.0, 0.0, 1.0));
-        auto ant_nom_vect_str = QString(" Ant Vect X:%1 Y:%2 Z:%3").
-                arg(ant_nom_vect.x(),5,'f',2,' ').
-                arg(ant_nom_vect.y(),5,'f',2,' ').
-                arg(ant_nom_vect.z(),5,'f',2,' ');
-        data.append(ant_nom_vect_str);
+//        auto ant_nom_quat = rotation.inverted();
+//        auto ant_nom_vect = ant_nom_quat.rotatedVector(QVector3D(0.0, 0.0, 1.0));
+//        auto ant_nom_vect_str = QString(" Ant Vect X:%1 Y:%2 Z:%3").
+//                arg(ant_nom_vect.x(),5,'f',2,' ').
+//                arg(ant_nom_vect.y(),5,'f',2,' ').
+//                arg(ant_nom_vect.z(),5,'f',2,' ');
+//        data.append(ant_nom_vect_str);
 
 //        auto ant_nom_rot = ant_nom_quat.toEulerAngles();
-        auto ant_nom_rot = ant_nom_quat.toEulerAngles();
-        auto ant_nom_rot_str = QString(" Ant Rot X:%1 Y:%2 Z:%3").
-                arg(ant_nom_rot.x(),4,'F',0,' ').
-                arg(ant_nom_rot.y(),4,'F',0,' ').
-                arg(ant_nom_rot.z(),4,'F',0,' ');
-        data.append(ant_nom_rot_str);
+//        auto ant_nom_rot_str = QString(" Ant Rot X:%1 Y:%2 Z:%3").
+//                arg(ant_nom_rot.x(),4,'F',0,' ').
+//                arg(ant_nom_rot.y(),4,'F',0,' ').
+//                arg(ant_nom_rot.z(),4,'F',0,' ');
+//        data.append(ant_nom_rot_str);
 
 
         foreach(auto antenna, m_antennas){
@@ -75,17 +72,7 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
                 auto str = QString("%1 has invalid antenna data").arg(antenna->m_name);
                 data.append(str);
             } else {
-//                auto ant_angle = (rotation * antenna->m_rotation).toEulerAngles();
-//                auto ant_angle = antenna->m_rotation.rotatedVector(QVector3D(0.0, 0.0, -1.0));
-//                auto ant_ang_str = QString("%1 Vect  X:%2 Y:%3 Z:%4").
-//                        arg(antenna->m_name,10).
-//                        arg(ant_angle.x(),3,'f',1).
-//                        arg(ant_angle.y(),3,'f',1).
-//                        arg(ant_angle.z(),3,'f',1);
-//                data.append(ant_ang_str);
-
-//                auto ant_quot_rot = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0) * antenna->m_rotation.inverted() * rotation;
-                auto ant_quot_rot = rotation * antenna->m_rotation.inverted();
+                auto ant_quot_rot = antenna->m_rotation.inverted() * rotation ;
 
                 auto ant_delta_angle = ant_quot_rot.toEulerAngles();
                 auto ant_dang_str = QString("%1 Delta X:%2 Y:%3 Z:%4").
@@ -94,30 +81,6 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
                         arg(ant_delta_angle.y(),3,'f',1).
                         arg(ant_delta_angle.z(),3,'f',1);
                 data.append(ant_dang_str);
-
-//                auto ant_face_vect = ant_quot_rot.rotatedVector(QVector3D(0.0, 0.0, -1.0));
-//                auto ant_face_vect_str = QString("%1 Vector X:%2 Y:%3 Z:%4").
-//                        arg(antenna->m_name,10).
-//                        arg(ant_face_vect.x(),3,'f',1).
-//                        arg(ant_face_vect.y(),3,'f',1).
-//                        arg(ant_face_vect.z(),3,'f',1);
-//                data.append(ant_face_vect_str);
-
-//                auto ant_face_vect = antenna->m_rotation.rotatedVector(QVector3D(0.0, -1.0, 0.0));
-//                auto ant_face_vect_str = QString("%1 Face vector  X:%2 Y:%3 Z:%4").
-//                        arg(antenna->m_name,10).
-//                        arg(ant_face_vect.x(),3,'f',1).
-//                        arg(ant_face_vect.y(),3,'f',1).
-//                        arg(ant_face_vect.z(),3,'f',1);
-//                data.append(ant_face_vect_str);
-
-//                auto ant_face_delta_angle = (ant_nom_quat * antenna->m_rotation * rotation.inverted()).toEulerAngles();
-//                auto ant_fdang_str = QString("%1 Face Delta X:%2 Y:%3 Z:%4").
-//                        arg(antenna->m_name,10).
-//                        arg(ant_face_delta_angle.x(),3,'f',1).
-//                        arg(ant_face_delta_angle.y(),3,'f',1).
-//                        arg(ant_face_delta_angle.z(),3,'f',1);
-//                data.append(ant_fdang_str);
 
                 auto nearest = antenna->m_rad_pattern.data()->nearest_point(ant_quot_rot);
                 auto ant_nearest_str = QString("%1 Rad Phi:%2 theta:%3 amp:%4").
@@ -129,9 +92,11 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
 
                 auto rad_data_index = antenna->m_rad_pattern.data()->get_index(nearest->phi, nearest->theta);
                 auto& rad_data = antenna->m_antenna_data[rad_data_index];
-                auto ant_rad_str = QString("%1 Rad ampl:%2").
+                auto effective = rad_data.m_visibility * nearest->get_amplitude();
+                auto ant_rad_str = QString("%1 Rad ampl:%2 eff:%3").
                         arg(antenna->m_name,10).
-                        arg(rad_data.m_visibility,4,'f',2);
+                        arg(rad_data.m_visibility,4,'f',2).
+                        arg(effective,4,'f',2);
                 data.append(ant_rad_str);
 
             }

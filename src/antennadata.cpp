@@ -1,6 +1,6 @@
 #include "antennadata.h"
 #include "radpatterndata.h"
-
+#include <QDebug>
 
 Antenna::Antenna()
     : m_pos()
@@ -48,6 +48,53 @@ void Antenna::deleteAntennaData()
     m_antenna_data.clear();
 }
 
+QVector3D Antenna::radiationVector(QQuaternion rotation)
+{
+    //View rotation relative to phi=theta=0 null rotation at the antenna
+    auto ant_quot_rot = rotationToAntennaFrame(rotation);
+
+    //Nearest antenna datapoint to the view rotation onto the antenna
+    auto nearest = nearestFromAntennaRotation(ant_quot_rot);
+//    auto nearest = m_rad_pattern.data()->nearest_point(ant_quot_rot);
+//    auto ant_nearest_str = QString("%1 Rad Phi:%2 theta:%3 amp:%4").
+//            arg(m_name,10).
+//            arg(nearest->phi,3,'f',1).
+//            arg(nearest->theta,3,'f',1).
+//            arg(nearest->get_amplitude(),4,'f',2);
+//    qDebug( ant_nearest_str.toLatin1() );
+
+    auto rad_data_index = m_rad_pattern.data()->get_index(nearest->phi, nearest->theta);
+    auto& rad_data = m_antenna_data[rad_data_index];
+    auto effective = rad_data.m_visibility * nearest->get_amplitude();
+    //TODO - Effective should be 3D vector
+
+//    auto ant_rad_str = QString("%1 Rad index:%2 vis:%3 eff:%4")
+//            .arg(m_name,10)
+//            .arg(rad_data_index)
+//            .arg(rad_data.m_visibility,4,'f',2)
+//            .arg(effective,4,'f',2);
+//    qDebug( ant_rad_str.toLatin1() );
+
+    //Antenna phi=theta=0 vector rotated with view rotation
+    auto ant_rad_rot = rotationToAntennaVector(rotation);
+    auto ant_vect = antennaRotationVector(ant_rad_rot);
+
+//    auto ant_vect_str = QString("%1 Vect X:%2 Y:%3 Z:%4").
+//            arg(m_name,10).
+//            arg(ant_vect.x(),5,'f',2,' ').
+//            arg(ant_vect.y(),5,'f',2,' ').
+//            arg(ant_vect.z(),5,'f',2,' ');
+//    qDebug( ant_vect_str.toLatin1() );
+
+    //Effective radiation vector
+    auto ant_rad_vect = ant_vect;
+    ant_rad_vect.normalize();
+    ant_rad_vect *= effective;
+
+    return ant_rad_vect;
+}
+
+
 QDataStream &operator<<(QDataStream &out, const Antenna &antenna)
 {
     out << antenna.m_pos << antenna.m_rotation
@@ -79,6 +126,9 @@ QDataStream &operator>>(QDataStream &in, Antenna &antenna)
 
     return in;
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
 
 
 ////////////////////////////////////////////////////////////////////////////////

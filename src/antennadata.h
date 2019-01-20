@@ -14,6 +14,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
+class AntennaRadiation
+{
+public:
+    AntennaRadiation();
+
+public:
+    QQuaternion     m_rot;
+    QVector3D       m_antenna_vector;
+    QVector3D       m_radiation_vector;
+
+signals:
+
+public slots:
+
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 class AntennaDataPoint : public QObject
 {
     Q_OBJECT
@@ -62,6 +81,18 @@ public:
     QExplicitlySharedDataPointer<RadPatternSet> m_rad_pattern;
 
     void deleteAntennaData();
+    QVector3D radiationVector(QQuaternion rotation);
+
+    //View rotation relative to phi=theta=0 null rotation at the antenna
+    QQuaternion rotationToAntennaFrame(QQuaternion rotation) {return m_rotation.inverted() * rotation ;}
+
+    //Antenna phi=theta=0 rotation wrt. to viewpoint
+    QQuaternion rotationToAntennaVector(QQuaternion rotation) {return rotation.inverted() * m_rotation;}
+
+    //Antenna phi=theta=0 vector rotated with view rotation
+    QVector3D antennaRotationVector(QQuaternion antenna_rotation) {return antenna_rotation.rotatedVector(QVector3D(0.0, 0.0, -1.0));}
+
+    RadPatternPoint* nearestFromAntennaRotation(QQuaternion rotation) {m_rad_pattern.data()->nearest_point(rotation);}
 };
 
 

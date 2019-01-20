@@ -56,53 +56,7 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
                 auto str = QString("%1 has invalid antenna data").arg(antenna->m_name);
                 data.append(str);
             } else {
-                //View rotation relative to phi=theta=0 null rotation at the antenna
-                auto ant_quot_rot = antenna->m_rotation.inverted() * rotation ;
-
-                //Antenna phi=theta=0 vector rotated with view rotation
-                auto ant_rad_rot = rotation.inverted() * antenna->m_rotation;
-                auto ant_vect = ant_rad_rot.rotatedVector(QVector3D(0.0, 0.0, -1.0));
-
-                //Display the antenna vector
-                auto ant_vect_str = QString("%1 Vect X:%2 Y:%3 Z:%4").
-                        arg(antenna->m_name,10).
-                        arg(ant_vect.x(),5,'f',2,' ').
-                        arg(ant_vect.y(),5,'f',2,' ').
-                        arg(ant_vect.z(),5,'f',2,' ');
-                data.append(ant_vect_str);
-
-//                //Display the antenna phi=theta=0 angle relative to view
-//                auto ant_delta_angle = ant_quot_rot.toEulerAngles();
-//                auto ant_dang_str = QString("%1 Delta X:%2 Y:%3 Z:%4").
-//                        arg(antenna->m_name,10).
-//                        arg(ant_delta_angle.x(),3,'f',1).
-//                        arg(ant_delta_angle.y(),3,'f',1).
-//                        arg(ant_delta_angle.z(),3,'f',1);
-//                data.append(ant_dang_str);
-
-                //Nearest antenna datapoint to the view rotation onto the antenna
-                auto nearest = antenna->m_rad_pattern.data()->nearest_point(ant_quot_rot);
-                auto ant_nearest_str = QString("%1 Rad Phi:%2 theta:%3 amp:%4").
-                        arg(antenna->m_name,10).
-                        arg(nearest->phi,3,'f',1).
-                        arg(nearest->theta,3,'f',1).
-                        arg(nearest->get_amplitude(),4,'f',2);
-                data.append(ant_nearest_str);
-
-                auto rad_data_index = antenna->m_rad_pattern.data()->get_index(nearest->phi, nearest->theta);
-                auto& rad_data = antenna->m_antenna_data[rad_data_index];
-                auto effective = rad_data.m_visibility * nearest->get_amplitude();
-                //TODO - Effective should be 3D vector
-
-                auto ant_rad_str = QString("%1 Rad vis:%2 eff:%3")
-                        .arg(antenna->m_name,10)
-                        .arg(rad_data.m_visibility,4,'f',2)
-                        .arg(effective,4,'f',2);
-                data.append(ant_rad_str);
-
-                auto ant_rad_vect = ant_vect;
-                ant_rad_vect.normalize();
-                ant_rad_vect *= effective;
+                auto ant_rad_vect = antenna->radiationVector(rotation);
 
                 auto ant_eff_str = QString("%1 Rad X:%3 Y:%4 Z:%5").
                         arg(antenna->m_name,10)

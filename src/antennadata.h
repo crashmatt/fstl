@@ -92,6 +92,9 @@ public:
     //Antenna phi=theta=0 vector rotated with view rotation
     QVector3D antennaRotationVector(QQuaternion antenna_rotation) {return antenna_rotation.rotatedVector(QVector3D(0.0, 0.0, -1.0));}
 
+    //Antenna radiation vector rotated with view rotation
+    QVector3D antennaRadiationVector(QQuaternion antenna_rotation) {return antenna_rotation.rotatedVector(QVector3D(0.0, 0.0, -1.0));}
+
     RadPatternPoint* nearestFromAntennaRotation(QQuaternion rotation) {m_rad_pattern.data()->nearest_point(rotation);}
 };
 

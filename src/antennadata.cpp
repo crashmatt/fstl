@@ -66,6 +66,7 @@ QVector3D Antenna::radiationVector(QQuaternion rotation)
     auto rad_data_index = m_rad_pattern.data()->get_index(nearest->phi, nearest->theta);
     auto& rad_data = m_antenna_data[rad_data_index];
     auto effective = rad_data.m_visibility * nearest->get_amplitude();
+//   auto effecive3D = rad_data.m_visibility * nearest->get_rad_vector();
     //TODO - Effective should be 3D vector
 
 //    auto ant_rad_str = QString("%1 Rad index:%2 vis:%3 eff:%4")

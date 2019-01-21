@@ -22,9 +22,11 @@ public:
 
     Vertex make_vertex();
     QColor get_color();
-    float get_amplitude();
-    float get_vertical();
-    float get_horizontal();
+    float get_amplitude() {return pow(10, total*0.1);}
+    float get_vertical() {return pow(10, ver*0.1);}
+    float get_horizontal() {return pow(10, hor*0.1);}
+
+    QVector3D get_rad_vector() {return QVector3D(get_horizontal(), get_vertical(), 0.0); }
 
     const float theta;
     const float phi;

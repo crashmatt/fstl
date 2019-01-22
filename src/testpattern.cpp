@@ -17,7 +17,7 @@ TestPattern::TestPattern(QObject *parent, RadPatternData* rad_patterns) : QObjec
   , m_rotation_timeout(0)
   , m_rotations_running(false)
   , m_rotation()
-
+  , m_radio_simulation(NULL)
 {
     reset();
 }

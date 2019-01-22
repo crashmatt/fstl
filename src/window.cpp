@@ -1,4 +1,5 @@
 #include <QMenuBar>
+#include <QThread>
 
 #include "window.h"
 #include "canvas.h"
@@ -8,6 +9,7 @@
 #include "testpattern.h"
 #include "dataprocessor.h"
 #include "globject.h"
+#include "radiosimulation.h"
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
@@ -20,9 +22,11 @@ Window::Window(QWidget *parent) :
     reset_test(new QAction("Reset test", this)),
     step_antenna(new QAction("Step antenna", this)),
     test_pattern(NULL),
+    rad_sim(NULL),
     reset_rotation(new QAction("Reset rotation", this)),
     fast_mode(new QAction("Fast mode", this)),
     start_rotations(new QAction("&Start Rotations", this)),
+    start_simulation(new QAction("Start Si&mulation", this)),
     solid_visible(new QAction("&Soild", this)),
     transparent_visible(new QAction("&Transparent", this)),
     visibility_visible(new QAction("&Visibility", this)),
@@ -112,6 +116,10 @@ Window::Window(QWidget *parent) :
     QObject::connect(start_rotations, &QAction::triggered,
                      this, &Window::start_random_rotations);
 
+    start_simulation->setShortcut(QKeySequence(Qt::Key_M));
+    QObject::connect(start_simulation, &QAction::triggered,
+                     this, &Window::start_radio_simulation);
+
     fast_mode->setShortcut(QKeySequence(Qt::Key_F));
     QObject::connect(fast_mode, &QAction::toggled,
                      test_pattern, &TestPattern::set_speed);
@@ -129,6 +137,7 @@ Window::Window(QWidget *parent) :
     auto test_menu = menuBar()->addMenu("Test");
     test_menu->addAction(start_test);
     test_menu->addAction(start_rotations);
+    test_menu->addAction(start_simulation);
     test_menu->addAction(stop_test);
     test_menu->addSeparator();
     test_menu->addAction(step_antenna);
@@ -273,11 +282,11 @@ void Window::pattern_loaded()
                                         , QColor(128,0,128,120));
             test_pattern->add_antenna(rl_antenna);
 
-//            auto aircraft = new Radio( (QObject*) this, QString("aircraft"), QVector3D(1000,0,0));
-//            aircraft->add_antenna(&cp_antenna);
-//            aircraft->add_antenna(&rr_antenna);
-//            aircraft->add_antenna(&rl_antenna);
-//            radios.append(aircraft);
+            auto aircraft = new Radio( (QObject*) this, QString("aircraft"), QVector3D(1000,0,0));
+            aircraft->add_antenna(&cp_antenna);
+            aircraft->add_antenna(&rr_antenna);
+            aircraft->add_antenna(&rl_antenna);
+            radios.append(aircraft);
 
 //            auto controller = new Radio( (QObject*) this, QString("controller"), QVector3D(0,0,0));
 //            const QQuaternion controller_rot = QQuaternion();
@@ -489,6 +498,21 @@ void Window::start_random_rotations()
     test_pattern->start_rotations(10.0);
 }
 
+void Window::start_radio_simulation()
+{
+    if (rad_sim != NULL){
+        if(rad_sim->isFinished()){
+            rad_sim->deleteLater();
+        } else {
+            qDebug("Radio simulation running, can't start another until complete");
+            return;
+        }
+        rad_sim = NULL;
+    }
+    rad_sim = new RadioSimulation(qobject_cast<QObject*>(this), &this->radios, "output.csv");
+    rad_sim->start();
+    QThread::msleep(500);
+}
 
 bool Window::load_antennas_file(QString &filename)
 {

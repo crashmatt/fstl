@@ -9,6 +9,7 @@
 #include <QQuaternion>
 
 #include "antennadata.h"
+#include "radiosimulation.h"
 #include "time.h"
 
 class RadPatternData;
@@ -83,6 +84,8 @@ public slots:
 private:
     friend QDataStream & operator<<(QDataStream &os, const TestPattern& p);
     friend QDataStream & operator>>(QDataStream &os, TestPattern& p);
+
+    RadioSimulation* m_radio_simulation;
 };
 
 

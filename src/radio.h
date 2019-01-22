@@ -4,6 +4,7 @@
 #include <QObject>
 #include "antennadata.h"
 
+
 class Radio : public QObject
 {
     Q_OBJECT

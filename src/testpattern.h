@@ -12,20 +12,12 @@
 #include "radiosimulation.h"
 #include "time.h"
 
-class RadPatternData;
-
+class Radio;
 
 class TestPattern : public QObject
 {
     Q_OBJECT
 public:    
-//    typedef struct {
-//        double      timestep;
-//        double      timestamp;
-//        double      angle;
-//        QVector3D   direction;
-//    } rotation_step;
-
     typedef struct {
         double      start_time;
         double      end_time;
@@ -33,21 +25,21 @@ public:
         QVector3D   direction;
     } rotation_segment;
 
-    explicit TestPattern(QObject *parent = 0, RadPatternData* rad_patterns = 0);
+    explicit TestPattern(QObject *parent = 0);
     ~TestPattern();
 
-    bool add_antenna(Antenna &antenna);
-    void delete_antennas(void);
+    bool add_radio(Radio &radio);
+    void delete_data(void);
+
+    const uint   TEST_PATTERN_VERSION = 1;
 
 protected:
     bool                m_pattern_running;
-    QList<Antenna*>     m_antennas;
+    QList<Radio*>       m_radios;
+
     int                 m_ant_pos_index;
     int                 m_test_index;
     bool                m_high_speed;
-
-    RadPatternData*     m_rad_patterns;
-//    QList<rotation_step> m_rotation_steps;
 
     rotation_segment    m_rotation_segment;
     double              m_last_rotation_time;
@@ -67,7 +59,6 @@ signals:
     void set_zoom(float zm);
     void redraw();
     void test_completed();
-    void antenna_data(Antenna* antenna);
     void delete_object(QString& obj_name);
     void set_object_visible(QString& obj_name, bool visible);
     void antenna_debug_text(QStringList& data);

@@ -205,20 +205,24 @@ void RadPatternSet::write(QJsonObject &json) const
 
 RadPatternData::RadPatternData(QObject *parent) : QObject(parent)
 {
+    m_patterns = this;
 }
 
 QExplicitlySharedDataPointer<RadPatternSet> RadPatternData::get_data(const QString &pattern_name)
 {
-    return pattern_data.value( pattern_name, QExplicitlySharedDataPointer<RadPatternSet>() );
+    if(m_patterns == NULL){
+        return QExplicitlySharedDataPointer<RadPatternSet>();
+    }
+    return m_patterns->m_pattern_data.value( pattern_name, QExplicitlySharedDataPointer<RadPatternSet>() );
 }
 
 void RadPatternData::add_pattern_data(RadPatternSet* data)
 {
     Q_ASSERT(data != NULL);
-    if(pattern_data.contains(data->set_name)){
-        pattern_data.remove(data->set_name);
+    if(m_pattern_data.contains(data->set_name)){
+        m_pattern_data.remove(data->set_name);
     }
-    pattern_data[data->set_name] = data;
+    m_pattern_data[data->set_name] = data;
 }
 
 void RadPatternData::write(QJsonObject &json) const

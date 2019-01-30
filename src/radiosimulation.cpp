@@ -17,9 +17,9 @@ RotationSegment::RotationSegment()
 {
 }
 
-RadioSimulation::RadioSimulation(QObject *parent, QVector<Radio*> *radios, QString filename)
+RadioSimulation::RadioSimulation(QObject *parent, TestPattern* test_pattern, QString filename)
     : QThread(parent)
-    , m_radios(radios)
+    , m_test_pattern(test_pattern)
     , m_filename(filename)
     , m_halt(false)
     , m_step_time(0.001)

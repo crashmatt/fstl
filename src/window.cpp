@@ -4,6 +4,7 @@
 #include "window.h"
 #include "canvas.h"
 #include "loader.h"
+#include "radio.h"
 #include "radpatterndata.h"
 #include "radpatternloader.h"
 #include "testpattern.h"
@@ -35,7 +36,7 @@ Window::Window(QWidget *parent) :
     visibility(new QMenu("&Object visibility", this)),
     objects_visibility(new QActionGroup(this))
 {
-    setWindowTitle("fstl");
+    setWindowTitle("Antenna");
     setAcceptDrops(true);
 
     QSurfaceFormat format;
@@ -49,8 +50,9 @@ Window::Window(QWidget *parent) :
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
 
+    radios = new Radios(this);
     rad_patterns = new RadPatternData(this);
-    test_pattern = new TestPattern(this, rad_patterns);
+    test_pattern = new TestPattern(this);
     data_processor = new DataProcessor(this);
 
     QObject::connect(canvas, &Canvas::antenna_visibility, test_pattern, &TestPattern::antenna_visibility);
@@ -231,13 +233,14 @@ void Window::pattern_loaded()
 {
     QObject *obj = QObject::sender();
     RadPatternLoader* loader =  qobject_cast<RadPatternLoader*>(obj);
+    Q_ASSERT(loader != NULL);
     auto loaded_filename = loader->filename();
     pending_radpattern_loads.removeAll(loaded_filename);
 
     if(pending_radpattern_loads.isEmpty()){
         QSettings settings(QString("Antenna"), QSettings::IniFormat, this);
         bool loaded = false;
-        test_pattern->delete_antennas();
+        test_pattern->delete_data();
 
         if (settings.contains("last_filepath")){
             QString file = settings.value("last_filepath").toString();
@@ -251,6 +254,8 @@ void Window::pattern_loaded()
         }
 
         if(!loaded){
+            auto aircraft = Radio( (QObject*) this, QString("aircraft"), QVector3D(1000,0,0));
+
             //Antenna just behind cockpit cover
             const QQuaternion cockpit_rot = QQuaternion();
             auto cp_antenna = Antenna( QVector3D(0.00, 0.35, 0.05)
@@ -258,7 +263,7 @@ void Window::pattern_loaded()
                                         , "rad_monopole"
                                         ,"cockpit"
                                         , QColor(0,128,128,120) );
-            test_pattern->add_antenna(cp_antenna);
+            aircraft.add_antenna(cp_antenna);
 
             //Antenna on right side behind wing
             const QQuaternion rear_right_rot =
@@ -269,7 +274,7 @@ void Window::pattern_loaded()
                                         , "rad_monopole"
                                         , "rear_right"
                                         , QColor(128,128,0,120));
-            test_pattern->add_antenna(rr_antenna);
+            aircraft.add_antenna(rr_antenna);
 
             //Antenna on left side behind wing
             const QQuaternion rear_left_rot =
@@ -280,13 +285,9 @@ void Window::pattern_loaded()
                                         , "rad_monopole"
                                         , "rear_left"
                                         , QColor(128,0,128,120));
-            test_pattern->add_antenna(rl_antenna);
+            aircraft.add_antenna(rl_antenna);
 
-            auto aircraft = new Radio( (QObject*) this, QString("aircraft"), QVector3D(1000,0,0));
-            aircraft->add_antenna(&cp_antenna);
-            aircraft->add_antenna(&rr_antenna);
-            aircraft->add_antenna(&rl_antenna);
-            radios.append(aircraft);
+            test_pattern->add_radio(aircraft);
 
 //            auto controller = new Radio( (QObject*) this, QString("controller"), QVector3D(0,0,0));
 //            const QQuaternion controller_rot = QQuaternion();
@@ -509,7 +510,7 @@ void Window::start_radio_simulation()
         }
         rad_sim = NULL;
     }
-    rad_sim = new RadioSimulation(qobject_cast<QObject*>(this), &this->radios, "output.csv");
+    rad_sim = new RadioSimulation(qobject_cast<QObject*>(this), this->test_pattern, "output.csv");
     rad_sim->start();
     QThread::msleep(500);
 }
@@ -523,7 +524,7 @@ bool Window::load_antennas_file(QString &filename)
         return false;
     }
 
-    test_pattern->delete_antennas();
+    test_pattern->delete_data();
     QDataStream in(&loadFile);
     in >> *test_pattern;
     loadFile.close();

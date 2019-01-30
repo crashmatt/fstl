@@ -13,6 +13,7 @@ class DataProcessor;
 class RadPatternData;
 class ObjectConfig;
 class RadioSimulation;
+class Radios;
 
 class Window : public QMainWindow
 {
@@ -83,11 +84,11 @@ private:
     QAction* const effective_visible;
 
     Canvas*        canvas;
+    Radios*        radios;
     TestPattern*   test_pattern;
     DataProcessor* data_processor;
     RadPatternData* rad_patterns;
     RadioSimulation* rad_sim;
-    QVector<Radio*> radios;
 
     QMenu* const visibility;
     QActionGroup* const objects_visibility;

@@ -5,7 +5,7 @@
 #include <QThread>
 #include <QVector3D>
 
-class Radio;
+class TestPattern;
 
 class RotationSegment
 {
@@ -24,7 +24,7 @@ class RadioSimulation : public QThread
 {
     Q_OBJECT
 public:
-    explicit RadioSimulation(QObject *parent, QVector<Radio*> *radios, QString filename);
+    explicit RadioSimulation(QObject *parent, TestPattern* test_pattern, QString filename);
     ~RadioSimulation();
     void run();
 
@@ -35,7 +35,7 @@ public slots:
 //    void stop();
 
 private:
-    QVector<Radio*> *m_radios;
+    TestPattern*    m_test_pattern;
     QString         m_filename;
     bool            m_halt;
     double          m_step_time;

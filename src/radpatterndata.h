@@ -85,7 +85,7 @@ class RadPatternData : public QObject
     Q_OBJECT
 public:
     explicit RadPatternData(QObject *parent = 0);
-    QExplicitlySharedDataPointer<RadPatternSet> get_data(const QString &pattern_name);
+    static QExplicitlySharedDataPointer<RadPatternSet> get_data(const QString &pattern_name);
 
     void write(QJsonObject &json) const;
 
@@ -95,7 +95,9 @@ public slots:
     void add_pattern_data(RadPatternSet* data);
 
 protected:
-    QMap< QString, QExplicitlySharedDataPointer<RadPatternSet> > pattern_data;
+    QMap< QString, QExplicitlySharedDataPointer<RadPatternSet> > m_pattern_data;
+
+    static RadPatternData* m_patterns;
 };
 
 #endif // RADPATTERNDATA_H

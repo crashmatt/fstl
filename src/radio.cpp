@@ -40,20 +40,15 @@ bool Radio::add_antenna(Antenna &antenna)
         }
     }
 
-    //If no radiation pattern is available for antenna then exit
+    //Get radiation pattern if it exits
     auto pattern = RadPatternData::get_data(antenna.m_type);
-    if(pattern.data() == NULL) return false;
-
     //Set antenna rad pattern reference
     antenna.m_rad_pattern = pattern;
 
     auto new_antenna = new Antenna(antenna);
     m_antennas.append(new_antenna);
+    emit antenna_data_update(new_antenna);
 
-    //If size of pattern and antenna data matches then announce it
-    if(antenna.m_rad_pattern.data()->rad_data.size() == antenna.m_antenna_data.size()){
-        emit antenna_data(new_antenna);
-    }
     return true;
 }
 
@@ -61,10 +56,7 @@ void Radio::delete_antennas(void)
 {
     qDeleteAll(m_antennas);
     m_antennas.clear();
-    QString del_objs = "ant_vis*";
-    emit delete_object(del_objs);
-    del_objs = "ant_rad*";
-    emit delete_object(del_objs);
+    emit antenna_data_update(NULL);
 }
 
 
@@ -128,10 +120,7 @@ void Radios::delete_radios(void)
 {
     qDeleteAll(m_radios);
     m_radios.clear();
-    QString del_objs = "ant_vis*";
-    emit delete_object(del_objs);
-    del_objs = "ant_rad*";
-    emit delete_object(del_objs);
+    emit radio_data(NULL, NULL);
 }
 
 bool Radios::add_radio(Radio &radio)
@@ -144,10 +133,16 @@ bool Radios::add_radio(Radio &radio)
     }
 
     auto new_radio = new Radio(radio);
-    m_antennas.append(radio);
+    m_radios.append(new_radio);
+    connect(new_radio, Radio::antenna_data_update, this, Radios::antenna_data_changed);
 
-    emit new_radio(radio);
+    emit radio_data(radio, NULL);
     return true;
+}
+
+void Radios::antenna_data_changed(Radio &radio, Antenna &antenna)
+{
+    emit radio_data(&radio, &antenna);
 }
 
 QDataStream &operator<<(QDataStream &, const Radios &)

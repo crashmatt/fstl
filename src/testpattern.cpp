@@ -7,12 +7,11 @@
 #include "time.h"
 #include "radio.h"
 
-TestPattern::TestPattern(QObject *parent, RadPatternData* rad_patterns) : QObject(parent)
+TestPattern::TestPattern(QObject *parent) : QObject(parent)
   , m_pattern_running(false)
   , m_ant_pos_index(-1)
   , m_test_index(-1)
   , m_high_speed(false)
-  , m_rad_patterns(rad_patterns)
   , m_rotation_segment()
   , m_last_rotation_time(0)
   , m_rotation_timeout(0)
@@ -104,10 +103,11 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
     if(m_test_index >= pattern->rad_data.size()){
         if(m_ant_pos_index >= m_radios[0]->m_antennas.size()-1) {
             m_ant_pos_index = 0;
-            foreach(antenna, m_radios[0]->m_antennas){
-                emit antenna_data(m_radios[0]->m_antennas[m_ant_pos_index]);
-                m_ant_pos_index++;
-            }
+            emit new_radio_visibility_data(m_radios[0]);
+//            foreach(antenna, m_radios[0]->m_antennas){
+//                emit antenna_data(m_radios[0]->m_antennas[m_ant_pos_index]);
+//                m_ant_pos_index++;
+//            }
 
             m_ant_pos_index = -1;
             m_test_index = -1;
@@ -172,7 +172,7 @@ void TestPattern::start_pattern(void)
         //Connect patterns
         foreach(auto antenna, m_radios[0]->m_antennas){
             auto type = antenna->m_type;
-            auto pattern = m_rad_patterns->get_data(type).data();
+            auto pattern = RadPatternData::get_data(type);
             if(pattern == NULL) return;
             antenna->m_rad_pattern = pattern;
         }

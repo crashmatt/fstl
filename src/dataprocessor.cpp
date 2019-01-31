@@ -1,6 +1,7 @@
 #include "dataprocessor.h"
 #include "mesh.h"
 #include "antennadata.h"
+#include "radio.h"
 #include "radpatterndata.h"
 #include "globject.h"
 #include <QMatrix4x4>
@@ -14,28 +15,32 @@ DataProcessor::DataProcessor(QObject *parent) : QObject(parent)
 
 }
 
-void DataProcessor::process_data(Antenna *antenna)
+void DataProcessor::process_data(Radio *radio)
 {
-    Q_ASSERT(antenna != NULL);
-    auto pattern = antenna->m_rad_pattern.data();
-    Q_ASSERT(pattern != NULL);
+    Q_ASSERT(radio != NULL);
 
-    float max_vis = 0.01;
-    for(auto& datapt : antenna->m_antenna_data) {
-//    foreach(AntennaDataPoint &datapt , antenna->m_antenna_data){
-        if(datapt.m_color_visibility > max_vis){
-            max_vis = datapt.m_color_visibility;
+    foreach(auto& antenna, radio->m_antennas){
+        Q_ASSERT(antenna != NULL);
+        auto pattern = antenna->m_rad_pattern.data();
+        Q_ASSERT(pattern != NULL);
+
+        float max_vis = 0.01;
+        for(auto& datapt : antenna->m_antenna_data) {
+    //    foreach(AntennaDataPoint &datapt , antenna->m_antenna_data){
+            if(datapt.m_color_visibility > max_vis){
+                max_vis = datapt.m_color_visibility;
+            }
         }
-    }
-    for(auto& datapt : antenna->m_antenna_data) {
-//    foreach(AntennaDataPoint &datapt, antenna->m_antenna_data){
-        datapt.m_center_visibility = datapt.m_center_color.greenF();
-        datapt.m_visibility = datapt.m_color_visibility / max_vis;
-    }
+        for(auto& datapt : antenna->m_antenna_data) {
+    //    foreach(AntennaDataPoint &datapt, antenna->m_antenna_data){
+            datapt.m_center_visibility = datapt.m_center_color.greenF();
+            datapt.m_visibility = datapt.m_color_visibility / max_vis;
+        }
 
-    build_antenna_visibility_object(antenna);
-    build_antenna_effective_object(antenna);
-    export_antenna_files(antenna);
+        build_antenna_visibility_object(antenna);
+        build_antenna_effective_object(antenna);
+        export_antenna_files(antenna);
+    }
 }
 
 

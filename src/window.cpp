@@ -63,14 +63,13 @@ Window::Window(QWidget *parent) :
     QObject::connect(test_pattern, &TestPattern::set_zoom, canvas, &Canvas::set_zoom);
     connect(test_pattern, SIGNAL(redraw()), canvas, SLOT(update()));
 
-    connect(test_pattern, &TestPattern::antenna_data, data_processor, &DataProcessor::process_data);
+    connect(radios, &Radios::radio_data, data_processor, &DataProcessor::process_data);
     connect(test_pattern, &TestPattern::delete_object, canvas, &Canvas::delete_globject);
 
     connect(canvas, &Canvas::loaded_object, this, &Window::add_object);
     connect(canvas, &Canvas::deleted_object, this, &Window::remove_object);
 
     connect(data_processor, &DataProcessor::built_mesh, canvas, &Canvas::load_mesh);
-    connect(data_processor, &DataProcessor::set_obj_pos, canvas, &Canvas::set_object_pos);
 
     connect(this, &Window::set_object_visible, canvas, &Canvas::set_object_visible);
     connect(test_pattern, &TestPattern::set_object_visible, canvas, &Canvas::set_object_visible);

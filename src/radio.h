@@ -23,7 +23,8 @@ public:
     bool add_antenna(Antenna &antenna);
 
 signals:
-    void antenna_data_update(Radio* radio, Antenna* antenna);
+    void antenna_data_update(Radio& radio, Antenna& antenna);
+    void radio_data_update(Radio& radio);
 
 public slots:
 
@@ -54,11 +55,16 @@ public:
     void delete_radios(void);
     bool add_radio(Radio &radio);
 
+//    static Radios* get_radios() {return s_radios;}
+
 signals:
     void radio_data(Radio* radio, Antenna* antenna);
 
 public slots:
     void antenna_data_changed(Radio &radio, Antenna &antenna);
+
+protected:
+    static Radios* s_radios;
 
 private:
     friend QDataStream & operator<<(QDataStream &os, const Radios& p);

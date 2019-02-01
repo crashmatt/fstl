@@ -12,6 +12,7 @@
 #include "radiosimulation.h"
 #include "time.h"
 
+class Radios;
 class Radio;
 
 class TestPattern : public QObject
@@ -25,17 +26,16 @@ public:
         QVector3D   direction;
     } rotation_segment;
 
-    explicit TestPattern(QObject *parent = 0);
+    explicit TestPattern(QObject *parent, Radios *radios);
     ~TestPattern();
 
-    bool add_radio(Radio &radio);
     void delete_data(void);
 
     const uint   TEST_PATTERN_VERSION = 1;
 
 protected:
+    Radios*             m_radios;
     bool                m_pattern_running;
-    QList<Radio*>       m_radios;
 
     int                 m_ant_pos_index;
     int                 m_test_index;

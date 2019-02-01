@@ -6,6 +6,7 @@
 #include <QVector3D>
 
 class TestPattern;
+class Radios;
 
 class RotationSegment
 {
@@ -24,7 +25,7 @@ class RadioSimulation : public QThread
 {
     Q_OBJECT
 public:
-    explicit RadioSimulation(QObject *parent, TestPattern* test_pattern, QString filename);
+    explicit RadioSimulation(QObject *parent, Radios* radios, TestPattern* test_pattern, QString filename);
     ~RadioSimulation();
     void run();
 
@@ -35,6 +36,7 @@ public slots:
 //    void stop();
 
 private:
+    Radios*         m_radios;
     TestPattern*    m_test_pattern;
     QString         m_filename;
     bool            m_halt;

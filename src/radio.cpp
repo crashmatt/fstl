@@ -47,7 +47,7 @@ bool Radio::add_antenna(Antenna &antenna)
 
     auto new_antenna = new Antenna(antenna);
     m_antennas.append(new_antenna);
-    emit antenna_data_update(new_antenna);
+    emit antenna_data_update( *this, *new_antenna );
 
     return true;
 }
@@ -56,7 +56,7 @@ void Radio::delete_antennas(void)
 {
     qDeleteAll(m_antennas);
     m_antennas.clear();
-    emit antenna_data_update(NULL);
+    emit radio_data_update(*this);
 }
 
 
@@ -92,10 +92,12 @@ QDataStream &operator>>(QDataStream &in, Radio &radio)
 
 Radios::Radios() : QObject(NULL)
 {
+    s_radios = this;
 }
 
 Radios::Radios(QObject *parent)  : QObject(parent)
 {
+    s_radios = this;
 }
 
 Radios::~Radios()
@@ -104,15 +106,17 @@ Radios::~Radios()
 
 Radios::Radios(const Radios& radios)
 {
+    s_radios = this;
     foreach(auto radio, radios.m_radios){
-        add_radio(radio);
+        add_radio(*radio);
     }
 }
 
-Radios::Radios& operator=(const Radios& radios)
+Radios& Radios::operator=(const Radios& radios)
 {
+    s_radios = this;
     foreach(auto radio, radios.m_radios){
-        add_radio(radio);
+        add_radio(*radio);
     }
 }
 
@@ -134,9 +138,10 @@ bool Radios::add_radio(Radio &radio)
 
     auto new_radio = new Radio(radio);
     m_radios.append(new_radio);
-    connect(new_radio, Radio::antenna_data_update, this, Radios::antenna_data_changed);
+//    connect(new_radio, &Radio::antenna_data_update, this, &Radios::antenna_data_changed);
+    connect( new_radio, SIGNAL(antenna_data_update()), this, SLOT(antenna_data_changed()) );
 
-    emit radio_data(radio, NULL);
+    emit radio_data(new_radio, NULL);
     return true;
 }
 

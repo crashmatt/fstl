@@ -52,7 +52,7 @@ Window::Window(QWidget *parent) :
 
     radios = new Radios(this);
     rad_patterns = new RadPatternData(this);
-    test_pattern = new TestPattern(this);
+    test_pattern = new TestPattern(this, radios);
     data_processor = new DataProcessor(this);
 
     QObject::connect(canvas, &Canvas::antenna_visibility, test_pattern, &TestPattern::antenna_visibility);
@@ -286,7 +286,7 @@ void Window::pattern_loaded()
                                         , QColor(128,0,128,120));
             aircraft.add_antenna(rl_antenna);
 
-            test_pattern->add_radio(aircraft);
+            radios->add_radio(aircraft);
 
 //            auto controller = new Radio( (QObject*) this, QString("controller"), QVector3D(0,0,0));
 //            const QQuaternion controller_rot = QQuaternion();
@@ -509,7 +509,7 @@ void Window::start_radio_simulation()
         }
         rad_sim = NULL;
     }
-    rad_sim = new RadioSimulation(qobject_cast<QObject*>(this), this->test_pattern, "output.csv");
+    rad_sim = new RadioSimulation(qobject_cast<QObject*>(this), this->radios, this->test_pattern, "output.csv");
     rad_sim->start();
     QThread::msleep(500);
 }

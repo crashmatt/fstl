@@ -17,8 +17,9 @@ RotationSegment::RotationSegment()
 {
 }
 
-RadioSimulation::RadioSimulation(QObject *parent, TestPattern* test_pattern, QString filename)
+RadioSimulation::RadioSimulation(QObject *parent, Radios* radios, TestPattern* test_pattern, QString filename)
     : QThread(parent)
+    , m_radios(radios)
     , m_test_pattern(test_pattern)
     , m_filename(filename)
     , m_halt(false)
@@ -37,7 +38,6 @@ RadioSimulation::~RadioSimulation()
 
 void RadioSimulation::run()
 {
-    Q_ASSERT(m_radios != NULL);
     m_time = 0;
 //    if (m_radios->length() < 2){
 //        qDebug("RadioSimulation does not have enough radios to simulate");

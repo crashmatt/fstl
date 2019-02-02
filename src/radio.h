@@ -19,14 +19,19 @@ public:
     QVector3D   m_pos;
     QVector<Antenna*> m_antennas;
 
-    void delete_antennas(void);
     bool add_antenna(Antenna &antenna);
+
+    const uint  RADIO_VERSION = 1;
+    const char* RADIO_UUID =  "06709ace-0235-4576-a3f4-9f8320b512f9";
 
 signals:
     void antenna_data_update(Radio& radio, Antenna& antenna);
     void radio_data_update(Radio& radio);
 
 public slots:
+
+protected:
+    void delete_antennas(void);
 
 private:
     friend QDataStream & operator<<(QDataStream &os, const Radio& p);
@@ -56,6 +61,9 @@ public:
     bool add_radio(Radio &radio);
 
 //    static Radios* get_radios() {return s_radios;}
+
+    const uint  RADIOS_VERSION = 1;
+    const char* RADIOS_UUID = "b67f8fc1-7188-48dd-b018-98b09f407484";
 
 signals:
     void radio_data(Radio* radio, Antenna* antenna);

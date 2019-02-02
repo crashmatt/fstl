@@ -170,9 +170,8 @@ void TestPattern::start_pattern(void)
 {
     if(!m_pattern_running){
         //Connect patterns
-        foreach(auto antenna, m_radios->m_radios[0]->m_antennas){
-            auto type = antenna->m_type;
-            auto pattern = RadPatternData::get_data(type);
+        foreach(Antenna *antenna, m_radios->m_radios[0]->m_antennas){
+            auto pattern = antenna->m_rad_pattern;
             if(pattern == NULL) return;
             antenna->m_rad_pattern = pattern;
         }
@@ -327,54 +326,37 @@ void TestPattern::rotation_step(double delta_time)
 }
 
 
+//QDataStream &operator<<(QDataStream &out, const TestPattern &pattern)
+//{
+//    out << pattern.TEST_PATTERN_VERSION;
 
-bool TestPattern::add_radio(Radio &radio)
-{
-    auto new_radio = new Radio(radio);
-    m_radios.append(new_radio);
+//    const int radio_count = pattern.m_radios.size();    //pattern.antenna_count();
+//    out << radio_count;
 
-    return true;
-}
+//    for(int index=0; index < radio_count; index++){
+//        out << *pattern.m_radios[index];
+//    }
 
-void TestPattern::delete_data(void)
-{
-    foreach(auto& radio, m_radios->m_radios){
-        radio->delete_antennas();
-    }
-}
+//    return out;
+//}
 
+//QDataStream &operator>>(QDataStream &in, TestPattern &pattern)
+//{
+//    uint radio_count;
+//    uint version;
+//    Radio radio;
 
-QDataStream &operator<<(QDataStream &out, const TestPattern &pattern)
-{
-    out << pattern.TEST_PATTERN_VERSION;
+//    in >> version ;
+//    if(version != pattern.TEST_PATTERN_VERSION){
+//        qDebug("Input did not match version number.  Did not load");
+//        return in;
+//    }
 
-    const int radio_count = pattern.m_radios.size();    //pattern.antenna_count();
-    out << radio_count;
+//    in >> radio_count;
 
-    for(int index=0; index < radio_count; index++){
-        out << *pattern.m_radios[index];
-    }
-
-    return out;
-}
-
-QDataStream &operator>>(QDataStream &in, TestPattern &pattern)
-{
-    uint radio_count;
-    uint version;
-    Radio radio;
-
-    in >> version ;
-    if(version != pattern.TEST_PATTERN_VERSION){
-        qDebug("Input did not match version number.  Did not load");
-        return in;
-    }
-
-    in >> radio_count;
-
-    for(int index=0; index<radio_count; index++){
-        in >> radio;
-        pattern.add_radio(radio);
-    }
-    return in;
-}
+//    for(int index=0; index<radio_count; index++){
+//        in >> radio;
+//        pattern.add_radio(radio);
+//    }
+//    return in;
+//}

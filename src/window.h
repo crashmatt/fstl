@@ -56,13 +56,16 @@ signals:
 private slots:
     void save_json();
     void save_bsjson();
-    void save_antennas();
-    void load_antennas();
+//    void save_antennas();
+//    void load_antennas();
+    void save_radios();
+    void load_radios();
     void start_random_rotations();
     void start_radio_simulation();
 
 private:
-    bool load_antennas_file(QString &filename);
+//    bool load_antennas_file(QString &filename);
+    bool load_radios_file(QString &filename);
 
     QAction* const about_action;
     QAction* const save_action;

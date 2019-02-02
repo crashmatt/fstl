@@ -14,6 +14,7 @@
 
 class Radios;
 class Radio;
+class RadPatternData;
 
 class TestPattern : public QObject
 {
@@ -28,8 +29,6 @@ public:
 
     explicit TestPattern(QObject *parent, Radios *radios);
     ~TestPattern();
-
-    void delete_data(void);
 
     const uint   TEST_PATTERN_VERSION = 1;
 
@@ -74,15 +73,15 @@ public slots:
     void start_rotations(const double timeout);
 
 private:
-    friend QDataStream & operator<<(QDataStream &os, const TestPattern& p);
-    friend QDataStream & operator>>(QDataStream &os, TestPattern& p);
+//    friend QDataStream & operator<<(QDataStream &os, const TestPattern& p);
+//    friend QDataStream & operator>>(QDataStream &os, TestPattern& p);
 
     RadioSimulation* m_radio_simulation;
 };
 
 
-QDataStream &operator<<(QDataStream &, const TestPattern &);
-QDataStream &operator>>(QDataStream &, TestPattern &);
+//QDataStream &operator<<(QDataStream &, const TestPattern &);
+//QDataStream &operator>>(QDataStream &, TestPattern &);
 
 
 #endif // TESTPATTERN_H

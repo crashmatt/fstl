@@ -72,7 +72,7 @@ void RadioSimulation::run()
         auto line = QString("%1,%2").arg(step).arg(m_time);
         file.write(line.toUtf8());
 
-        foreach(auto radio, *m_radios){
+        foreach(auto radio, m_radios->m_radios){
             foreach(auto antenna, radio->m_antennas){
                 auto rad_vect = antenna->radiationVector(rotation);
                 auto rad_vect_str = QString(",%1,%2,%3").arg(rad_vect.x()).arg(rad_vect.y()).arg(rad_vect.z());

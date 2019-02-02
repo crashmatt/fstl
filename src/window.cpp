@@ -15,8 +15,8 @@
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
     about_action(new QAction("About", this)),
-    save_action(new QAction("Save antennas", this)),
-    load_action(new QAction("Load antennas", this)),
+    save_action(new QAction("Save radios", this)),
+    load_action(new QAction("Load radios", this)),
     quit_action(new QAction("Quit", this)),
     start_test(new QAction("Start test", this)),
     stop_test(new QAction("Sto&p test", this)),
@@ -85,11 +85,11 @@ Window::Window(QWidget *parent) :
 
     save_action->setShortcut(QKeySequence::Save);
     QObject::connect(save_action, &QAction::triggered,
-                     this, &Window::save_antennas);
+                     this, &Window::save_radios);
 
     load_action->setShortcut(QKeySequence::Open);
     QObject::connect(load_action, &QAction::triggered,
-                     this, &Window::load_antennas);
+                     this, &Window::load_radios);
 
     QObject::connect(about_action, &QAction::triggered,
                      this, &Window::on_about);
@@ -237,9 +237,9 @@ void Window::pattern_loaded()
     pending_radpattern_loads.removeAll(loaded_filename);
 
     if(pending_radpattern_loads.isEmpty()){
-        QSettings settings(QString("Antenna"), QSettings::IniFormat, this);
+        QSettings settings(QString("Radios"), QSettings::IniFormat, this);
         bool loaded = false;
-        test_pattern->delete_data();
+        radios->delete_radios();
 
         if (settings.contains("last_filepath")){
             QString file = settings.value("last_filepath").toString();
@@ -248,7 +248,7 @@ void Window::pattern_loaded()
             reply = QMessageBox::question(this, "", "Load default",
                                           QMessageBox::Yes|QMessageBox::No);
             if (reply == QMessageBox::Yes) {
-                loaded = load_antennas_file(file);
+                loaded = load_radios_file(file);
             }
         }
 
@@ -453,11 +453,11 @@ void Window::save_bsjson()
     save(BJson);
 }
 
-void Window::save_antennas()
+void Window::save_radios()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
-                                                    "antennas.dat",
-                                                    tr("Antenna data (*.dat)"));
+                                                    "radios.dat",
+                                                    tr("Radio data (*.dat)"));
     if(fileName == "") return;
 
     QFile saveFile(fileName);
@@ -468,22 +468,22 @@ void Window::save_antennas()
     }
 
     QDataStream out(&saveFile);
-    out << *test_pattern;
+    out << *radios;
     saveFile.close();
 
-    QSettings settings(QString("Antenna"), QSettings::IniFormat, this);
+    QSettings settings(QString("Radios"), QSettings::IniFormat, this);
     settings.setValue("last_filepath", fileName);
 }
 
-void Window::load_antennas()
+void Window::load_radios()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                    "antennas.dat",
-                                                    tr("Antenna data (*.dat)"));
+                                                    "radios.dat",
+                                                    tr("Radio data (*.dat)"));
     if(filename == "") return;
 
-    if(load_antennas_file(filename)){
-        QSettings settings(QString("Antenna"), QSettings::IniFormat, this);
+    if(load_radios_file(filename)){
+        QSettings settings(QString("Radios"), QSettings::IniFormat, this);
         settings.setValue("last_filepath", filename);
     }
 
@@ -514,7 +514,7 @@ void Window::start_radio_simulation()
     QThread::msleep(500);
 }
 
-bool Window::load_antennas_file(QString &filename)
+bool Window::load_radios_file(QString &filename)
 {
     QFile loadFile(filename);
 
@@ -523,9 +523,9 @@ bool Window::load_antennas_file(QString &filename)
         return false;
     }
 
-    test_pattern->delete_data();
+    radios->delete_radios();
     QDataStream in(&loadFile);
-    in >> *test_pattern;
+    in >> *radios;
     loadFile.close();
     return true;
 }

@@ -1,6 +1,7 @@
 #include "radpatterndata.h"
 #include "mesh.h"
 
+
 #define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
 
 RadPatternPoint::RadPatternPoint(int i, float t, float p, float v, float h, float tot)
@@ -205,15 +206,11 @@ void RadPatternSet::write(QJsonObject &json) const
 
 RadPatternData::RadPatternData(QObject *parent) : QObject(parent)
 {
-    m_patterns = this;
 }
 
 QExplicitlySharedDataPointer<RadPatternSet> RadPatternData::get_data(const QString &pattern_name)
 {
-    if(m_patterns == NULL){
-        return QExplicitlySharedDataPointer<RadPatternSet>();
-    }
-    return m_patterns->m_pattern_data.value( pattern_name, QExplicitlySharedDataPointer<RadPatternSet>() );
+    return m_pattern_data.value( pattern_name, QExplicitlySharedDataPointer<RadPatternSet>() );
 }
 
 void RadPatternData::add_pattern_data(RadPatternSet* data)

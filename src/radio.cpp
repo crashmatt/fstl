@@ -22,6 +22,11 @@ Radio::Radio(const Radio& radio) : QObject(radio.parent())
 {
 }
 
+Radio::~Radio()
+{
+    delete_antennas();
+}
+
 Radio& Radio::operator=(const Radio& radio)
 {
     this->setParent(radio.parent());
@@ -41,6 +46,7 @@ bool Radio::add_antenna(Antenna &antenna)
     }
 
     //Get radiation pattern if it exits
+    auto rad_pattern_data = RadPatternData::get_instance();
     auto pattern = RadPatternData::get_data(antenna.m_type);
     //Set antenna rad pattern reference
     antenna.m_rad_pattern = pattern;
@@ -92,12 +98,10 @@ QDataStream &operator>>(QDataStream &in, Radio &radio)
 
 Radios::Radios() : QObject(NULL)
 {
-    s_radios = this;
 }
 
 Radios::Radios(QObject *parent)  : QObject(parent)
 {
-    s_radios = this;
 }
 
 Radios::~Radios()
@@ -106,7 +110,6 @@ Radios::~Radios()
 
 Radios::Radios(const Radios& radios)
 {
-    s_radios = this;
     foreach(auto radio, radios.m_radios){
         add_radio(*radio);
     }
@@ -114,7 +117,6 @@ Radios::Radios(const Radios& radios)
 
 Radios& Radios::operator=(const Radios& radios)
 {
-    s_radios = this;
     foreach(auto radio, radios.m_radios){
         add_radio(*radio);
     }
@@ -150,11 +152,56 @@ void Radios::antenna_data_changed(Radio &radio, Antenna &antenna)
     emit radio_data(&radio, &antenna);
 }
 
-QDataStream &operator<<(QDataStream &, const Radios &)
+QDataStream &operator<<(QDataStream &out, const Radios &radio)
 {
+    const char* uuid = radio.RADIOS_UUID;
+    out << uuid;
 }
 
-QDataStream &operator>>(QDataStream &, Radios &)
+QDataStream &operator>>(QDataStream &in, Radios &radio)
 {
+    unsigned int uuid_len = sizeof(radio.RADIOS_UUID) / sizeof(radio.RADIOS_UUID[0]);
+    char uuid[uuid_len] = "";
+    char* uuid_ref = &uuid[0];
+    in.readBytes(uuid_ref, uuid_len);
+
+    if(uuid != radio.RADIOS_UUID){
+        auto failed_str = QString("Load radios faied UUID:%1").arg( radio.RADIOS_UUID);
+        qDebug(failed_str.toLatin1());
+    }
 }
 
+//QDataStream &operator<<(QDataStream &out, const TestPattern &pattern)
+//{
+//    out << pattern.TEST_PATTERN_VERSION;
+
+//    const int radio_count = pattern.m_radios.size();    //pattern.antenna_count();
+//    out << radio_count;
+
+//    for(int index=0; index < radio_count; index++){
+//        out << *pattern.m_radios[index];
+//    }
+
+//    return out;
+//}
+
+//QDataStream &operator>>(QDataStream &in, TestPattern &pattern)
+//{
+//    uint radio_count;
+//    uint version;
+//    Radio radio;
+
+//    in >> version ;
+//    if(version != pattern.TEST_PATTERN_VERSION){
+//        qDebug("Input did not match version number.  Did not load");
+//        return in;
+//    }
+
+//    in >> radio_count;
+
+//    for(int index=0; index<radio_count; index++){
+//        in >> radio;
+//        pattern.add_radio(radio);
+//    }
+//    return in;
+//}

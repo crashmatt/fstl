@@ -43,6 +43,7 @@ public:
 
 class RadPatternSet : public QSharedData
 {
+    Q_OBJECT
 
     union index_id {
         struct _t{
@@ -62,7 +63,6 @@ public:
     bool build_maps();
     RadPatternPoint* get_point(int phi, int theta);
     int get_index(int phi, int theta);
-//    RadPatternPoint* get_point_at_index(uint phi_index, uint theta_index);
     RadPatternPoint* nearest_point(QQuaternion rot);
     Mesh* create_mesh();
     void make_indices(std::vector<GLuint>& indices);

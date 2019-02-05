@@ -14,25 +14,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-class AntennaRadiation
-{
-public:
-    AntennaRadiation();
-
-public:
-    QQuaternion     m_rot;
-    QVector3D       m_antenna_vector;
-    QVector3D       m_radiation_vector;
-
-signals:
-
-public slots:
-
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
-
 class AntennaDataPoint : public QObject
 {
     Q_OBJECT

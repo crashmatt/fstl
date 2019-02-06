@@ -203,9 +203,11 @@ void RadPatternSet::write(QJsonObject &json) const
 
 ////////////////////////////////////////////////////////////////////////////////
 
+RadPatternData* RadPatternData::s_instance = NULL;
 
 RadPatternData::RadPatternData(QObject *parent) : QObject(parent)
 {
+    s_instance = this;
 }
 
 QExplicitlySharedDataPointer<RadPatternSet> RadPatternData::get_data(const QString &pattern_name)

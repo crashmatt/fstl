@@ -20,6 +20,10 @@ Radio::Radio(const Radio& radio) : QObject(radio.parent())
     ,m_pos(radio.m_pos)
     ,m_antennas(radio.m_antennas)
 {
+    foreach(auto ant, radio.m_antennas){
+        auto &antenna = *ant;
+        add_antenna(antenna);
+    }
 }
 
 Radio::~Radio()
@@ -47,7 +51,7 @@ bool Radio::add_antenna(Antenna &antenna)
 
     //Get radiation pattern if it exits
     auto rad_pattern_data = RadPatternData::get_instance();
-    auto pattern = RadPatternData::get_data(antenna.m_type);
+    auto pattern = rad_pattern_data->get_data(antenna.m_type);
     //Set antenna rad pattern reference
     antenna.m_rad_pattern = pattern;
 

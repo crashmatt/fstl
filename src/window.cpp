@@ -260,7 +260,7 @@ void Window::pattern_loaded()
             auto cp_antenna = Antenna( QVector3D(0.00, 0.35, 0.05)
                                         , cockpit_rot
                                         , "rad_monopole"
-                                        ,"cockpit"
+                                        , "cockpit"
                                         , QColor(0,128,128,120) );
             aircraft.add_antenna(cp_antenna);
 

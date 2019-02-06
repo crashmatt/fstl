@@ -43,8 +43,6 @@ public:
 
 class RadPatternSet : public QSharedData
 {
-    Q_OBJECT
-
     union index_id {
         struct _t{
             int16_t phi;
@@ -86,7 +84,7 @@ class RadPatternData : public QObject
 public:
     explicit RadPatternData(QObject *parent = 0);
     QExplicitlySharedDataPointer<RadPatternSet> get_data(const QString &pattern_name);
-    static RadPatternData* get_instance();
+    static RadPatternData* get_instance() {return RadPatternData::s_instance;};
 
     void write(QJsonObject &json) const;
 
@@ -97,6 +95,8 @@ public slots:
 
 protected:
     QMap< QString, QExplicitlySharedDataPointer<RadPatternSet> > m_pattern_data;
+
+    static RadPatternData* s_instance;
 };
 
 #endif // RADPATTERNDATA_H

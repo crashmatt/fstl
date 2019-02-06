@@ -36,7 +36,7 @@ void RadPatternLoader::run()
 }
 
 
-RadPatternPoint* RadPatternLoader::point_from_line(QObject* parent, QByteArray &line, int index)
+RadPatternPoint* RadPatternLoader::point_from_line(QByteArray &line, int index)
 {
     const auto parts = line.trimmed().split(',');
     if(parts.count() < 8){
@@ -79,7 +79,7 @@ RadPatternSet* RadPatternLoader::load_rad_pattern()
     int index  = 0;
     while(!file.atEnd()){
         auto line = file.readLine();
-        RadPatternPoint* radpt = point_from_line(this, line, index);
+        RadPatternPoint* radpt = point_from_line(line, index);
         if(radpt != NULL){
             rad_data.append(radpt);
         }

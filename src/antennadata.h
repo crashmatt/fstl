@@ -14,12 +14,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-class AntennaDataPoint : public QObject
+class AntennaDataPoint
 {
-    Q_OBJECT
 public:
     AntennaDataPoint();
-    explicit AntennaDataPoint(QObject *parent, const QQuaternion &rot, float center, float visibility);
+    explicit AntennaDataPoint(const QQuaternion &rot, float center, float visibility);
     AntennaDataPoint(const AntennaDataPoint&);
     AntennaDataPoint& operator=(const AntennaDataPoint&);
 

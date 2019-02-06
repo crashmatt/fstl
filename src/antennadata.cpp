@@ -134,8 +134,8 @@ QDataStream &operator>>(QDataStream &in, Antenna &antenna)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-AntennaDataPoint::AntennaDataPoint() : QObject(NULL)
-  , m_rot()
+AntennaDataPoint::AntennaDataPoint()
+  : m_rot()
   , m_center_color(0,0,0,0)
   , m_center_visibility(0.0)
   , m_color_visibility(0.0)
@@ -143,8 +143,8 @@ AntennaDataPoint::AntennaDataPoint() : QObject(NULL)
 {
 }
 
-AntennaDataPoint::AntennaDataPoint(QObject *parent, const QQuaternion &rot, float center, float visibility) : QObject(parent)
-  , m_rot(rot)
+AntennaDataPoint::AntennaDataPoint(const QQuaternion &rot, float center, float visibility)
+  : m_rot(rot)
   , m_center_color(center)
   , m_center_visibility(0.0)
   , m_color_visibility(visibility)
@@ -152,8 +152,8 @@ AntennaDataPoint::AntennaDataPoint(QObject *parent, const QQuaternion &rot, floa
 {
 }
 
-AntennaDataPoint::AntennaDataPoint(const AntennaDataPoint& antenna) : QObject(antenna.parent())
-  , m_rot(antenna.m_rot)
+AntennaDataPoint::AntennaDataPoint(const AntennaDataPoint& antenna)
+  : m_rot(antenna.m_rot)
   , m_center_color(antenna.m_center_color)
   , m_center_visibility(antenna.m_center_visibility)
   , m_color_visibility(antenna.m_color_visibility)

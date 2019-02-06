@@ -26,7 +26,7 @@ public:
 
 protected:
     RadPatternSet* load_rad_pattern();
-    RadPatternPoint* point_from_line(QObject* parent, QByteArray &line, int index);
+    RadPatternPoint* point_from_line(QByteArray &line, int index);
 
 signals:
     void loaded_file(QString m_filename);

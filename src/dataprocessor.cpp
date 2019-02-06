@@ -17,7 +17,7 @@ DataProcessor::DataProcessor(QObject *parent) : QObject(parent)
 
 void DataProcessor::process_data(Radio *radio)
 {
-    Q_ASSERT(radio != NULL);
+    if(radio == NULL) return;
 
     foreach(auto& antenna, radio->m_antennas){
         Q_ASSERT(antenna != NULL);

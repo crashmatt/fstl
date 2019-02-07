@@ -163,23 +163,39 @@ void Radios::antenna_data_changed(Radio &radio, Antenna &antenna)
     emit radio_data(&radio, &antenna);
 }
 
-QDataStream &operator<<(QDataStream &out, const Radios &radio)
+QDataStream &operator<<(QDataStream &out, const Radios &radios)
 {
-    const char* uuid = radio.RADIOS_UUID;
+    const char* uuid = radios.RADIOS_UUID;
     out << uuid;
+
+    const int radio_count = radios.m_radios.size();
+    out << radio_count;
+
+    for(int index=0; index < radio_count; index++){
+        out << *radios.m_radios[index];
+    }
 }
 
-QDataStream &operator>>(QDataStream &in, Radios &radio)
+QDataStream &operator>>(QDataStream &in, Radios &radios)
 {
-    unsigned int uuid_len = sizeof(radio.RADIOS_UUID) / sizeof(radio.RADIOS_UUID[0]);
+    int radio_count;
+    unsigned int uuid_len = sizeof(radios.RADIOS_UUID) / sizeof(radios.RADIOS_UUID[0]);
     char uuid[uuid_len] = "";
     char* uuid_ref = &uuid[0];
     in.readBytes(uuid_ref, uuid_len);
 
-    if(uuid != radio.RADIOS_UUID){
-        auto failed_str = QString("Load radios faied UUID:%1").arg( radio.RADIOS_UUID);
+    if(uuid != radios.RADIOS_UUID){
+        auto failed_str = QString("Load radios faied UUID:%1").arg( radios.RADIOS_UUID);
         qDebug(failed_str.toLatin1());
     }
+
+     in >> radio_count;
+
+     for(int index=0; index<radio_count; index++){
+         auto radio = new Radio();
+         in >> *radio;
+         radios.add_radio(std::move(radio));
+     }
 }
 
 //QDataStream &operator<<(QDataStream &out, const TestPattern &pattern)

@@ -105,7 +105,7 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
     if(m_test_index >= pattern->rad_data.size()){
         if(m_ant_pos_index >= radios[0]->m_antennas.size()-1) {
             m_ant_pos_index = 0;
-            emit new_radio_visibility_data(radios[0]);
+            radios[0]->antennaDataChanged(NULL);
 //            foreach(antenna, m_radios[0]->m_antennas){
 //                emit antenna_data(m_radios[0]->m_antennas[m_ant_pos_index]);
 //                m_ant_pos_index++;

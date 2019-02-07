@@ -59,7 +59,6 @@ signals:
     void delete_object(QString& obj_name);
     void set_object_visible(QString& obj_name, bool visible);
     void antenna_debug_text(QStringList& data);
-    void new_radio_visibility_data(Radio* radio);
 
 public slots:
     void antenna_visibility(int index, QQuaternion rotation, float center_color, float color_visibility);

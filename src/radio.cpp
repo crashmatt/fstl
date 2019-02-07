@@ -63,6 +63,11 @@ bool Radio::add_antenna(Antenna *antenna)
     return true;
 }
 
+void Radio::antennaDataChanged(Antenna *antenna)
+{
+    emit antenna_data_update( *this, *antenna );
+}
+
 void Radio::delete_antennas(void)
 {
     qDeleteAll(m_antennas);
@@ -146,7 +151,8 @@ bool Radios::add_radio(Radio *radio)
     }
 
     m_radios.append(rad);
-    connect( rad, SIGNAL(antenna_data_update()), this, SLOT(antenna_data_changed()) );
+//    connect( rad, SIGNAL(antenna_data_update()), this, SLOT(antenna_data_changed()) );
+    connect( rad, &Radio::antenna_data_update, this, &Radios::antenna_data_changed );
 
     emit radio_data(rad, NULL);
     return true;

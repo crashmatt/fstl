@@ -29,6 +29,7 @@ signals:
     void radio_data_update(Radio& radio);
 
 public slots:
+    void antennaDataChanged(Antenna *antenna);
 
 protected:
     void delete_antennas(void);

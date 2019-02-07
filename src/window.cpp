@@ -63,7 +63,6 @@ Window::Window(QWidget *parent) :
     QObject::connect(test_pattern, &TestPattern::set_zoom, canvas, &Canvas::set_zoom);
     connect(test_pattern, SIGNAL(redraw()), canvas, SLOT(update()));
 
-    connect(test_pattern, &TestPattern::new_radio_visibility_data, data_processor, &DataProcessor::process_data);
     connect(radios, &Radios::radio_data, data_processor, &DataProcessor::process_data);
     connect(test_pattern, &TestPattern::delete_object, canvas, &Canvas::delete_globject);
 

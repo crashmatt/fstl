@@ -253,40 +253,40 @@ void Window::pattern_loaded()
         }
 
         if(!loaded){
-            auto aircraft = Radio( (QObject*) this, QString("aircraft"), QVector3D(1000,0,0));
+            auto aircraft = new Radio( (QObject*) this, QString("aircraft"), QVector3D(1000,0,0));
 
             //Antenna just behind cockpit cover
             const QQuaternion cockpit_rot = QQuaternion();
-            auto cp_antenna = Antenna( QVector3D(0.00, 0.35, 0.05)
+            auto cp_antenna = new Antenna( QVector3D(0.00, 0.35, 0.05)
                                         , cockpit_rot
                                         , "rad_monopole"
                                         , "cockpit"
                                         , QColor(0,128,128,120) );
-            aircraft.add_antenna(cp_antenna);
+            aircraft->add_antenna(std::move(cp_antenna));
 
             //Antenna on right side behind wing
             const QQuaternion rear_right_rot =
                     QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), -135) *
                     QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
-            auto rr_antenna = Antenna( QVector3D(0.05, -0.1, 0.0)
+            auto rr_antenna = new Antenna( QVector3D(0.05, -0.1, 0.0)
                                         , rear_right_rot
                                         , "rad_monopole"
                                         , "rear_right"
                                         , QColor(128,128,0,120));
-            aircraft.add_antenna(rr_antenna);
+            aircraft->add_antenna(std::move(rr_antenna));
 
             //Antenna on left side behind wing
             const QQuaternion rear_left_rot =
                     QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), 135) *
                     QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
-            auto rl_antenna = Antenna( QVector3D(-0.05, -0.1, 0.0)
+            auto rl_antenna = new Antenna( QVector3D(-0.05, -0.1, 0.0)
                                         , rear_left_rot
                                         , "rad_monopole"
                                         , "rear_left"
                                         , QColor(128,0,128,120));
-            aircraft.add_antenna(rl_antenna);
+            aircraft->add_antenna(rl_antenna);
 
-            radios->add_radio(aircraft);
+            radios->add_radio(std::move(aircraft));
 
 //            auto controller = new Radio( (QObject*) this, QString("controller"), QVector3D(0,0,0));
 //            const QQuaternion controller_rot = QQuaternion();

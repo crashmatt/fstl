@@ -19,7 +19,7 @@ public:
     QVector3D   m_pos;
     QVector<Antenna*> m_antennas;
 
-    bool add_antenna(Antenna &antenna);
+    bool add_antenna(Antenna *antenna);
 
     const uint  RADIO_VERSION = 1;
     const char* RADIO_UUID =  "06709ace-0235-4576-a3f4-9f8320b512f9";
@@ -58,7 +58,7 @@ public:
     QList<Radio*> m_radios;
 
     void delete_radios(void);
-    bool add_radio(Radio &radio);
+    bool add_radio(Radio *radio);
 
 //    static Radios* get_radios() {return s_radios;}
 

@@ -21,8 +21,8 @@ Radio::Radio(const Radio& radio) : QObject(radio.parent())
     ,m_antennas(radio.m_antennas)
 {
     foreach(auto ant, radio.m_antennas){
-        auto &antenna = *ant;
-        add_antenna(antenna);
+        auto antenna = new Antenna(*ant);
+        add_antenna(std::move(antenna));
     }
 }
 
@@ -40,22 +40,23 @@ Radio& Radio::operator=(const Radio& radio)
 }
 
 
-bool Radio::add_antenna(Antenna &antenna)
+bool Radio::add_antenna(Antenna *antenna)
 {
+    auto new_antenna = std::move(antenna);
     //Don't add an antenna that already exists
     foreach(auto ant, m_antennas){
-        if(ant->m_name == antenna.m_name){
+        if(ant->m_name == new_antenna->m_name){
+            delete(new_antenna);
             return false;
         }
     }
 
     //Get radiation pattern if it exits
     auto rad_pattern_data = RadPatternData::get_instance();
-    auto pattern = rad_pattern_data->get_data(antenna.m_type);
+    auto pattern = rad_pattern_data->get_data(new_antenna->m_type);
     //Set antenna rad pattern reference
-    antenna.m_rad_pattern = pattern;
+    new_antenna->m_rad_pattern = pattern;
 
-    auto new_antenna = new Antenna(antenna);
     m_antennas.append(new_antenna);
     emit antenna_data_update( *this, *new_antenna );
 
@@ -85,13 +86,13 @@ QDataStream &operator<<(QDataStream &out, const Radio &radio)
 QDataStream &operator>>(QDataStream &in, Radio &radio)
 {
     int count;
-    Antenna antenna;
+    auto antenna = new Antenna();
 
     in >> count;
 
     for(int index=0; index<count; index++){
-        in >> antenna;
-        radio.add_antenna(antenna);
+        in >> *antenna;
+        radio.add_antenna(std::move(antenna));
     }
     return in;
 }
@@ -115,14 +116,14 @@ Radios::~Radios()
 Radios::Radios(const Radios& radios)
 {
     foreach(auto radio, radios.m_radios){
-        add_radio(*radio);
+        add_radio(radio);
     }
 }
 
 Radios& Radios::operator=(const Radios& radios)
 {
     foreach(auto radio, radios.m_radios){
-        add_radio(*radio);
+        add_radio(radio);
     }
 }
 
@@ -133,21 +134,21 @@ void Radios::delete_radios(void)
     emit radio_data(NULL, NULL);
 }
 
-bool Radios::add_radio(Radio &radio)
+bool Radios::add_radio(Radio *radio)
 {
+    auto rad = std::move(radio);
     //Don't add an antenna that already exists
     foreach(auto rad, m_radios){
-        if(rad->m_name == radio.m_name){
+        if(rad->m_name == rad->m_name){
+            delete(rad);
             return false;
         }
     }
 
-    auto new_radio = new Radio(radio);
-    m_radios.append(new_radio);
-//    connect(new_radio, &Radio::antenna_data_update, this, &Radios::antenna_data_changed);
-    connect( new_radio, SIGNAL(antenna_data_update()), this, SLOT(antenna_data_changed()) );
+    m_radios.append(rad);
+    connect( rad, SIGNAL(antenna_data_update()), this, SLOT(antenna_data_changed()) );
 
-    emit radio_data(new_radio, NULL);
+    emit radio_data(rad, NULL);
     return true;
 }
 

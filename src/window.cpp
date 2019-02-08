@@ -264,27 +264,27 @@ void Window::pattern_loaded()
                                         , QColor(0,128,128,120) );
             aircraft->add_antenna(std::move(cp_antenna));
 
-//            //Antenna on right side behind wing
-//            const QQuaternion rear_right_rot =
-//                    QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), -135) *
-//                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
-//            auto rr_antenna = new Antenna( QVector3D(0.05, -0.1, 0.0)
-//                                        , rear_right_rot
-//                                        , "rad_monopole"
-//                                        , "rear_right"
-//                                        , QColor(128,128,0,120));
-//            aircraft->add_antenna(std::move(rr_antenna));
+            //Antenna on right side behind wing
+            const QQuaternion rear_right_rot =
+                    QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), -135) *
+                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
+            auto rr_antenna = new Antenna( QVector3D(0.05, -0.1, 0.0)
+                                        , rear_right_rot
+                                        , "rad_monopole"
+                                        , "rear_right"
+                                        , QColor(128,128,0,120));
+            aircraft->add_antenna(std::move(rr_antenna));
 
-//            //Antenna on left side behind wing
-//            const QQuaternion rear_left_rot =
-//                    QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), 135) *
-//                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
-//            auto rl_antenna = new Antenna( QVector3D(-0.05, -0.1, 0.0)
-//                                        , rear_left_rot
-//                                        , "rad_monopole"
-//                                        , "rear_left"
-//                                        , QColor(128,0,128,120));
-//            aircraft->add_antenna(rl_antenna);
+            //Antenna on left side behind wing
+            const QQuaternion rear_left_rot =
+                    QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), 135) *
+                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
+            auto rl_antenna = new Antenna( QVector3D(-0.05, -0.1, 0.0)
+                                        , rear_left_rot
+                                        , "rad_monopole"
+                                        , "rear_left"
+                                        , QColor(128,0,128,120));
+            aircraft->add_antenna(rl_antenna);
 
             radios->add_radio(std::move(aircraft));
 

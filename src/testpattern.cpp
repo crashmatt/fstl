@@ -33,6 +33,8 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
     auto &radios = m_radios->m_radios;
     if(radios.count() < 1) return;
 
+    if(radios[0]->m_antennas.count() < 1) return;
+
     if(!m_pattern_running){
         auto data = QStringList();
         auto view_angles = rotation.toEulerAngles();
@@ -196,6 +198,8 @@ void TestPattern::stop_pattern(void)
 bool TestPattern::set_antenna_pos_to_index(int index)
 {
     if(m_radios->m_radios.count() < 1) return false;
+    if(m_radios->m_radios[0]->m_antennas.count() < 1) return false;
+
     if( (index >= m_radios->m_radios[0]->m_antennas.size()) || (index < 0) ){
         m_ant_pos_index = index;
         QVector3D pos = {0.0, 0.0, 0.0};

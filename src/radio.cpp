@@ -78,6 +78,8 @@ void Radio::delete_antennas(void)
 
 QDataStream &operator<<(QDataStream &out, const Radio &radio)
 {
+    out << Radio::RADIO_VERSION;
+
     const int count = radio.m_antennas.size();    //pattern.antenna_count();
     out << count;
 
@@ -90,12 +92,19 @@ QDataStream &operator<<(QDataStream &out, const Radio &radio)
 
 QDataStream &operator>>(QDataStream &in, Radio &radio)
 {
-    int count;
-    auto antenna = new Antenna();
+    uint version = 0;
+    in >> version;
 
+    if(version != Radio::RADIO_VERSION) {
+        in.setStatus(QDataStream::ReadCorruptData);
+        return in;
+    }
+
+    int count;
     in >> count;
 
     for(int index=0; index<count; index++){
+        auto antenna = new Antenna();
         in >> *antenna;
         radio.add_antenna(std::move(antenna));
     }
@@ -104,7 +113,6 @@ QDataStream &operator>>(QDataStream &in, Radio &radio)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-
 
 Radios::Radios() : QObject(NULL)
 {
@@ -165,8 +173,7 @@ void Radios::antenna_data_changed(Radio &radio, Antenna &antenna)
 
 QDataStream &operator<<(QDataStream &out, const Radios &radios)
 {
-    const char* uuid = radios.RADIOS_UUID;
-    out << uuid;
+    out << Radios::RADIOS_VERSION;
 
     const int radio_count = radios.m_radios.size();
     out << radio_count;
@@ -178,24 +185,22 @@ QDataStream &operator<<(QDataStream &out, const Radios &radios)
 
 QDataStream &operator>>(QDataStream &in, Radios &radios)
 {
-    int radio_count;
-    unsigned int uuid_len = sizeof(radios.RADIOS_UUID) / sizeof(radios.RADIOS_UUID[0]);
-    char uuid[uuid_len] = "";
-    char* uuid_ref = &uuid[0];
-    in.readBytes(uuid_ref, uuid_len);
+    uint version = 0;
+    in >> version;
 
-    if(uuid != radios.RADIOS_UUID){
-        auto failed_str = QString("Load radios faied UUID:%1").arg( radios.RADIOS_UUID);
-        qDebug(failed_str.toLatin1());
+    if(version != Radios::RADIOS_VERSION) {
+        in.setStatus(QDataStream::ReadCorruptData);
+        return in;
     }
 
-     in >> radio_count;
+    int radio_count;
+    in >> radio_count;
 
-     for(int index=0; index<radio_count; index++){
-         auto radio = new Radio();
-         in >> *radio;
-         radios.add_radio(std::move(radio));
-     }
+    for(int index=0; index<radio_count; index++){
+        auto radio = new Radio();
+        in >> *radio;
+        radios.add_radio(std::move(radio));
+    }
 }
 
 //QDataStream &operator<<(QDataStream &out, const TestPattern &pattern)

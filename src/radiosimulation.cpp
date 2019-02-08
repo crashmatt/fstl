@@ -60,6 +60,16 @@ void RadioSimulation::run()
         return;
     }
 
+    auto header = QString("step,time");
+    foreach(auto radio, m_radios->m_radios){
+        foreach(auto antenna, radio->m_antennas){
+            auto hdr_part_str = QString(",%1_X,%1_Y,%1_Z").arg(antenna->m_name);
+            header += hdr_part_str;
+        }
+    }
+    file.write(header.toUtf8());
+    file.write("\r\n");
+
     QQuaternion rotation;
     RotationSegment segment;
 

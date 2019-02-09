@@ -76,6 +76,30 @@ void Radio::delete_antennas(void)
 }
 
 
+void Radio::write_config(QJsonObject &json) const
+{
+    QJsonValue name(m_name);
+    json["name"] = name;
+
+    QJsonObject pos;
+    QJsonValue Xpos(m_pos.x());
+    QJsonValue Ypos(m_pos.y());
+    QJsonValue Zpos(m_pos.z());
+    pos["X"] = Xpos;
+    pos["Y"] = Ypos;
+    pos["Z"] = Zpos;
+    json["pos"] = pos;
+
+    QJsonArray antennas;
+    foreach (const auto antenna, m_antennas) {
+        QJsonObject antennaObject;
+        antenna->write_config(antennaObject);
+        antennas.append(antennaObject);
+    }
+    json["antennas"] = antennas;
+}
+
+
 QDataStream &operator<<(QDataStream &out, const Radio &radio)
 {
     out << Radio::RADIO_VERSION;
@@ -182,6 +206,18 @@ QDataStream &operator<<(QDataStream &out, const Radios &radios)
         out << *radios.m_radios[index];
     }
 }
+
+void Radios::write_config(QJsonObject &json) const
+{
+    QJsonArray radios;
+    foreach (const auto radio, m_radios) {
+        QJsonObject radioObject;
+        radio->write_config(radioObject);
+        radios.append(radioObject);
+    }
+    json["radios"] = radios;
+}
+
 
 QDataStream &operator>>(QDataStream &in, Radios &radios)
 {

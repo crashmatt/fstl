@@ -49,7 +49,7 @@ public:
     explicit Antenna(QVector3D pos, QQuaternion rot, QString m_type, QString m_name, QColor color);
     ~Antenna();
     Antenna(const Antenna&);
-    Antenna& operator=(const Antenna&);
+//    Antenna& operator=(const Antenna&);
 
     QVector3D   m_pos;
     QQuaternion m_rotation;
@@ -58,10 +58,15 @@ public:
     QColor      m_color;
 
     QVector<AntennaDataPoint>                   m_antenna_data;
+    QVector<QVector4D>                          m_rotation_config;
     QExplicitlySharedDataPointer<RadPatternSet> m_rad_pattern;
 
     void deleteAntennaData();
     QVector3D radiationVector(QQuaternion rotation);
+
+    void write_config(QJsonObject &json) const;
+
+    void addRotation(QVector3D axis, float angle);
 
     //View rotation relative to phi=theta=0 null rotation at the antenna
     QQuaternion rotationToAntennaFrame(QQuaternion rotation) {return m_rotation.inverted() * rotation ;}

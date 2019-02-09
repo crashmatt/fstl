@@ -20,6 +20,8 @@ public:
 
     bool add_antenna(Antenna *antenna);
 
+    void write_config(QJsonObject &json) const;
+
     static const uint RADIO_VERSION = 0xAB01;
 
 signals:
@@ -59,8 +61,7 @@ public:
     void delete_radios(void);
     bool add_radio(Radio *radio);
 
-//    static Radios* get_radios() {return s_radios;}
-
+    void write_config(QJsonObject &json) const;
 
     static const uint RADIOS_VERSION = 0x5A01;
 

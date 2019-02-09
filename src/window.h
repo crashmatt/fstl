@@ -60,6 +60,8 @@ private slots:
 //    void load_antennas();
     void save_radios();
     void load_radios();
+    void save_config();
+    void load_config();
     void start_random_rotations();
     void start_radio_simulation();
 
@@ -70,6 +72,8 @@ private:
     QAction* const about_action;
     QAction* const save_action;
     QAction* const load_action;
+    QAction* const save_config_action;
+    QAction* const load_config_action;
     QAction* const quit_action;
     QAction* const start_test;
     QAction* const stop_test;

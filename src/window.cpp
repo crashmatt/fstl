@@ -17,6 +17,8 @@ Window::Window(QWidget *parent) :
     about_action(new QAction("About", this)),
     save_action(new QAction("Save radios", this)),
     load_action(new QAction("Load radios", this)),
+    save_config_action(new QAction("Save config", this)),
+    load_config_action(new QAction("Load config", this)),
     quit_action(new QAction("Quit", this)),
     start_test(new QAction("Start test", this)),
     stop_test(new QAction("Sto&p test", this)),
@@ -91,6 +93,14 @@ Window::Window(QWidget *parent) :
     QObject::connect(load_action, &QAction::triggered,
                      this, &Window::load_radios);
 
+//    save_config_action->setShortcut(QKeySequence::Save);
+    QObject::connect(save_config_action, &QAction::triggered,
+                     this, &Window::save_config);
+
+//    load_config_action->setShortcut(QKeySequence::Open);
+    QObject::connect(load_config_action, &QAction::triggered,
+                     this, &Window::load_config);
+
     QObject::connect(about_action, &QAction::triggered,
                      this, &Window::on_about);
 
@@ -130,6 +140,10 @@ Window::Window(QWidget *parent) :
     file_menu->addAction(load_action);
     file_menu->addSeparator();
     file_menu->addAction(save_action);
+    file_menu->addSeparator();
+    file_menu->addAction(load_config_action);
+    file_menu->addSeparator();
+    file_menu->addAction(save_config_action);
     file_menu->addSeparator();
     file_menu->addAction(quit_action);
 
@@ -265,25 +279,29 @@ void Window::pattern_loaded()
             aircraft->add_antenna(std::move(cp_antenna));
 
             //Antenna on right side behind wing
-            const QQuaternion rear_right_rot =
-                    QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), -135) *
-                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
+//            const QQuaternion rear_right_rot =
+//                    QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), -135) *
+//                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
             auto rr_antenna = new Antenna( QVector3D(0.05, -0.1, 0.0)
-                                        , rear_right_rot
+                                        , QQuaternion()
                                         , "rad_monopole"
                                         , "rear_right"
                                         , QColor(128,128,0,120));
+            rr_antenna->addRotation(QVector3D(1,0,0), -90.0);
+            rr_antenna->addRotation(QVector3D(0,0,1), -135);
             aircraft->add_antenna(std::move(rr_antenna));
 
             //Antenna on left side behind wing
-            const QQuaternion rear_left_rot =
-                    QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), 135) *
-                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
+//            const QQuaternion rear_left_rot =
+//                    QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), 135) *
+//                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
             auto rl_antenna = new Antenna( QVector3D(-0.05, -0.1, 0.0)
-                                        , rear_left_rot
+                                        , QQuaternion()
                                         , "rad_monopole"
                                         , "rear_left"
                                         , QColor(128,0,128,120));
+            rl_antenna->addRotation(QVector3D(1,0,0), -90.0);
+            rl_antenna->addRotation(QVector3D(0,0,1), 135);
             aircraft->add_antenna(rl_antenna);
 
             radios->add_radio(std::move(aircraft));
@@ -489,6 +507,16 @@ void Window::load_radios()
 
 }
 
+void Window::save_config()
+{
+    save_json();
+}
+
+void Window::load_config()
+{
+
+}
+
 void Window::start_random_rotations()
 {
     //Hide radiation patterns for better visibility
@@ -555,7 +583,7 @@ bool Window::save(Window::SaveFormat saveFormat) const
 
 void Window::write(QJsonObject &json) const
 {
-    QJsonObject radpatternsObject;
-    rad_patterns->write(radpatternsObject);
-    json["rad_patterns"] = radpatternsObject;
+    QJsonObject radiosObject;
+    radios->write_config(radiosObject);
+    json["config"] = radiosObject;
 }

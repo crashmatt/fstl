@@ -1,6 +1,8 @@
 #include "antennadata.h"
 #include "radpatterndata.h"
 #include <QDebug>
+#include <QtMath>
+
 
 Antenna::Antenna()
     : m_pos()
@@ -32,6 +34,7 @@ Antenna::Antenna(const Antenna& antenna)
     , m_color(antenna.m_color)
     , m_rad_pattern(antenna.m_rad_pattern)
     , m_antenna_data(antenna.m_antenna_data)
+    , m_rotation_config(antenna.m_rotation_config)
 {
 
 }
@@ -41,12 +44,76 @@ Antenna::~Antenna()
     deleteAntennaData();
 }
 
+void Antenna::addRotation(QVector3D axis, float angle)
+{
+    m_rotation_config.append(QVector4D(axis, angle));
+    m_rotation = QQuaternion::fromAxisAndAngle(axis, angle) * m_rotation;
+}
 
 void Antenna::deleteAntennaData()
 {
 //    qDeleteAll(m_antenna_data);
     m_antenna_data.clear();
 }
+
+void Antenna::write_config(QJsonObject &json) const
+{
+    QJsonValue name(m_name);
+    json["name"] = name;
+
+    QJsonValue type(m_type);
+    json["type"] = type;
+
+    QJsonObject colour;
+    colour["R"] = QJsonValue(m_color.red());
+    colour["G"] = QJsonValue(m_color.green());
+    colour["B"] = QJsonValue(m_color.blue());
+    json["colour"] = colour;
+
+    QJsonObject pos;
+    QJsonValue Xpos(m_pos.x());
+    QJsonValue Ypos(m_pos.y());
+    QJsonValue Zpos(m_pos.z());
+    pos["X"] = Xpos;
+    pos["Y"] = Ypos;
+    pos["Z"] = Zpos;
+    json["pos"] = pos;
+
+//    QVector3D   axis;
+//    float       angle;
+//    m_rotation.getAxisAndAngle(&axis, &angle);
+//    QJsonObject rot;
+//    QJsonValue Xrot(qRadiansToDegrees(axis.x()));
+//    QJsonValue Yrot(qRadiansToDegrees(axis.y()));
+//    QJsonValue Zrot(qRadiansToDegrees(axis.z()));
+//    rot["X"] = Xrot;
+//    rot["Y"] = Yrot;
+//    rot["Z"] = Zrot;
+//    rot["angle"] = angle;
+    QJsonArray rotations;
+    foreach(auto rotation, m_rotation_config){
+        QJsonObject conf_rot;
+        conf_rot["X"] = QJsonValue(rotation.x());
+        conf_rot["Y"] = QJsonValue(rotation.y());
+        conf_rot["Z"] = QJsonValue(rotation.z());
+        conf_rot["Angle"] = QJsonValue(rotation.w());
+        rotations.append(conf_rot);
+    }
+    json["conf_rotations"] = rotations;
+
+    QJsonObject rot;
+    QVector4D quat = m_rotation.toVector4D();
+    QJsonValue Xval(quat.x());
+    QJsonValue Yval(quat.y());
+    QJsonValue ZVal(quat.z());
+    QJsonValue WVal(quat.w());
+    rot["Xval"] = Xval;
+    rot["Yval"] = Yval;
+    rot["Zval"] = ZVal;
+    rot["Wval"] = WVal;
+    json["rotation"] = rot;
+}
+
 
 QVector3D Antenna::radiationVector(QQuaternion rotation)
 {
@@ -102,6 +169,8 @@ QDataStream &operator<<(QDataStream &out, const Antenna &antenna)
         << antenna.m_type << antenna.m_name
         << antenna.m_color << antenna.m_antenna_data;
 
+    out << antenna.m_rotation_config;
+
     return out;
 }
 
@@ -113,10 +182,13 @@ QDataStream &operator>>(QDataStream &in, Antenna &antenna)
     QString     name;
     QColor      color;
     QVector<AntennaDataPoint> antenna_data;
+    QVector<QVector4D> rotation_config;
 
     in >> pos >> rotation
         >> type >> name
         >> color >> antenna_data;
+
+    in >> rotation_config;
 
     antenna.m_pos = pos;
     antenna.m_rotation = rotation;

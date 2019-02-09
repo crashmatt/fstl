@@ -32,7 +32,9 @@ protected:
     QMap<QString, bool> object_visibilities;
 
     bool save(Window::SaveFormat saveFormat) const;
+    bool load(Window::SaveFormat saveFormat);
     void write(QJsonObject &json) const;
+    void read(const QJsonObject &json);
 
 public slots:
     void on_about();
@@ -54,10 +56,6 @@ signals:
     void set_object_visible(QString& obj_name, bool visible);
 
 private slots:
-    void save_json();
-    void save_bsjson();
-//    void save_antennas();
-//    void load_antennas();
     void save_radios();
     void load_radios();
     void save_config();

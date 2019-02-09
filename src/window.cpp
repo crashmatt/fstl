@@ -461,16 +461,6 @@ bool Window::load_rad_pattern(const QString& filename, const ObjectConfig& confi
     return true;
 }
 
-void Window::save_json()
-{
-    save(Json);
-}
-
-void Window::save_bsjson()
-{
-    save(BJson);
-}
-
 void Window::save_radios()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
@@ -509,12 +499,12 @@ void Window::load_radios()
 
 void Window::save_config()
 {
-    save_json();
+    save(Json);
 }
 
 void Window::load_config()
 {
-
+    load(Json);
 }
 
 void Window::start_random_rotations()
@@ -559,6 +549,28 @@ bool Window::load_radios_file(QString &filename)
 }
 
 
+bool Window::load(Window::SaveFormat saveFormat)
+{
+    QFile loadFile(saveFormat == Json
+        ? QStringLiteral("save.json")
+        : QStringLiteral("save.dat"));
+
+    if (!loadFile.open(QIODevice::ReadOnly)) {
+        qWarning("Couldn't open save file.");
+        return false;
+    }
+
+    QByteArray saveData = loadFile.readAll();
+
+    QJsonDocument loadDoc(saveFormat == Json
+        ? QJsonDocument::fromJson(saveData)
+        : QJsonDocument::fromBinaryData(saveData));
+
+    read(loadDoc.object());
+
+    return true;
+}
+
 bool Window::save(Window::SaveFormat saveFormat) const
 {
     QFile saveFile(saveFormat == Json
@@ -586,4 +598,11 @@ void Window::write(QJsonObject &json) const
     QJsonObject radiosObject;
     radios->write_config(radiosObject);
     json["config"] = radiosObject;
+}
+
+
+void Window::read(const QJsonObject &json)
+{
+    QJsonObject radiosObject = json["config"].toObject();
+    radios->load_config(radiosObject);
 }

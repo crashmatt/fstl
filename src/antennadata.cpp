@@ -39,6 +39,39 @@ Antenna::Antenna(const Antenna& antenna)
 
 }
 
+
+Antenna::Antenna(const QJsonObject& json)
+    : m_pos(0.0,0.0,0.0)
+    , m_rotation(QQuaternion())
+    , m_type("none")
+    , m_name("unknown")
+    , m_color(QColor("black"))
+    , m_antenna_data()
+    , m_rotation_config()
+{
+    m_name = json["name"].toString();
+    m_type = json["type"].toString();
+    m_rad_pattern = RadPatternData::get_instance()->get_data(m_type);
+
+    QJsonObject colour = json["colour"].toObject();
+    m_color = QColor(colour["R"].toDouble(), colour["G"].toDouble(), colour["B"].toDouble());
+
+    QJsonObject pos = json["pos"].toObject();
+    m_pos = QVector3D(pos["X"].toDouble(), pos["Y"].toDouble(), pos["Z"].toDouble());
+
+    QJsonObject rotation = json["rotation"].toObject();
+    auto quat_vect = QVector4D(rotation["Xval"].toDouble(), rotation["Yval"].toDouble(), rotation["Zval"].toDouble(), rotation["Wval"].toDouble());
+    m_rotation = QQuaternion(quat_vect);
+
+    QJsonArray rotations = json["conf_rotations"].toArray();
+    foreach(const QJsonValue & rotVal, rotations){
+        QJsonObject rotObj = rotVal.toObject();
+        auto rot = QVector4D(rotObj["X"].toDouble(), rotObj["Y"].toDouble(), rotObj["Z"].toDouble(), rotObj["Angle"].toDouble());
+        m_rotation_config.append(rot);
+    }
+}
+
+
 Antenna::~Antenna()
 {
     deleteAntennaData();

@@ -10,6 +10,7 @@ class Radio : public QObject
 public:
     Radio();
     explicit Radio(QObject *parent, QString name, QVector3D pos);
+    explicit Radio(QObject *parent, QJsonObject &json);
     ~Radio();
     Radio(const Radio&);
     Radio& operator=(const Radio&);
@@ -61,6 +62,7 @@ public:
     void delete_radios(void);
     bool add_radio(Radio *radio);
 
+    void load_config(const QJsonObject &json);
     void write_config(QJsonObject &json) const;
 
     static const uint RADIOS_VERSION = 0x5A01;

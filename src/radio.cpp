@@ -15,6 +15,26 @@ Radio::Radio(QObject *parent, QString name, QVector3D pos) : QObject(parent)
 }
 
 
+Radio::Radio(QObject *parent, QJsonObject &json) : QObject(parent)
+  , m_name("")
+  , m_pos(0.0,0.0,0.0)
+{
+    m_name = json["name"].toString();
+    QJsonObject pos = json["pos"].toObject();
+    auto X = pos["X"].toDouble();
+    auto Y = pos["Y"].toDouble();
+    auto Z = pos["Z"].toDouble();
+    m_pos = QVector3D(X,Y,Z);
+
+    QJsonArray antennas = json["antennas"].toArray();
+    foreach(const QJsonValue & antVal, antennas){
+        auto antObj = antVal.toObject();
+        auto antenna = new Antenna(antObj);
+        add_antenna(std::move(antenna));
+    }
+}
+
+
 Radio::Radio(const Radio& radio) : QObject(radio.parent())
     ,m_name(radio.m_name)
     ,m_pos(radio.m_pos)
@@ -174,6 +194,7 @@ void Radios::delete_radios(void)
 bool Radios::add_radio(Radio *radio)
 {
     auto rad = std::move(radio);
+    rad->setParent(this);
     //Don't add an antenna that already exists
     foreach(auto rad, m_radios){
         if(rad->m_name == rad->m_name){
@@ -204,6 +225,21 @@ QDataStream &operator<<(QDataStream &out, const Radios &radios)
 
     for(int index=0; index < radio_count; index++){
         out << *radios.m_radios[index];
+    }
+}
+
+void Radios::load_config(const QJsonObject &json)
+{
+    delete_radios();
+    if(!json.keys().contains("radios")) return;
+    if(!json["radios"].isArray()) return;
+    QJsonArray radios = json["radios"].toArray();
+    foreach(const QJsonValue & radioVal, radios){
+        if(radioVal.isObject()){
+            QJsonObject radioObj = radioVal.toObject();
+            auto new_rad = new Radio(this, radioObj);
+            add_radio( std::move( new_rad ) );
+        }
     }
 }
 

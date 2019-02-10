@@ -5,6 +5,7 @@
 #include <QActionGroup>
 #include <QFileSystemWatcher>
 #include <QVector3D>
+#include <QFileInfo>
 #include "radio.h"
 
 class Canvas;
@@ -24,15 +25,10 @@ public:
     bool load_rad_pattern(const QString& filename, const ObjectConfig& config);    
 
 protected:    
-    typedef enum{
-        Json,
-        BJson
-    } SaveFormat;
-
     QMap<QString, bool> object_visibilities;
 
-    bool save(Window::SaveFormat saveFormat) const;
-    bool load(Window::SaveFormat saveFormat);
+    bool save(QString filepath) const;
+    bool load(QString filepath);
     void write(QJsonObject &json) const;
     void read(const QJsonObject &json);
 

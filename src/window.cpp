@@ -495,9 +495,9 @@ void Window::save_radios()
 
 void Window::load_radios()
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open radios data"),
                                                     "radios.dat",
-                                                    tr("Radio data (*.dat)"));
+                                                    tr("Radios data (*.dat)"));
     if(filename == "") return;
 
     if(load_radios_file(filename)){
@@ -509,12 +509,22 @@ void Window::load_radios()
 
 void Window::save_config()
 {
-    save(Json);
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Radios Config"),
+                                                    "config.json",
+                                                    tr("Radio config (*.json)"));
+    if(fileName == "") return;
+
+    save(fileName);
 }
 
 void Window::load_config()
 {
-    load(Json);
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open Radios Config"),
+                                                    "config.json",
+                                                    tr("Radio config (*.json)"));
+    if(filename == "") return;
+
+    load(filename);
 }
 
 void Window::start_random_rotations()
@@ -559,46 +569,40 @@ bool Window::load_radios_file(QString &filename)
 }
 
 
-bool Window::load(Window::SaveFormat saveFormat)
+bool Window::load(QString filepath)
 {
-    QFile loadFile(saveFormat == Json
-        ? QStringLiteral("save.json")
-        : QStringLiteral("save.dat"));
+    QFile loadFile(filepath);
+//        ? QStringLiteral("save.json")
 
     if (!loadFile.open(QIODevice::ReadOnly)) {
-        qWarning("Couldn't open save file.");
+        qWarning("Couldn't open file to load.");
         return false;
     }
 
-    QByteArray saveData = loadFile.readAll();
+    QByteArray data = loadFile.readAll();
 
-    QJsonDocument loadDoc(saveFormat == Json
-        ? QJsonDocument::fromJson(saveData)
-        : QJsonDocument::fromBinaryData(saveData));
+    QJsonDocument loadDoc(QJsonDocument::fromJson(data));
+//        : QJsonDocument::fromBinaryData(saveData));
 
     read(loadDoc.object());
 
     return true;
 }
 
-bool Window::save(Window::SaveFormat saveFormat) const
+bool Window::save(QString filepath) const
 {
-    QFile saveFile(saveFormat == Json
-        ? QStringLiteral("save.json")
-        : QStringLiteral("save.dat"));
+    QFile saveFile(filepath);
 
     if (!saveFile.open(QIODevice::WriteOnly)) {
-        qWarning("Couldn't open save file.");
+        qWarning("Couldn't open file to save.");
         return false;
     }
 
     QJsonObject antennasObject;
     write(antennasObject);
     QJsonDocument saveDoc(antennasObject);
-    saveFile.write(saveFormat == Json
-        ? saveDoc.toJson()
-        : saveDoc.toBinaryData());
-
+    saveFile.write(saveDoc.toJson());
+//    saveDoc.toBinaryData();
     return true;
 }
 

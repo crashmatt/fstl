@@ -36,6 +36,8 @@ protected:
     void write(QJsonObject &json) const;
     void read(const QJsonObject &json);
 
+    void generate_default();
+
 public slots:
     void on_about();
     void on_bad_stl();

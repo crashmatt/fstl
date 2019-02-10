@@ -267,48 +267,55 @@ void Window::pattern_loaded()
         }
 
         if(!loaded){
-            auto aircraft = new Radio( (QObject*) this, QString("aircraft"), QVector3D(1000,0,0));
+            generate_default();
+        }
+    }
+}
 
-            //Antenna just behind cockpit cover
-            const QQuaternion cockpit_rot = QQuaternion();
-            auto cp_antenna = new Antenna( QVector3D(0.00, 0.35, 0.05)
-                                        , cockpit_rot
-                                        , "rad_monopole"
-                                        , "cockpit"
-                                        , QColor(0,128,128,120) );
-            aircraft->add_antenna(std::move(cp_antenna));
+void Window::generate_default()
+{
+    auto aircraft = new Radio( (QObject*) this, QString("aircraft"), QVector3D(1000,0,0));
 
-            //Antenna on right side behind wing
+    //Antenna just behind cockpit cover
+    const QQuaternion cockpit_rot = QQuaternion();
+    auto cp_antenna = new Antenna( QVector3D(0.00, 0.35, 0.05)
+                                , cockpit_rot
+                                , "rad_monopole"
+                                , "cockpit"
+                                , QColor(0,128,128,120) );
+    aircraft->add_antenna(std::move(cp_antenna));
+
+    //Antenna on right side behind wing
 //            const QQuaternion rear_right_rot =
 //                    QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), -135) *
 //                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
-            auto rr_antenna = new Antenna( QVector3D(0.05, -0.1, 0.0)
-                                        , QQuaternion()
-                                        , "rad_monopole"
-                                        , "rear_right"
-                                        , QColor(128,128,0,120));
-            rr_antenna->addRotation(QVector3D(1,0,0), -90.0);
-            rr_antenna->addRotation(QVector3D(0,0,1), -135);
-            aircraft->add_antenna(std::move(rr_antenna));
+    auto rr_antenna = new Antenna( QVector3D(0.05, -0.1, 0.0)
+                                , QQuaternion()
+                                , "rad_monopole"
+                                , "rear_right"
+                                , QColor(128,128,0,120));
+    rr_antenna->addRotation(QVector3D(1,0,0), -90.0);
+    rr_antenna->addRotation(QVector3D(0,0,1), -135);
+    aircraft->add_antenna(std::move(rr_antenna));
 
-            //Antenna on left side behind wing
+    //Antenna on left side behind wing
 //            const QQuaternion rear_left_rot =
 //                    QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), 135) *
 //                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
-            auto rl_antenna = new Antenna( QVector3D(-0.05, -0.1, 0.0)
-                                        , QQuaternion()
-                                        , "rad_monopole"
-                                        , "rear_left"
-                                        , QColor(128,0,128,120));
-            rl_antenna->addRotation(QVector3D(1,0,0), -90.0);
-            rl_antenna->addRotation(QVector3D(0,0,1), 135);
-            aircraft->add_antenna(rl_antenna);
+    auto rl_antenna = new Antenna( QVector3D(-0.05, -0.1, 0.0)
+                                , QQuaternion()
+                                , "rad_monopole"
+                                , "rear_left"
+                                , QColor(128,0,128,120));
+    rl_antenna->addRotation(QVector3D(1,0,0), -90.0);
+    rl_antenna->addRotation(QVector3D(0,0,1), 135);
+    aircraft->add_antenna(rl_antenna);
 
-            aircraft->add_object("fuselage");
-            aircraft->add_object("solid");
-            aircraft->add_object("shadow0_5");
+    aircraft->add_object("fuselage");
+    aircraft->add_object("solid");
+    aircraft->add_object("shadow0_5");
 
-            radios->add_radio(std::move(aircraft));
+    radios->add_radio(std::move(aircraft));
 
 //            auto controller = new Radio( (QObject*) this, QString("controller"), QVector3D(0,0,0));
 //            const QQuaternion controller_rot = QQuaternion();
@@ -319,9 +326,8 @@ void Window::pattern_loaded()
 //                                              , "controller_vert"
 //                                              , QColor(128,128,128,120));
 //            controller->add_antenna(&cont_vert_antenna);
-        }
-    }
 }
+
 
 void Window::solid_visibile(bool visible)
 {

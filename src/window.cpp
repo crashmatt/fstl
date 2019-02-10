@@ -304,6 +304,10 @@ void Window::pattern_loaded()
             rl_antenna->addRotation(QVector3D(0,0,1), 135);
             aircraft->add_antenna(rl_antenna);
 
+            aircraft->add_object("fuselage");
+            aircraft->add_object("solid");
+            aircraft->add_object("shadow0_5");
+
             radios->add_radio(std::move(aircraft));
 
 //            auto controller = new Radio( (QObject*) this, QString("controller"), QVector3D(0,0,0));

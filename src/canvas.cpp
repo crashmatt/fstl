@@ -114,7 +114,7 @@ void Canvas::set_rotation(QQuaternion rotation, int index)
 QList<GLObject*> Canvas::get_objs(const QString& obj_name)
 {
     QList<GLObject*> list;
-    if(obj_name == "all"){
+    if(obj_name == "*"){
         list = obj_map.values();
     } else {
         QRegExp exp(obj_name);

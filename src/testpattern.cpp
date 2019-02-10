@@ -154,16 +154,23 @@ void TestPattern::reset()
 
     //Delete any previous antenna data
     foreach(auto radio, m_radios->m_radios){
-        foreach(auto antenna, radio->m_antennas){
-            antenna->deleteAntennaData();
-        }
+        radio->deleteAntennaData();
     }
     emit set_zoom(16.0);
     set_antenna_pos_to_index(0);
     auto rotation = QQuaternion();
 
-    QString vis_pattern = "rad_*";
+    QString vis_pattern = "*";
     emit set_object_visible(vis_pattern, false);
+
+    QString ant = "antenna";
+    emit set_object_visible(ant, true);
+
+    if(m_radios->m_radios.length() > 0){
+        foreach(auto objname, m_radios->m_radios[0]->m_objects){
+            emit set_object_visible(objname, true);
+        }
+    }
 
     emit set_rotation(rotation, -1);
     emit redraw();

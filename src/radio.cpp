@@ -32,6 +32,12 @@ Radio::Radio(QObject *parent, QJsonObject &json) : QObject(parent)
         auto antenna = new Antenna(antObj);
         add_antenna(std::move(antenna));
     }
+
+    QJsonArray objects = json["objects"].toArray();
+    foreach(const QJsonValue & objVal, objects){
+        auto objStr = objVal.toString();
+        add_object(objStr);
+    }
 }
 
 
@@ -89,6 +95,14 @@ void Radio::delete_antennas(void)
     emit radio_data_update(*this);
 }
 
+void Radio::deleteAntennaData()
+{
+    foreach(Antenna* antenna, m_antennas){
+        antenna->deleteAntennaData();
+    }
+}
+
+
 
 void Radio::write_config(QJsonObject &json) const
 {
@@ -111,6 +125,14 @@ void Radio::write_config(QJsonObject &json) const
         antennas.append(antennaObject);
     }
     json["antennas"] = antennas;
+
+    QJsonArray objects;
+    foreach (const auto objname, m_objects) {
+        QJsonObject object;
+        objects.append(objname);
+    }
+    json["objects"] = objects;
+
 }
 
 

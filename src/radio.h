@@ -21,8 +21,8 @@ public:
     QVector<QString> m_objects;
 
     bool add_antenna(Antenna *antenna);
-
-    bool add_object(QString obj_name);
+    void add_object(QString obj_name) {m_objects.append(obj_name);};
+    void deleteAntennaData();
 
     void write_config(QJsonObject &json) const;
 

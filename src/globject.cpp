@@ -1,6 +1,7 @@
 #include "globject.h"
 #include "glmesh.h"
 #include <QOpenGLShaderProgram>
+#include <QJsonObject>
 
 ObjectConfig::ObjectConfig()
     : m_name("no_name")
@@ -26,6 +27,51 @@ ObjectConfig::ObjectConfig(const QString& name, const QString& shader_name, cons
 
 }
 Q_DECLARE_METATYPE(ObjectConfig)
+
+
+void ObjectConfig::write_config(QJsonObject &json) const
+{
+    QJsonValue name(m_name);
+    json["name"] = name;
+
+    QJsonValue shadername(m_shadername);
+    json["shadername"] = shadername;
+
+    QJsonObject colour;
+    colour["R"] = QJsonValue(m_color.red());
+    colour["G"] = QJsonValue(m_color.green());
+    colour["B"] = QJsonValue(m_color.blue());
+    json["colour"] = colour;
+
+    QJsonValue showorder(m_show_order);
+    json["showorder"] = showorder;
+
+    QJsonValue visible(m_visible);
+    json["visible"] = visible;
+
+
+    QJsonObject offset;
+    QJsonValue Xoffset(m_offset.x());
+    QJsonValue Yoffset(m_offset.y());
+    QJsonValue Zoffset(m_offset.z());
+    offset["X"] = Xoffset;
+    offset["Y"] = Yoffset;
+    offset["Z"] = Zoffset;
+    json["offset"] = offset;
+
+    QJsonObject rot;
+    QVector4D quat = m_rotation.toVector4D();
+    QJsonValue Xval(quat.x());
+    QJsonValue Yval(quat.y());
+    QJsonValue ZVal(quat.z());
+    QJsonValue WVal(quat.w());
+    rot["Xval"] = Xval;
+    rot["Yval"] = Yval;
+    rot["Zval"] = ZVal;
+    rot["Wval"] = WVal;
+    json["rotation"] = rot;
+}
+
 
 
 GLObject::GLObject(GLMesh *mesh, QOpenGLShaderProgram* shaderprog, const ObjectConfig &config) :

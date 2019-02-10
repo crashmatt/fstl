@@ -13,6 +13,8 @@ public:
     ObjectConfig();
     ObjectConfig(const QString& name, const QString& shader_name, const QColor& base_color, const int order, bool visible=true);
 
+    void write_config(QJsonObject &json) const;
+
     const QString   m_shadername;
     const QColor    m_color;
     const QString   m_name;

@@ -71,12 +71,6 @@ bool Radio::add_antenna(Antenna *antenna)
         }
     }
 
-    //Get radiation pattern if it exits
-    auto rad_pattern_data = RadPatternData::get_instance();
-    auto pattern = rad_pattern_data->get_data(new_antenna->m_type);
-    //Set antenna rad pattern reference
-    new_antenna->m_rad_pattern = pattern;
-
     m_antennas.append(new_antenna);
     emit antenna_data_update( *this, *new_antenna );
 

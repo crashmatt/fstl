@@ -12,7 +12,7 @@ Antenna::Antenna()
     , m_color("black")
     , m_rad_pattern()
 {
-
+    m_rad_pattern = RadPatternData::get_instance()->get_data(m_type);
 }
 
 Antenna::Antenna(QVector3D pos, QQuaternion rot, QString type, QString name, QColor color)
@@ -23,7 +23,7 @@ Antenna::Antenna(QVector3D pos, QQuaternion rot, QString type, QString name, QCo
   , m_color(color)
   , m_rad_pattern()
 {
-
+    m_rad_pattern = RadPatternData::get_instance()->get_data(m_type);
 }
 
 Antenna::Antenna(const Antenna& antenna)
@@ -36,7 +36,7 @@ Antenna::Antenna(const Antenna& antenna)
     , m_antenna_data(antenna.m_antenna_data)
     , m_rotation_config(antenna.m_rotation_config)
 {
-
+    m_rad_pattern = RadPatternData::get_instance()->get_data(m_type);
 }
 
 

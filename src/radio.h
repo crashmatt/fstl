@@ -18,8 +18,11 @@ public:
     QString     m_name;
     QVector3D   m_pos;
     QVector<Antenna*> m_antennas;
+    QVector<QString> m_objects;
 
     bool add_antenna(Antenna *antenna);
+
+    bool add_object(QString obj_name);
 
     void write_config(QJsonObject &json) const;
 

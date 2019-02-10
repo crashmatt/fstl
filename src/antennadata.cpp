@@ -230,6 +230,8 @@ QDataStream &operator>>(QDataStream &in, Antenna &antenna)
     antenna.m_color = color;
     antenna.m_antenna_data = antenna_data;
 
+    antenna.m_rad_pattern = RadPatternData::get_instance()->get_data(antenna.m_type);
+
     return in;
 }
 

@@ -94,8 +94,8 @@ void Canvas::load_mesh(Mesh* m, const ObjectConfig &config)
     if( (shader != NULL) && !obj_map.contains(config.m_show_order) ){
         GLObject *newobj = new GLObject(new_mesh, shader, config);
         obj_map[config.m_show_order] = newobj;
-        obj_name_map[newobj->m_name] = newobj;
-        emit loaded_object(newobj->m_name);
+        obj_name_map[newobj->m_config.m_name] = newobj;
+        emit loaded_object(newobj->m_config.m_name);
     } else {
         delete(new_mesh);
     }
@@ -350,7 +350,7 @@ void Canvas::draw_obj(GLObject* gl_obj)
                 shader->uniformLocation("view_matrix"),
                 1, GL_FALSE, view_matrix().data());
 
-    shader->setUniformValue("color", gl_obj->m_color);
+    shader->setUniformValue("color", gl_obj->m_config.m_color);
 
     // Compensate for z-flattening when zooming
     glUniform1f(shader->uniformLocation("zoom"), 1/zoom);

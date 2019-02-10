@@ -25,6 +25,8 @@ public:
     void view_orthographic();
     void view_perspective();
 
+    void write_config(QJsonObject &json) const;
+
 public slots:
     void set_status(const QString& s);
     void set_data_strings(const QStringList& s);

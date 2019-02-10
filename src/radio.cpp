@@ -125,6 +125,13 @@ QDataStream &operator<<(QDataStream &out, const Radio &radio)
         out << *radio.m_antennas[index];
     }
 
+//    const int objects_count = radio.m_objects.size();
+    out << radio.m_objects;
+
+//    for(int index=0; index < objects_count; index++){
+//        out << *radio.m_antennas[index];
+//    }
+
     return out;
 }
 
@@ -146,6 +153,9 @@ QDataStream &operator>>(QDataStream &in, Radio &radio)
         in >> *antenna;
         radio.add_antenna(std::move(antenna));
     }
+
+    in >> radio.m_objects;
+
     return in;
 }
 
@@ -268,38 +278,3 @@ QDataStream &operator>>(QDataStream &in, Radios &radios)
         radios.add_radio(std::move(radio));
     }
 }
-
-//QDataStream &operator<<(QDataStream &out, const TestPattern &pattern)
-//{
-//    out << pattern.TEST_PATTERN_VERSION;
-
-//    const int radio_count = pattern.m_radios.size();    //pattern.antenna_count();
-//    out << radio_count;
-
-//    for(int index=0; index < radio_count; index++){
-//        out << *pattern.m_radios[index];
-//    }
-
-//    return out;
-//}
-
-//QDataStream &operator>>(QDataStream &in, TestPattern &pattern)
-//{
-//    uint radio_count;
-//    uint version;
-//    Radio radio;
-
-//    in >> version ;
-//    if(version != pattern.TEST_PATTERN_VERSION){
-//        qDebug("Input did not match version number.  Did not load");
-//        return in;
-//    }
-
-//    in >> radio_count;
-
-//    for(int index=0; index<radio_count; index++){
-//        in >> radio;
-//        pattern.add_radio(radio);
-//    }
-//    return in;
-//}

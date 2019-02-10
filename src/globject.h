@@ -31,12 +31,11 @@ public:
     ~GLObject();
 
     GLMesh *m_mesh;
-    QOpenGLShaderProgram *m_shaderprog;
-    const QColor    m_color;
-    const QString   m_name;
-    QVector3D       m_offset;
-    QQuaternion     m_rotation;
-    bool            m_visible;
+    QOpenGLShaderProgram    *m_shaderprog;
+    const ObjectConfig      m_config;
+    bool                    m_visible;
+    QVector3D               m_offset;
+    QQuaternion             m_rotation;
 };
 
 #endif // GLOBJECT_H

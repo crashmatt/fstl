@@ -78,11 +78,10 @@ GLObject::GLObject(GLMesh *mesh, QOpenGLShaderProgram* shaderprog, const ObjectC
     QOpenGLFunctions()
   , m_mesh(mesh)
   , m_shaderprog(shaderprog)
-  , m_color(config.m_color)
-  , m_name(config.m_name)
+  , m_config(config)
+  , m_visible(config.m_visible)
   , m_offset(config.m_offset)
   , m_rotation(config.m_rotation)
-  , m_visible(config.m_visible)
 {
 
 }

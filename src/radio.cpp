@@ -6,14 +6,16 @@ Radio::Radio() : QObject(NULL)
   , m_name("unknown")
   , m_pos(0.0, 0.0, 0.0)
 {
-
+    qRegisterMetaType<Radio>();
+    qRegisterMetaTypeStreamOperators<Radio>("Radio");
 }
 
 Radio::Radio(QObject *parent, QString name, QVector3D pos) : QObject(parent)
   , m_name(name)
   , m_pos(pos)
 {
-
+    qRegisterMetaType<Radio>();
+    qRegisterMetaTypeStreamOperators<Radio>("Radio");
 }
 
 
@@ -21,6 +23,9 @@ Radio::Radio(QObject *parent, QJsonObject &json) : QObject(parent)
   , m_name("")
   , m_pos(0.0,0.0,0.0)
 {
+    qRegisterMetaType<Radio>();
+    qRegisterMetaTypeStreamOperators<Radio>("Radio");
+
     m_name = json["name"].toString();
     QJsonObject pos = json["pos"].toObject();
     auto X = pos["X"].toDouble();

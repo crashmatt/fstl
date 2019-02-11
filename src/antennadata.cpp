@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QtMath>
 
+Q_DECLARE_METATYPE(Antenna)
 
 Antenna::Antenna() : QObject(NULL)
     , m_pos()
@@ -12,6 +13,8 @@ Antenna::Antenna() : QObject(NULL)
     , m_color("black")
     , m_rad_pattern()
 {
+    qRegisterMetaType<Antenna>();
+    qRegisterMetaTypeStreamOperators<Antenna>("Antenna");
     m_rad_pattern = RadPatternData::get_instance()->get_data(m_type);
 }
 
@@ -23,6 +26,7 @@ Antenna::Antenna(QObject *parent, QVector3D pos, QQuaternion rot, QString type, 
   , m_color(color)
   , m_rad_pattern()
 {
+    qRegisterMetaType<Antenna>();
     m_rad_pattern = RadPatternData::get_instance()->get_data(m_type);
 }
 
@@ -36,6 +40,8 @@ Antenna::Antenna(const Antenna& antenna) : QObject(antenna.parent())
     , m_antenna_data(antenna.m_antenna_data)
     , m_rotation_config(antenna.m_rotation_config)
 {
+    qRegisterMetaType<Antenna>();
+    qRegisterMetaTypeStreamOperators<Antenna>("Antenna");
     m_rad_pattern = RadPatternData::get_instance()->get_data(m_type);
 }
 
@@ -49,6 +55,9 @@ Antenna::Antenna(QObject *parent, const QJsonObject& json): QObject(parent)
     , m_antenna_data()
     , m_rotation_config()
 {
+    qRegisterMetaType<Antenna>();
+    qRegisterMetaTypeStreamOperators<Antenna>("Antenna");
+
     m_name = json["name"].toString();
     m_type = json["type"].toString();
     m_rad_pattern = RadPatternData::get_instance()->get_data(m_type);

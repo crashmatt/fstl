@@ -42,12 +42,12 @@ QDataStream &operator>>(QDataStream &, AntennaDataPoint &);
 
 
 
-class Antenna
+class Antenna : public QObject
 {
 public:
     Antenna();
-    explicit Antenna(QVector3D pos, QQuaternion rot, QString m_type, QString m_name, QColor color);
-    explicit Antenna(const QJsonObject& json);
+    explicit Antenna(QObject *parent, QVector3D pos, QQuaternion rot, QString m_type, QString m_name, QColor color);
+    explicit Antenna(QObject *parent, const QJsonObject& json);
     ~Antenna();
     Antenna(const Antenna&);
 //    Antenna& operator=(const Antenna&);

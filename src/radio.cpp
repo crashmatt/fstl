@@ -1,5 +1,7 @@
 #include "radio.h"
 
+Q_DECLARE_METATYPE(Radio)
+
 Radio::Radio() : QObject(NULL)
   , m_name("unknown")
   , m_pos(0.0, 0.0, 0.0)
@@ -29,7 +31,7 @@ Radio::Radio(QObject *parent, QJsonObject &json) : QObject(parent)
     QJsonArray antennas = json["antennas"].toArray();
     foreach(const QJsonValue & antVal, antennas){
         auto antObj = antVal.toObject();
-        auto antenna = new Antenna(antObj);
+        auto antenna = new Antenna(this, antObj);
         add_antenna(std::move(antenna));
     }
 
@@ -78,6 +80,7 @@ bool Radio::add_antenna(Antenna *antenna)
     }
 
     m_antennas.append(new_antenna);
+    new_antenna->setParent(this);
     emit antenna_data_update( *this, *new_antenna );
 
     return true;
@@ -183,6 +186,8 @@ QDataStream &operator>>(QDataStream &in, Radio &radio)
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
+Q_DECLARE_METATYPE(Radios)
 
 Radios::Radios() : QObject(NULL)
 {

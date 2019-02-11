@@ -4,8 +4,8 @@
 #include <QtMath>
 
 
-Antenna::Antenna()
-    : m_pos()
+Antenna::Antenna() : QObject(NULL)
+    , m_pos()
     , m_rotation()
     , m_type("none")
     , m_name("no-name")
@@ -15,8 +15,8 @@ Antenna::Antenna()
     m_rad_pattern = RadPatternData::get_instance()->get_data(m_type);
 }
 
-Antenna::Antenna(QVector3D pos, QQuaternion rot, QString type, QString name, QColor color)
-  : m_pos(pos)
+Antenna::Antenna(QObject *parent, QVector3D pos, QQuaternion rot, QString type, QString name, QColor color) : QObject(NULL)
+  , m_pos(pos)
   , m_rotation(rot)
   , m_type(type)
   , m_name(name)
@@ -26,8 +26,8 @@ Antenna::Antenna(QVector3D pos, QQuaternion rot, QString type, QString name, QCo
     m_rad_pattern = RadPatternData::get_instance()->get_data(m_type);
 }
 
-Antenna::Antenna(const Antenna& antenna)
-    : m_pos(antenna.m_pos)
+Antenna::Antenna(const Antenna& antenna) : QObject(antenna.parent())
+    , m_pos(antenna.m_pos)
     , m_rotation(antenna.m_rotation)
     , m_type(antenna.m_type)
     , m_name(antenna.m_name)
@@ -40,8 +40,8 @@ Antenna::Antenna(const Antenna& antenna)
 }
 
 
-Antenna::Antenna(const QJsonObject& json)
-    : m_pos(0.0,0.0,0.0)
+Antenna::Antenna(QObject *parent, const QJsonObject& json): QObject(parent)
+    , m_pos(0.0,0.0,0.0)
     , m_rotation(QQuaternion())
     , m_type("none")
     , m_name("unknown")

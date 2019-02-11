@@ -25,7 +25,8 @@ SOURCES += \
     ../src/radpatterndata.cpp \
     ../src/glradpatternmesh.cpp \
     ../src/radio.cpp \
-    ../src/radiosimulation.cpp
+    ../src/radiosimulation.cpp \
+    configeditdialog.cpp
 
 HEADERS  += \
     ../src/app.h\
@@ -44,7 +45,8 @@ HEADERS  += \
     ../src/glradpatternmesh.h \
     ../src/radio.h \
     ../src/antennadata.h \
-    ../src/radiosimulation.h
+    ../src/radiosimulation.h \
+    configeditdialog.h
 
 CONFIG += c++11
 
@@ -69,3 +71,6 @@ linux {
 static {
     CONFIG += static
 }
+
+FORMS += \
+    configeditdialog.ui

@@ -7,6 +7,7 @@
 #include <QVector3D>
 #include <QFileInfo>
 #include "radio.h"
+#include "configeditdialog.h"
 
 class Canvas;
 class TestPattern;
@@ -33,6 +34,8 @@ protected:
     void read(const QJsonObject &json);
 
     void generate_default();
+
+    ConfigEditDialog m_editDialog;
 
 public slots:
     void on_about();

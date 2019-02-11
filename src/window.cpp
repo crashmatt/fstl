@@ -11,9 +11,12 @@
 #include "dataprocessor.h"
 #include "globject.h"
 #include "radiosimulation.h"
+#include "configeditdialog.h"
+#include "ui_configframe.h"
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
+    m_editDialog(this),
     about_action(new QAction("About", this)),
     save_action(new QAction("Save radios", this)),
     load_action(new QAction("Load radios", this)),
@@ -51,6 +54,8 @@ Window::Window(QWidget *parent) :
 	
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
+
+    m_editDialog.setModal(false);
 
     radios = new Radios(this);
     rad_patterns = new RadPatternData(this);
@@ -270,6 +275,7 @@ void Window::pattern_loaded()
             generate_default();
         }
     }
+    m_editDialog.show();
 }
 
 void Window::generate_default()
@@ -277,9 +283,8 @@ void Window::generate_default()
     auto aircraft = new Radio( (QObject*) this, QString("aircraft"), QVector3D(1000,0,0));
 
     //Antenna just behind cockpit cover
-    const QQuaternion cockpit_rot = QQuaternion();
-    auto cp_antenna = new Antenna( QVector3D(0.00, 0.35, 0.05)
-                                , cockpit_rot
+    auto cp_antenna = new Antenna(this, QVector3D(0.00, 0.35, 0.05)
+                                , QQuaternion()
                                 , "rad_monopole"
                                 , "cockpit"
                                 , QColor(0,128,128,120) );
@@ -289,7 +294,7 @@ void Window::generate_default()
 //            const QQuaternion rear_right_rot =
 //                    QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), -135) *
 //                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
-    auto rr_antenna = new Antenna( QVector3D(0.05, -0.1, 0.0)
+    auto rr_antenna = new Antenna(this, QVector3D(0.05, -0.1, 0.0)
                                 , QQuaternion()
                                 , "rad_monopole"
                                 , "rear_right"
@@ -302,7 +307,7 @@ void Window::generate_default()
 //            const QQuaternion rear_left_rot =
 //                    QQuaternion::fromAxisAndAngle(QVector3D(0,0,1), 135) *
 //                    QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), -90.0);
-    auto rl_antenna = new Antenna( QVector3D(-0.05, -0.1, 0.0)
+    auto rl_antenna = new Antenna(this, QVector3D(-0.05, -0.1, 0.0)
                                 , QQuaternion()
                                 , "rad_monopole"
                                 , "rear_left"

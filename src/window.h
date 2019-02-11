@@ -35,7 +35,7 @@ protected:
 
     void generate_default();
 
-    ConfigEditDialog m_editDialog;
+    ConfigEditDialog *m_editDialog;
 
 public slots:
     void on_about();

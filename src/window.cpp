@@ -16,7 +16,7 @@
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
-    m_editDialog(this),
+    m_editDialog(NULL),
     about_action(new QAction("About", this)),
     save_action(new QAction("Save radios", this)),
     load_action(new QAction("Load radios", this)),
@@ -54,8 +54,6 @@ Window::Window(QWidget *parent) :
 	
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
-
-    m_editDialog.setModal(false);
 
     radios = new Radios(this);
     rad_patterns = new RadPatternData(this);
@@ -275,7 +273,12 @@ void Window::pattern_loaded()
             generate_default();
         }
     }
-    m_editDialog.show();
+
+    m_editDialog = new ConfigEditDialog(this);
+    m_editDialog->setModal(false);
+    Q_ASSERT(m_editDialog != NULL);
+    m_editDialog->updateRadios(radios);
+    m_editDialog->show();
 }
 
 void Window::generate_default()

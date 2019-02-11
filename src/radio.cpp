@@ -196,10 +196,14 @@ Q_DECLARE_METATYPE(Radios)
 
 Radios::Radios() : QObject(NULL)
 {
+    qRegisterMetaType<Radios>();
+    qRegisterMetaTypeStreamOperators<Radios>("Radios");
 }
 
 Radios::Radios(QObject *parent)  : QObject(parent)
 {
+    qRegisterMetaType<Radios>();
+    qRegisterMetaTypeStreamOperators<Radios>("Radios");
 }
 
 Radios::~Radios()

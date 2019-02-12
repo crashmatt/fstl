@@ -18,7 +18,7 @@ public:
     QString     m_name;
     QVector3D   m_pos;
     QVector<Antenna*> m_antennas;
-    QVector<QString> m_objects;
+    QStringList m_objects;
 
     bool add_antenna(Antenna *antenna);
     void add_object(QString obj_name) {m_objects.append(obj_name);};

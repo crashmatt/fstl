@@ -20,14 +20,10 @@ ConfigEditDialog::~ConfigEditDialog()
 
 void ConfigEditDialog::updateRadio(Radio* radio)
 {
-
-}
-
-void ConfigEditDialog::updateRadios(Radios* radios)
-{
-    ui->radiosTreeWidget->clear();
-    foreach(auto radio, radios->m_radios){
+    if(!radioItemMap.contains(radio)){
         QTreeWidgetItem *radioItem = new QTreeWidgetItem(ui->radiosTreeWidget);
+        radioItem->setExpanded(true);
+        radioItemMap[radio] = radioItem;
 
         // QTreeWidgetItem::setText(int column, const QString & text)
         radioItem->setText(TREE_COLUMN, radio->m_name);
@@ -41,6 +37,9 @@ void ConfigEditDialog::updateRadios(Radios* radios)
         radioItem->addChild(antennasItem);
         antennasItem->setFlags(antennasItem->flags() | Qt::ItemIsUserCheckable |Qt::ItemIsSelectable);
         antennasItem->setCheckState(VISIBILITY_COLUMN, Qt::Unchecked);
+        antennasItem->setExpanded(true);
+
+        antennasItemMap[&radio->m_antennas] = antennasItem;
 
         foreach(auto antenna, radio->m_antennas){
             addAntenna(antennasItem, antenna);
@@ -50,7 +49,7 @@ void ConfigEditDialog::updateRadios(Radios* radios)
         objectsItem->setText(TREE_COLUMN, "Objects");
         radioItem->addChild(objectsItem);
         objectsItem->setFlags(antennasItem->flags() | Qt::ItemIsUserCheckable |Qt::ItemIsSelectable);
-        objectsItem->setFlags(objectsItem->flags() | Qt::ItemIsUserCheckable |Qt::ItemIsSelectable);
+        objectsItem->setExpanded(true);
 
         foreach(auto objstr, radio->m_objects){
             QTreeWidgetItem *objItem = new QTreeWidgetItem(objectsItem);
@@ -59,6 +58,16 @@ void ConfigEditDialog::updateRadios(Radios* radios)
             objItem->setFlags(objItem->flags() | Qt::ItemIsUserCheckable |Qt::ItemIsSelectable);
             objItem->setCheckState(VISIBILITY_COLUMN, Qt::Unchecked);
         }
+    }
+}
+
+void ConfigEditDialog::updateRadios(Radios* radios)
+{
+    ui->radiosTreeWidget->clear();
+    radioItemMap.clear();
+
+    foreach(auto radio, radios->m_radios){
+        updateRadio(radio);
     }
 }
 
@@ -71,6 +80,8 @@ void ConfigEditDialog::updateAntenna(Radio* radio, Antenna* antenna)
 void ConfigEditDialog::addAntenna(QTreeWidgetItem *radioItem, Antenna* antenna)
 {
     QTreeWidgetItem *antennaItem = new QTreeWidgetItem(radioItem);
+    antennaItem->setExpanded(true);
+    antennaItemMap[antenna] = antennaItem;
 
     // QTreeWidgetItem::setText(int column, const QString & text)
     antennaItem->setText(TREE_COLUMN, antenna->m_name);

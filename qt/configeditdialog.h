@@ -2,6 +2,7 @@
 #define CONFIGEDITDIALOG_H
 
 #include <QDialog>
+#include <QMap>
 #include "../src/radio.h"
 
 namespace Ui {
@@ -22,6 +23,12 @@ public:
 
     void addAntenna(QTreeWidgetItem *radioItem, Antenna* antenna);
     void addRadioObject(QTreeWidgetItem *radioItem, QString obj);
+
+protected:
+    QMap<Radio*, QTreeWidgetItem*> radioItemMap;
+    QMap<QVector<Antenna*>*, QTreeWidgetItem*> antennasItemMap;
+    QMap<QStringList*, QTreeWidgetItem*> objectsItemMap;
+    QMap<Antenna*, QTreeWidgetItem*> antennaItemMap;
 
 private:
     Ui::ConfigEditDialog *ui;

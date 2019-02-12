@@ -24,6 +24,11 @@ public:
     void addAntenna(QTreeWidgetItem *radioItem, Antenna* antenna);
     void addRadioObject(QTreeWidgetItem *radioItem, QString obj);
 
+Q_SIGNALS:
+
+public Q_SLOTS:
+    void itemChanged(QTreeWidgetItem *item, int state);
+
 protected:
     QMap<Radio*, QTreeWidgetItem*> radioItemMap;
     QMap<QVector<Antenna*>*, QTreeWidgetItem*> antennasItemMap;

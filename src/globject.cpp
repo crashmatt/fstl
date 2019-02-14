@@ -74,12 +74,11 @@ void ObjectConfig::write_config(QJsonObject &json) const
 
 
 
-GLObject::GLObject(GLMesh *mesh, QOpenGLShaderProgram* shaderprog, const ObjectConfig &config) :
+GLObject::GLObject(GLMesh *mesh, QOpenGLShaderProgram* shaderprog, ObjectConfig &config) :
     QOpenGLFunctions()
   , m_mesh(mesh)
   , m_shaderprog(shaderprog)
   , m_config(config)
-  , m_visible(config.m_visible)
   , m_offset(config.m_offset)
   , m_rotation(config.m_rotation)
 {

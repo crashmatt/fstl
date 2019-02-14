@@ -24,7 +24,7 @@ protected:
 
 signals:
     void loaded_file(QString filename);
-    void got_mesh(Mesh* m, const ObjectConfig& config);
+    void got_mesh(Mesh* m, ObjectConfig& config);
 
     void error_bad_stl();
     void error_empty_mesh();
@@ -33,7 +33,7 @@ signals:
 
 private:
     const QString      m_filename;
-    const ObjectConfig m_config;
+    ObjectConfig       m_config;
     /*  Used to warn on binary STLs that begin with the word 'solid'" */
     bool confusing_stl;
 

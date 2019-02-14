@@ -31,7 +31,7 @@ public slots:
     void set_status(const QString& s);
     void set_data_strings(const QStringList& s);
     void clear_status();
-    void load_mesh(Mesh* m, const ObjectConfig &config);
+    void load_mesh(Mesh* m, ObjectConfig &config);
     void set_rotation(QQuaternion view_rotation, int ref_index);
     void set_object_pos(const QString& obj_name, const QVector3D& pos);
     void set_object_rot(const QString& obj_name, const QQuaternion& rot);
@@ -43,8 +43,8 @@ public slots:
 
 signals:
     void antenna_visibility(int index, QQuaternion view_rotation, float center_visibility , float color_visibility);
-    void loaded_object(const QString& obj_name);
-    void deleted_object(const QString& obj_name);
+    void loaded_object(ObjectConfig& obj);
+    void deleted_object(ObjectConfig& obj);
 
 protected:
 	void paintGL() override;

@@ -27,13 +27,12 @@ public:
 class GLObject : protected QOpenGLFunctions
 {
 public:
-    GLObject(GLMesh *mesh, QOpenGLShaderProgram* shaderprog, const ObjectConfig &config);
+    GLObject(GLMesh *mesh, QOpenGLShaderProgram* shaderprog, ObjectConfig &config);
     ~GLObject();
 
     GLMesh *m_mesh;
     QOpenGLShaderProgram    *m_shaderprog;
-    const ObjectConfig      m_config;
-    bool                    m_visible;
+    ObjectConfig            m_config;
     QVector3D               m_offset;
     QQuaternion             m_rotation;
 };

@@ -7,7 +7,7 @@
 #include "globject.h"
 
 
-RadPatternLoader::RadPatternLoader(QObject* parent, const QString& filename, const ObjectConfig& config)
+RadPatternLoader::RadPatternLoader(QObject* parent, const QString& filename, ObjectConfig& config)
     : QThread(parent)
     , m_filename(filename)
     , m_config(config)

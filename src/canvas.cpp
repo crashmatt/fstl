@@ -65,7 +65,7 @@ void Canvas::view_perspective()
     view_anim(0.25);
 }
 
-void Canvas::load_mesh(Mesh* m, const ObjectConfig &config)
+void Canvas::load_mesh(Mesh* m, ObjectConfig &config)
 {
     GLMesh *new_mesh = NULL;
     if(config.m_shadername == "visi"){
@@ -95,7 +95,7 @@ void Canvas::load_mesh(Mesh* m, const ObjectConfig &config)
         GLObject *newobj = new GLObject(new_mesh, shader, config);
         obj_map[config.m_show_order] = newobj;
         obj_name_map[newobj->m_config.m_name] = newobj;
-        emit loaded_object(newobj->m_config.m_name);
+        emit loaded_object(newobj->m_config);
     } else {
         delete(new_mesh);
     }
@@ -157,7 +157,7 @@ void Canvas::set_object_visible(const QString& obj_name, bool visible)
 {
     QList<GLObject*> list = get_objs(obj_name);
     foreach(GLObject* obj, list){
-        obj->m_visible = visible;
+        obj->m_config.m_visible = visible;
     }
 }
 
@@ -171,7 +171,8 @@ void Canvas::delete_globject(const QString& obj_name)
             int index = obj_map.key(obj);
             obj_map.remove(index);
             obj_name_map.remove(name);
-            deleted_object(name);
+//            ObjectConfig& config = obj->m_config;
+            deleted_object(obj->m_config);
             delete obj;
         }
     }
@@ -257,7 +258,7 @@ void Canvas::paintGL()
 
     foreach(int show_order, obj_map.keys()){
         GLObject* obj = obj_map[show_order];
-        if(obj->m_visible){
+        if(obj->m_config.m_visible){
             if(obj) draw_obj(obj);
         }
     }

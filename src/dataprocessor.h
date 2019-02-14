@@ -23,7 +23,7 @@ protected:
     int m_sequence;
 
 signals:
-    void built_mesh(Mesh* m, const ObjectConfig& config);
+    void built_mesh(Mesh* m, ObjectConfig& config);
 //    void set_obj_pos(const QString& obj_name, const QVector3D& pos);
 
 public slots:

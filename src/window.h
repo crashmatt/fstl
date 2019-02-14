@@ -23,7 +23,7 @@ class Window : public QMainWindow
 public:
     explicit Window(QWidget* parent=0);
     bool load_stl(const QString& filename, const ObjectConfig& config);
-    bool load_rad_pattern(const QString& filename, const ObjectConfig& config);    
+    bool load_rad_pattern(const QString& filename, ObjectConfig& config);
 
 protected:    
     QMap<QString, bool> object_visibilities;
@@ -50,8 +50,8 @@ public slots:
     void rad_pattern_visibile(bool visible);
     void effective_visibile(bool visible);
     void object_visible(QAction* a);
-    void add_object(const QString &obj_name);
-    void remove_object(const QString &obj_name);
+    void add_object(ObjectConfig &obj);
+    void remove_object(ObjectConfig &obj);
 
 signals:
     void set_object_visible(QString& obj_name, bool visible);

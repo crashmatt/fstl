@@ -376,45 +376,45 @@ void Window::effective_visibile(bool visible)
 
 void Window::object_visible(QAction* a)
 {
-    QString obj_name = a->data().toString();
-    emit set_object_visible(obj_name , !object_visibilities[obj_name] );
-    emit update();
-    object_visibilities[obj_name] ^= true;
+//    QString obj_name = a->data().toString();
+//    emit set_object_visible(obj_name , !object_visibilities[obj_name] );
+//    emit update();
+//    object_visibilities[obj_name] ^= true;
 }
 
 
-void Window::add_object(const QString &obj_name)
+void Window::add_object(ObjectConfig &obj)
 {
-    auto list = objects_visibility->actions();
-    foreach(QAction* a, list){
-        if(a->data().toString() == obj_name)
-            return;
-    }
+//    auto list = objects_visibility->actions();
+//    foreach(QAction* a, list){
+//        if(a->data().toString() == obj_name)
+//            return;
+//    }
 
-    const auto a = new QAction(obj_name, visibility);
-    object_visibilities[obj_name] = true;
-//    a->setCheckable(true);
-//    a->setChecked(true);
-    a->setData(obj_name);
-    auto next = list.count();
-    if(next < 9){
-        a->setShortcut(QKeySequence(Qt::Key_0+next));
-    } else {
-        a->setShortcut(QKeySequence(Qt::Key_A+next-9));
-    }
-    objects_visibility->addAction(a);
-    visibility->addAction(a);
+//    const auto a = new QAction(obj_name, visibility);
+//    object_visibilities[obj_name] = true;
+////    a->setCheckable(true);
+////    a->setChecked(true);
+//    a->setData(obj_name);
+//    auto next = list.count();
+//    if(next < 9){
+//        a->setShortcut(QKeySequence(Qt::Key_0+next));
+//    } else {
+//        a->setShortcut(QKeySequence(Qt::Key_A+next-9));
+//    }
+//    objects_visibility->addAction(a);
+//    visibility->addAction(a);
 }
 
-void Window::remove_object(const QString &obj_name)
+void Window::remove_object(ObjectConfig &obj)
 {
-    auto actions = visibility->actions();
-    foreach(auto action, actions){
-        if(action->text() == obj_name){
-            visibility->removeAction(action);
-            delete action;
-        }
-    }
+//    auto actions = visibility->actions();
+//    foreach(auto action, actions){
+//        if(action->text() == obj_name){
+//            visibility->removeAction(action);
+//            delete action;
+//        }
+//    }
 }
 
 
@@ -446,7 +446,7 @@ bool Window::load_stl(const QString& filename, const ObjectConfig& config)
     return true;
 }
 
-bool Window::load_rad_pattern(const QString& filename, const ObjectConfig& config)
+bool Window::load_rad_pattern(const QString& filename, ObjectConfig& config)
 {
     pending_radpattern_loads.append(filename);
     RadPatternLoader* loader = new RadPatternLoader(this, filename, config);

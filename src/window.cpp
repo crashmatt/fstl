@@ -12,7 +12,7 @@
 #include "globject.h"
 #include "radiosimulation.h"
 #include "configeditdialog.h"
-#include "ui_configframe.h"
+//#include "ui_configframe.h"
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),

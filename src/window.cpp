@@ -546,18 +546,18 @@ void Window::start_random_rotations()
 
 void Window::start_radio_simulation()
 {
-    if (rad_sim != NULL){
-        if(rad_sim->isFinished()){
-            rad_sim->deleteLater();
-        } else {
-            qDebug("Radio simulation running, can't start another until complete");
-            return;
-        }
-        rad_sim = NULL;
-    }
-    rad_sim = new RadioSimulation(qobject_cast<QObject*>(this), this->radios, this->test_pattern, "output.csv");
-    rad_sim->start();
-    QThread::msleep(500);
+//    if (rad_sim != NULL){
+//        if(rad_sim->isFinished()){
+//            rad_sim->deleteLater();
+//        } else {
+//            qDebug("Radio simulation running, can't start another until complete");
+//            return;
+//        }
+//        rad_sim = NULL;
+//    }
+//    rad_sim = new RadioSimulation(qobject_cast<QObject*>(this), this->radios, this->test_pattern, "output.csv");
+//    rad_sim->run();
+//    QThread::msleep(500);
 }
 
 bool Window::load_radios_file(QString &filename)

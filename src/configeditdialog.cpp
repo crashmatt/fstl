@@ -140,13 +140,15 @@ void ConfigEditDialog::addAntenna(QTreeWidgetItem *radioItem, Antenna* antenna)
 
 void ConfigEditDialog::itemChanged(QTreeWidgetItem *item, int column)
 {
-    auto flags = item->flags();
+//    auto flags = item->flags();
     if(column == VISIBILITY_COLUMN){
-        if(item->checkState(column)){
+        bool checked = item->checkState(column);
+        if(checked){
             qDebug("Item checked by user");
         } else {
             qDebug("Item cleared by user");
         }
+//        if
 //            item->setDisabled(false);
 //        item->setCheckState(VISIBILITY_COLUMN, Qt::Unchecked);
     }

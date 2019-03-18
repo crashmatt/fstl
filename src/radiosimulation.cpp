@@ -1,7 +1,7 @@
 #include "radiosimulation.h"
-#include "testpattern.h"
-#include "radio.h"
-#include "antennadata.h"
+//#include "testpattern.h"
+//#include "radio.h"
+//#include "antennadata.h"
 #include <QTime>
 #include <QFile>
 #include <QQuaternion>
@@ -17,11 +17,11 @@ RotationSegment::RotationSegment()
 {
 }
 
-RadioSimulation::RadioSimulation(QObject *parent, Radios* radios, TestPattern* test_pattern, QString filename)
-    : QThread(parent)
-    , m_radios(radios)
-    , m_test_pattern(test_pattern)
-    , m_filename(filename)
+
+RadioSimulation::RadioSimulation() : QObject(NULL)
+//    , m_radios(NULL)
+//    , m_test_pattern(NULL)
+    , m_filename("")
     , m_halt(false)
     , m_step_time(0.001)
     , m_end_time(10.0)
@@ -31,6 +31,34 @@ RadioSimulation::RadioSimulation(QObject *parent, Radios* radios, TestPattern* t
 
 }
 
+
+//RadioSimulation::RadioSimulation(QObject *parent, Radios* radios, TestPattern* test_pattern, QString filename) : QObject(parent)
+//    , m_radios(radios)
+//    , m_test_pattern(test_pattern)
+//    , m_filename(filename)
+//    , m_halt(false)
+//    , m_step_time(0.001)
+//    , m_end_time(10.0)
+//    , m_time(0)
+//    , m_max_runtime_ms(1000)
+//{
+
+//}
+
+
+RadioSimulation::RadioSimulation(const RadioSimulation& radsim) : QObject(radsim.parent())
+//  , m_radios(radsim.m_radios)
+//  , m_test_pattern(radsim.m_test_pattern)
+  , m_filename(radsim.m_filename)
+  , m_halt(false)
+  , m_step_time(radsim.m_step_time)
+  , m_end_time(radsim.m_end_time)
+  , m_time(0)
+  , m_max_runtime_ms(radsim.m_max_runtime_ms)
+{
+}
+
+
 RadioSimulation::~RadioSimulation()
 {
 
@@ -38,72 +66,72 @@ RadioSimulation::~RadioSimulation()
 
 void RadioSimulation::run()
 {
-    m_time = 0;
-//    if (m_radios->length() < 2){
-//        qDebug("RadioSimulation does not have enough radios to simulate");
+//    m_time = 0;
+////    if (m_radios->length() < 2){
+////        qDebug("RadioSimulation does not have enough radios to simulate");
+////        return;
+////    }
+//    qDebug("RadioSimulation started");
+
+//    QTime start_time = QTime();
+//    QTime stop_time = start_time;
+//    stop_time.addMSecs(m_end_time);
+
+//    m_time = 0;
+//    ulong steps = (ulong) m_end_time / m_step_time;
+//    auto dbg_str  = QString("RadioSimulation has %1 steps to run").arg(steps);
+//    qDebug(dbg_str.toLatin1());
+
+//    QFile file(m_filename);
+//    if (!file.open(QFile::WriteOnly)){
+//        qDebug("RadioSimulation failed to open file for writing: ", m_filename);
 //        return;
 //    }
-    qDebug("RadioSimulation started");
 
-    QTime start_time = QTime();
-    QTime stop_time = start_time;
-    stop_time.addMSecs(m_end_time);
+//    auto header = QString("step,time");
+//    foreach(auto radio, m_radios->m_radios){
+//        foreach(auto antenna, radio->m_antennas){
+//            auto hdr_part_str = QString(",%1_X,%1_Y,%1_Z").arg(antenna->m_name);
+//            header += hdr_part_str;
+//        }
+//    }
+//    file.write(header.toUtf8());
+//    file.write("\r\n");
 
-    m_time = 0;
-    ulong steps = (ulong) m_end_time / m_step_time;
-    auto dbg_str  = QString("RadioSimulation has %1 steps to run").arg(steps);
-    qDebug(dbg_str.toLatin1());
+//    QQuaternion rotation;
+//    RotationSegment segment;
 
-    QFile file(m_filename);
-    if (!file.open(QFile::WriteOnly)){
-        qDebug("RadioSimulation failed to open file for writing: ", m_filename);
-        return;
-    }
+//    unsigned long step = 0;
+//    while(m_time < m_end_time){
+//        m_time += m_step_time;
+//        rotation_step(rotation, segment);
+//        step++;
 
-    auto header = QString("step,time");
-    foreach(auto radio, m_radios->m_radios){
-        foreach(auto antenna, radio->m_antennas){
-            auto hdr_part_str = QString(",%1_X,%1_Y,%1_Z").arg(antenna->m_name);
-            header += hdr_part_str;
-        }
-    }
-    file.write(header.toUtf8());
-    file.write("\r\n");
+//        auto line = QString("%1,%2").arg(step).arg(m_time);
+//        file.write(line.toUtf8());
 
-    QQuaternion rotation;
-    RotationSegment segment;
+//        foreach(auto radio, m_radios->m_radios){
+//            foreach(auto antenna, radio->m_antennas){
+//                auto rad_vect = antenna->radiationVector(rotation);
+//                auto rad_vect_str = QString(",%1,%2,%3").arg(rad_vect.x()).arg(rad_vect.y()).arg(rad_vect.z());
+//                file.write(rad_vect_str.toUtf8());
+//            }
+//        }
 
-    unsigned long step = 0;
-    while(m_time < m_end_time){
-        m_time += m_step_time;
-        rotation_step(rotation, segment);
-        step++;
+//        file.write("\r\n");
 
-        auto line = QString("%1,%2").arg(step).arg(m_time);
-        file.write(line.toUtf8());
-
-        foreach(auto radio, m_radios->m_radios){
-            foreach(auto antenna, radio->m_antennas){
-                auto rad_vect = antenna->radiationVector(rotation);
-                auto rad_vect_str = QString(",%1,%2,%3").arg(rad_vect.x()).arg(rad_vect.y()).arg(rad_vect.z());
-                file.write(rad_vect_str.toUtf8());
-            }
-        }
-
-        file.write("\r\n");
-
-        if(step%1000 == 0){
-            auto now = QTime();
-            auto runtime = start_time.msecsTo(now);
-            auto step_line = QString("Simulation runtime %1ms step:%2\r\n").arg(runtime).arg(step);
-            qDebug(step_line.toLatin1());
-            if(now > stop_time){
-                qDebug("RadioSimulation timeout");
-                break;
-            }
-        }
-    }
-    file.close();
+//        if(step%1000 == 0){
+//            auto now = QTime();
+//            auto runtime = start_time.msecsTo(now);
+//            auto step_line = QString("Simulation runtime %1ms step:%2\r\n").arg(runtime).arg(step);
+//            qDebug(step_line.toLatin1());
+//            if(now > stop_time){
+//                qDebug("RadioSimulation timeout");
+//                break;
+//            }
+//        }
+//    }
+//    file.close();
 
     qDebug("RadioSimulation complete");
 }
@@ -166,3 +194,4 @@ void RadioSimulation::rotation_step(QQuaternion& rotation, RotationSegment& segm
 
     segment.m_last_time = now;
 }
+

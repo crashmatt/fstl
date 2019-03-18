@@ -81,7 +81,7 @@ public:
     //Antenna radiation vector rotated with view rotation
     QVector3D antennaRadiationVector(QQuaternion antenna_rotation) {return antenna_rotation.rotatedVector(QVector3D(0.0, 0.0, -1.0));}
 
-    RadPatternPoint* nearestFromAntennaRotation(QQuaternion rotation) {m_rad_pattern.data()->nearest_point(rotation);}
+    RadPatternPoint* nearestFromAntennaRotation(QQuaternion rotation) {return m_rad_pattern.data()->nearest_point(rotation);}
 };
 
 

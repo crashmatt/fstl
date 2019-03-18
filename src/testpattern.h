@@ -9,7 +9,6 @@
 #include <QQuaternion>
 
 #include "antennadata.h"
-#include "radiosimulation.h"
 #include "time.h"
 
 class Radios;
@@ -69,8 +68,6 @@ public slots:
     void set_speed(bool high_speed);
     void start_rotations(const double timeout);
 
-private:
-    RadioSimulation* m_radio_simulation;
 };
 
 

@@ -1,6 +1,6 @@
 #include "radiosimulation.h"
-//#include "testpattern.h"
-//#include "radio.h"
+#include "testpattern.h"
+#include "radio.h"
 //#include "antennadata.h"
 #include <QTime>
 #include <QFile>
@@ -19,8 +19,8 @@ RotationSegment::RotationSegment()
 
 
 RadioSimulation::RadioSimulation() : QObject(NULL)
-//    , m_radios(NULL)
-//    , m_test_pattern(NULL)
+    , m_radios(NULL)
+    , m_test_pattern(NULL)
     , m_filename("")
     , m_halt(false)
     , m_step_time(0.001)
@@ -47,8 +47,8 @@ RadioSimulation::RadioSimulation() : QObject(NULL)
 
 
 RadioSimulation::RadioSimulation(const RadioSimulation& radsim) : QObject(radsim.parent())
-//  , m_radios(radsim.m_radios)
-//  , m_test_pattern(radsim.m_test_pattern)
+  , m_radios(radsim.m_radios)
+  , m_test_pattern(radsim.m_test_pattern)
   , m_filename(radsim.m_filename)
   , m_halt(false)
   , m_step_time(radsim.m_step_time)

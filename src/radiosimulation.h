@@ -5,8 +5,8 @@
 #include <QThread>
 #include <QVector3D>
 
-//class TestPattern;
-//class Radios;
+class TestPattern;
+class Radios;
 
 class RotationSegment
 {
@@ -37,8 +37,8 @@ public slots:
 //    void stop();
 
 private:
-//    Radios*         m_radios;
-//    TestPattern*    m_test_pattern;
+    Radios*         m_radios;
+    TestPattern*    m_test_pattern;
     QString         m_filename;
     bool            m_halt;
     double          m_step_time;

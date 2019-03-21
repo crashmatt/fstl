@@ -10,6 +10,7 @@
 #include <QVector>
 
 #include "radpatterndata.h"
+#include <msgpackstream.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -66,6 +67,7 @@ public:
     QVector3D radiationVector(QQuaternion rotation);
 
     void write_config(QJsonObject &json) const;
+    void pack(MsgPackStream &s);
 
     void addRotation(QVector3D axis, float angle);
 
@@ -85,6 +87,7 @@ public:
 };
 
 
+MsgPackStream &operator<<(MsgPackStream &s, const Antenna &antenna);
 QDataStream &operator<<(QDataStream &, const Antenna &);
 QDataStream &operator>>(QDataStream &, Antenna &);
 

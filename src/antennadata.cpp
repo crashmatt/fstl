@@ -204,6 +204,12 @@ QVector3D Antenna::radiationVector(QQuaternion rotation)
     return ant_rad_vect;
 }
 
+void Antenna::pack(MsgPackStream &s)
+{
+    s << m_name;
+}
+
+
 
 QDataStream &operator<<(QDataStream &out, const Antenna &antenna)
 {
@@ -306,6 +312,13 @@ QDataStream &operator>>(QDataStream &in, AntennaDataPoint &datapt)
         >> datapt.m_center_visibility >> datapt.m_color_visibility
         >> datapt.m_visibility;
     return in;
+}
+
+
+MsgPackStream &operator<<(MsgPackStream &s, const Antenna &antenna)
+{
+    s << antenna.m_name;
+    return s;
 }
 
 

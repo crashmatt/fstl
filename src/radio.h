@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "antennadata.h"
+#include <msgpackstream.h>
 
 class Radio : public QObject
 {
@@ -25,8 +26,10 @@ public:
     void deleteAntennaData();
 
     void write_config(QJsonObject &json) const;
+    void pack(MsgPackStream &s);
 
     static const uint RADIO_VERSION = 0xAB01;
+
 
 signals:
     void antenna_data_update(Radio& radio, Antenna& antenna);
@@ -41,9 +44,11 @@ protected:
 private:
     friend QDataStream & operator<<(QDataStream &os, const Radio& p);
     friend QDataStream & operator>>(QDataStream &os, Radio& p);
+    friend MsgPackStream & operator<<(MsgPackStream &os, const Radio& p);
 };
 
 
+MsgPackStream &operator<<(MsgPackStream &s, const Radio &radio);
 QDataStream &operator<<(QDataStream &, const Radio &);
 QDataStream &operator>>(QDataStream &, Radio &);
 
@@ -67,6 +72,7 @@ public:
 
     void load_config(const QJsonObject &json);
     void write_config(QJsonObject &json) const;
+    void pack(MsgPackStream &s);
 
     static const uint RADIOS_VERSION = 0x5A01;
 
@@ -82,11 +88,13 @@ protected:
 private:
     friend QDataStream & operator<<(QDataStream &os, const Radios& p);
     friend QDataStream & operator>>(QDataStream &os, Radios& p);
+    friend MsgPackStream & operator<<(MsgPackStream &s, const Radios& radios);
 };
 
 
 QDataStream &operator<<(QDataStream &, const Radios &);
 QDataStream &operator>>(QDataStream &, Radios &);
+MsgPackStream &operator<<(MsgPackStream &s, const Radios &);
 
 
 #endif // RADIO_H

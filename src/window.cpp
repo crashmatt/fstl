@@ -557,7 +557,7 @@ void Window::start_radio_simulation()
 //        }
 //        rad_sim = NULL;
 //    }
-    auto radsim = RadioSimulation(qobject_cast<QObject*>(this), this->radios, this->test_pattern, "output.csv");
+    auto radsim = RadioSimulation(qobject_cast<QObject*>(this), this->radios, this->test_pattern, "output");
     radsim.run();
 //    rad_sim->run();
 //    QThread::msleep(500);

@@ -1,5 +1,8 @@
 QT += core gui opengl widgets
 
+LIBS += -L/usr/local/lib -lqmsgpack
+INCLUDEPATH += /usr/local/include/qmsgpack
+
 TARGET = fstl
 TEMPLATE = app
 

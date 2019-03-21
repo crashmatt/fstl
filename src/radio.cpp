@@ -236,8 +236,8 @@ bool Radios::add_radio(Radio *radio)
     auto rad = std::move(radio);
     rad->setParent(this);
     //Don't add an antenna that already exists
-    foreach(auto rad, m_radios){
-        if(rad->m_name == rad->m_name){
+    foreach(auto r, m_radios){
+        if(rad->m_name == r->m_name){
             delete(rad);
             return false;
         }

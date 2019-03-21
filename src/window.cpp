@@ -317,7 +317,7 @@ void Window::generate_default()
                                 , QColor(128,0,128,120));
     rl_antenna->addRotation(QVector3D(1,0,0), -90.0);
     rl_antenna->addRotation(QVector3D(0,0,1), 135);
-    aircraft->add_antenna(rl_antenna);
+    aircraft->add_antenna(std::move(rl_antenna));
 
     aircraft->add_object("fuselage");
     aircraft->add_object("solid");
@@ -325,15 +325,17 @@ void Window::generate_default()
 
     radios->add_radio(std::move(aircraft));
 
-//            auto controller = new Radio( (QObject*) this, QString("controller"), QVector3D(0,0,0));
-//            const QQuaternion controller_rot = QQuaternion();
 
-//            auto cont_vert_antenna = Antenna( QVector3D(0.0, 0.0, 0.0)
-//                                              , controller_rot
-//                                              , "rad_monopole"
-//                                              , "controller_vert"
-//                                              , QColor(128,128,128,120));
-//            controller->add_antenna(&cont_vert_antenna);
+    auto controller = new Radio( (QObject*) this, QString("controller"), QVector3D(0,0,0));
+
+    auto cont_vert_antenna = new Antenna( this, QVector3D(0.0, 0.0, 0.0)
+                                      , QQuaternion()
+                                      , "rad_monopole"
+                                      , "controller_vert"
+                                      , QColor(128,128,128,120));
+    controller->add_antenna(std::move(cont_vert_antenna));
+
+    radios->add_radio(std::move(controller));
 }
 
 
@@ -555,7 +557,8 @@ void Window::start_radio_simulation()
 //        }
 //        rad_sim = NULL;
 //    }
-//    rad_sim = new RadioSimulation(qobject_cast<QObject*>(this), this->radios, this->test_pattern, "output.csv");
+    auto radsim = RadioSimulation(qobject_cast<QObject*>(this), this->radios, this->test_pattern, "output.csv");
+    radsim.run();
 //    rad_sim->run();
 //    QThread::msleep(500);
 }

@@ -7,6 +7,8 @@
 #include <QQuaternion>
 
 #include <math.h>
+#include <msgpack.h>
+#include <msgpackstream.h>
 
 RotationSegment::RotationSegment()
     :m_start_time(0.0)
@@ -16,6 +18,49 @@ RotationSegment::RotationSegment()
     ,m_direction(0.0, 0.0, 0.0)
 {
 }
+
+RadioSimResult::RadioSimResult(int size, double timestamp)
+    : m_timestamp(timestamp)
+{
+    m_rx_dBs.fill(0.0, size);
+}
+
+
+
+AntennaPair::AntennaPair(Antenna* ant1, Antenna* ant2)
+    :m_ant1(ant1)
+    ,m_ant2(ant2)
+{
+}
+
+
+RadioSimResults::RadioSimResults(Radios* radios)
+{
+    makeAntennaPairs(radios);
+};
+
+
+int RadioSimResults::makeAntennaPairs(Radios* radios)
+{
+    const auto &rads = radios->m_radios;
+    int radcount = rads.size();
+
+    for(int i=0; i<radcount; i++){
+        auto rad1 = rads[i];
+        for(int j=i+1; j<radcount; j++){
+            auto rad2 = rads[j];
+            foreach(auto ant1, rad1->m_antennas){
+                m_antenna_radio_map[ant1] = rad1;
+                foreach (auto ant2, rad2->m_antennas) {
+                    m_antenna_radio_map[ant2] = rad2;
+                    m_antenna_pairs.append(AntennaPair(ant1, ant2));
+                }
+            }
+        }
+    }
+    return m_antenna_pairs.size();
+}
+
 
 
 RadioSimulation::RadioSimulation() : QObject(NULL)
@@ -32,18 +77,18 @@ RadioSimulation::RadioSimulation() : QObject(NULL)
 }
 
 
-//RadioSimulation::RadioSimulation(QObject *parent, Radios* radios, TestPattern* test_pattern, QString filename) : QObject(parent)
-//    , m_radios(radios)
-//    , m_test_pattern(test_pattern)
-//    , m_filename(filename)
-//    , m_halt(false)
-//    , m_step_time(0.001)
-//    , m_end_time(10.0)
-//    , m_time(0)
-//    , m_max_runtime_ms(1000)
-//{
+RadioSimulation::RadioSimulation(QObject *parent, Radios* radios, TestPattern* test_pattern, QString filename) : QObject(parent)
+    , m_radios(radios)
+    , m_test_pattern(test_pattern)
+    , m_filename(filename)
+    , m_halt(false)
+    , m_step_time(0.001)
+    , m_end_time(10.0)
+    , m_time(0)
+    , m_max_runtime_ms(1000)
+{
 
-//}
+}
 
 
 RadioSimulation::RadioSimulation(const RadioSimulation& radsim) : QObject(radsim.parent())
@@ -66,21 +111,24 @@ RadioSimulation::~RadioSimulation()
 
 void RadioSimulation::run()
 {
-//    m_time = 0;
-////    if (m_radios->length() < 2){
-////        qDebug("RadioSimulation does not have enough radios to simulate");
-////        return;
-////    }
-//    qDebug("RadioSimulation started");
+    m_time = 0;
+//    if (m_radios->length() < 2){
+//        qDebug("RadioSimulation does not have enough radios to simulate");
+//        return;
+//    }
+    qDebug("RadioSimulation started");
 
-//    QTime start_time = QTime();
-//    QTime stop_time = start_time;
-//    stop_time.addMSecs(m_end_time);
+    QTime start_time = QTime();
+    QTime stop_time = start_time;
+    stop_time.addMSecs(m_end_time);
 
-//    m_time = 0;
-//    ulong steps = (ulong) m_end_time / m_step_time;
-//    auto dbg_str  = QString("RadioSimulation has %1 steps to run").arg(steps);
-//    qDebug(dbg_str.toLatin1());
+    m_time = 0;
+    ulong steps = (ulong) m_end_time / m_step_time;
+    auto dbg_str  = QString("RadioSimulation has %1 steps to run").arg(steps);
+    qDebug(dbg_str.toLatin1());
+
+    QByteArray bytes;
+    MsgPackStream packstream(&bytes, QIODevice::WriteOnly);
 
 //    QFile file(m_filename);
 //    if (!file.open(QFile::WriteOnly)){
@@ -98,18 +146,28 @@ void RadioSimulation::run()
 //    file.write(header.toUtf8());
 //    file.write("\r\n");
 
-//    QQuaternion rotation;
-//    RotationSegment segment;
+    auto sim_results = RadioSimResults(m_radios);
 
-//    unsigned long step = 0;
-//    while(m_time < m_end_time){
-//        m_time += m_step_time;
-//        rotation_step(rotation, segment);
-//        step++;
+    QQuaternion rotation;
+    RotationSegment segment;
 
-//        auto line = QString("%1,%2").arg(step).arg(m_time);
+    unsigned long step = 0;
+    while(m_time < m_end_time){
+        m_time += m_step_time;
+        rotation_step(rotation, segment);
+        step++;
+
+        auto line = QString("%1,%2").arg(step).arg(m_time);
 //        file.write(line.toUtf8());
 
+        packstream << (quint64) step << m_time;
+
+        foreach(auto pair, sim_results.m_antenna_pairs){
+            auto rad_vect = pair.m_ant1->radiationVector(rotation);
+            auto rad_vect_str = QString(",%1,%2,%3").arg(rad_vect.x()).arg(rad_vect.y()).arg(rad_vect.z());
+            packstream << rad_vect.x() << rad_vect.y() << rad_vect.z();
+//            file.write(rad_vect_str.toUtf8());
+        }
 //        foreach(auto radio, m_radios->m_radios){
 //            foreach(auto antenna, radio->m_antennas){
 //                auto rad_vect = antenna->radiationVector(rotation);
@@ -117,21 +175,29 @@ void RadioSimulation::run()
 //                file.write(rad_vect_str.toUtf8());
 //            }
 //        }
-
 //        file.write("\r\n");
 
-//        if(step%1000 == 0){
-//            auto now = QTime();
-//            auto runtime = start_time.msecsTo(now);
-//            auto step_line = QString("Simulation runtime %1ms step:%2\r\n").arg(runtime).arg(step);
-//            qDebug(step_line.toLatin1());
-//            if(now > stop_time){
-//                qDebug("RadioSimulation timeout");
-//                break;
-//            }
-//        }
-//    }
-//    file.close();
+        if(step%1000 == 0){
+            auto now = QTime();
+            auto runtime = start_time.msecsTo(now);
+            auto step_line = QString("Simulation runtime %1ms step:%2\r\n").arg(runtime).arg(step);
+            qDebug(step_line.toLatin1());
+            if(now > stop_time){
+                qDebug("RadioSimulation timeout");
+                break;
+            }
+        }
+    }
+
+    packstream.setFlushWrites(true);
+    auto fname = m_filename.replace(".csv", ".pack", Qt::CaseInsensitive);
+    QFile file(fname);
+    if (!file.open(QFile::WriteOnly)){
+        qDebug("RadioSimulation failed to open file for writing: ", fname);
+        return;
+    }
+    file.write(bytes);
+    file.close();
 
     qDebug("RadioSimulation complete");
 }

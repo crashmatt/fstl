@@ -173,8 +173,11 @@ QVector3D Antenna::radiationVector(QQuaternion rotation)
 //    qDebug( ant_nearest_str.toLatin1() );
 
     auto rad_data_index = m_rad_pattern.data()->get_index(nearest->phi, nearest->theta);
-    auto& rad_data = m_antenna_data[rad_data_index];
-    auto effective = rad_data.m_visibility * nearest->get_amplitude();
+    auto effective = nearest->get_amplitude();
+    if(m_antenna_data.size() > 0){
+        auto& rad_data = m_antenna_data[rad_data_index];
+        effective *= rad_data.m_visibility;
+    }
 //   auto effecive3D = rad_data.m_visibility * nearest->get_rad_vector();
     //TODO - Effective should be 3D vector
 

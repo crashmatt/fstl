@@ -33,11 +33,27 @@ AntennaPair::AntennaPair(Antenna* ant1, Antenna* ant2)
 {
 }
 
+void AntennaPair::pack(MsgPackStream &s)
+{
+    s << m_ant1->m_name;
+    s << m_ant2->m_name;
+}
+
 
 RadioSimResults::RadioSimResults(Radios* radios)
 {
     makeAntennaPairs(radios);
 };
+
+
+void RadioSimResults::pack(MsgPackStream &s)
+{
+    s << m_antenna_pairs.size();
+
+    foreach(auto pair, m_antenna_pairs){
+        pair.                              pack(s);
+    }
+}
 
 
 int RadioSimResults::makeAntennaPairs(Radios* radios)
@@ -68,8 +84,8 @@ RadioSimulation::RadioSimulation() : QObject(NULL)
     , m_test_pattern(NULL)
     , m_filename("")
     , m_halt(false)
-    , m_step_time(0.001)
-    , m_end_time(1.0)
+    , m_step_time(0.01)
+    , m_end_time(10.0)
     , m_time(0)
     , m_max_runtime_ms(1000)
 {
@@ -82,8 +98,8 @@ RadioSimulation::RadioSimulation(QObject *parent, Radios* radios, TestPattern* t
     , m_test_pattern(test_pattern)
     , m_filename(filename)
     , m_halt(false)
-    , m_step_time(0.001)
-    , m_end_time(1.0)
+    , m_step_time(0.01)
+    , m_end_time(10.0)
     , m_time(0)
     , m_max_runtime_ms(1000)
 {
@@ -133,63 +149,44 @@ void RadioSimulation::run()
     packstream << QString("Radio Simulation Results - MessagePack - V0_1");
     m_radios->pack(packstream);
 
-//    QFile file(m_filename);
-//    if (!file.open(QFile::WriteOnly)){
-//        qDebug("RadioSimulation failed to open file for writing: ", m_filename);
-//        return;
-//    }
 
-//    auto header = QString("step,time");
-//    foreach(auto radio, m_radios->m_radios){
-//        foreach(auto antenna, radio->m_antennas){
-//            auto hdr_part_str = QString(",%1_X,%1_Y,%1_Z").arg(antenna->m_name);
-//            header += hdr_part_str;
-//        }
-//    }
-//    file.write(header.toUtf8());
-//    file.write("\r\n");
+    auto sim_results = RadioSimResults(m_radios);
+    sim_results.pack(packstream);
 
-//    auto sim_results = RadioSimResults(m_radios);
+    QQuaternion rotation;
+    RotationSegment segment;
 
-//    QQuaternion rotation;
-//    RotationSegment segment;
-
-//    unsigned long step = 0;
-//    while(m_time < m_end_time){
-//        m_time += m_step_time;
-//        rotation_step(rotation, segment);
-//        step++;
+    unsigned long step = 0;
+    while(m_time < m_end_time){
+        m_time += m_step_time;
+        rotation_step(rotation, segment);
+        step++;
 
 //        auto line = QString("%1,%2").arg(step).arg(m_time);
 ////        file.write(line.toUtf8());
 
-////        packstream << (quint64) step << m_time;
+        packstream << (quint64) step << m_time;
 
-//        foreach(auto pair, sim_results.m_antenna_pairs){
-//            auto rad_vect = pair.m_ant1->radiationVector(rotation);
+        foreach(auto pair, sim_results.m_antenna_pairs){
+            QVector3D rad_vect1 = pair.m_ant1->radiationVector(rotation);
+            QVector3D rad_vect2 = pair.m_ant2->radiationVector(rotation);
+            auto ant_gain = QVector3D::dotProduct(rad_vect1, rad_vect2);
 //            auto rad_vect_str = QString(",%1,%2,%3").arg(rad_vect.x()).arg(rad_vect.y()).arg(rad_vect.z());
-////            packstream << rad_vect.x() << rad_vect.y() << rad_vect.z();
-//        }
-////        foreach(auto radio, m_radios->m_radios){
-////            foreach(auto antenna, radio->m_antennas){
-////                auto rad_vect = antenna->radiationVector(rotation);
-////                auto rad_vect_str = QString(",%1,%2,%3").arg(rad_vect.x()).arg(rad_vect.y()).arg(rad_vect.z());
-////                file.write(rad_vect_str.toUtf8());
-////            }
-////        }
-////        file.write("\r\n");
+            packstream << ant_gain;
+        }
 
-//        if(step%1000 == 0){
-//            auto now = QTime();
-//            auto runtime = start_time.msecsTo(now);
-//            auto step_line = QString("Simulation runtime %1ms step:%2\r\n").arg(runtime).arg(step);
-//            qDebug(step_line.toLatin1());
-//            if(now > stop_time){
-//                qDebug("RadioSimulation timeout");
-//                break;
-//            }
-//        }
-//    }
+
+        if(step%1000 == 0){
+            auto now = QTime();
+            auto runtime = start_time.msecsTo(now);
+            auto step_line = QString("Simulation runtime %1ms step:%2\r\n").arg(runtime).arg(step);
+            qDebug(step_line.toLatin1());
+            if(now > stop_time){
+                qDebug("RadioSimulation timeout");
+                break;
+            }
+        }
+    }
 
     packstream.setFlushWrites(true);
     auto fname = m_filename + ".pack";

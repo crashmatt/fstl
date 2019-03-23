@@ -331,9 +331,17 @@ void Window::generate_default()
     auto cont_vert_antenna = new Antenna( this, QVector3D(0.0, 0.0, 0.0)
                                       , QQuaternion()
                                       , "rad_monopole"
-                                      , "controller_vert"
+                                      , "cont_vert"
                                       , QColor(128,128,128,120));
     controller->add_antenna(std::move(cont_vert_antenna));
+
+    auto cont_horiz_antenna = new Antenna( this, QVector3D(0.0, 0.0, 0.0)
+                                      , QQuaternion()
+                                      , "rad_monopole"
+                                      , "cont_horiz"
+                                      , QColor(128,128,128,120));
+    cont_horiz_antenna->addRotation(QVector3D(0,1,0), -90.0);
+    controller->add_antenna(std::move(cont_horiz_antenna));
 
     radios->add_radio(std::move(controller));
 }

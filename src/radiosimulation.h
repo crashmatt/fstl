@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QMap>
 #include <QVector3D>
+#include <msgpackstream.h>
 
 class TestPattern;
 class Radios;
@@ -40,6 +41,8 @@ public:
     AntennaPair(Antenna* ant1, Antenna* ant2);
     Antenna* m_ant1;
     Antenna* m_ant2;
+
+    void pack(MsgPackStream &s);
 };
 
 class RadioSimResults
@@ -51,6 +54,9 @@ public:
     QMap<Antenna*, Radio*>  m_antenna_radio_map;
 
     QList<RadioSimResult>   m_sim_results;
+
+    void pack(MsgPackStream &s);
+
 protected:
     int makeAntennaPairs(Radios* radios);
 };

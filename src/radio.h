@@ -10,7 +10,7 @@ class Radio : public QObject
     Q_OBJECT
 public:
     Radio();
-    explicit Radio(QObject *parent, QString name, QVector3D pos);
+    explicit Radio(QObject *parent, QString name, QVector3D pos, bool fixed = true);
     explicit Radio(QObject *parent, QJsonObject &json);
     ~Radio();
     Radio(const Radio&);
@@ -20,6 +20,7 @@ public:
     QVector3D   m_pos;
     QVector<Antenna*> m_antennas;
     QStringList m_objects;
+    bool        m_fixed;
 
     bool add_antenna(Antenna *antenna);
     void add_object(QString obj_name) {m_objects.append(obj_name);};

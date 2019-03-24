@@ -149,7 +149,6 @@ void RadioSimulation::run()
     packstream << QString("Radio Simulation Results - MessagePack - V0_1");
     m_radios->pack(packstream);
 
-
     auto sim_results = RadioSimResults(m_radios);
     sim_results.pack(packstream);
 
@@ -162,16 +161,32 @@ void RadioSimulation::run()
         rotation_step(rotation, segment);
         step++;
 
-//        auto line = QString("%1,%2").arg(step).arg(m_time);
-////        file.write(line.toUtf8());
-
         packstream << (quint64) step << m_time;
 
         foreach(auto pair, sim_results.m_antenna_pairs){
-            QVector3D rad_vect1 = pair.m_ant1->radiationVector(rotation);
-            QVector3D rad_vect2 = pair.m_ant2->radiationVector(rotation);
+            bool rad1fixed = sim_results.m_antenna_radio_map[pair.m_ant1]->m_fixed;
+            bool rad2fixed = sim_results.m_antenna_radio_map[pair.m_ant2]->m_fixed;
+
+            auto rad_vect1 = QVector3D();
+            auto rad_vect2 = QVector3D();
+            if(rad1fixed){
+                rad_vect1 = pair.m_ant1->radiationVector(QQuaternion());
+            } else {
+                rad_vect1 = pair.m_ant1->radiationVector(rotation);
+            }
+            if(rad2fixed){
+                rad_vect2 = pair.m_ant2->radiationVector(QQuaternion());
+            } else {
+                rad_vect2 = pair.m_ant2->radiationVector(rotation);
+            }
+
+            rad_vect1[0] = fabs(rad_vect1[0]);
+            rad_vect1[1] = fabs(rad_vect1[1]);
+            rad_vect1[2] = fabs(rad_vect1[2]);
+            rad_vect2[0] = fabs(rad_vect2[0]);
+            rad_vect2[1] = fabs(rad_vect2[1]);
+            rad_vect2[2] = fabs(rad_vect2[2]);
             auto ant_gain = QVector3D::dotProduct(rad_vect1, rad_vect2);
-//            auto rad_vect_str = QString(",%1,%2,%3").arg(rad_vect.x()).arg(rad_vect.y()).arg(rad_vect.z());
             packstream << ant_gain;
         }
 

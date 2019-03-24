@@ -51,25 +51,24 @@ void TestPattern::antenna_visibility(int index, QQuaternion rotation, float cent
         data.append(vect_str);
 
         foreach(auto radio, radios){
-            foreach(auto antenna, radio->m_antennas){
+            foreach(Antenna* antenna, radio->m_antennas){
                 auto rad_data = antenna->m_rad_pattern.data();
                 if(rad_data == NULL) return;
 
-                auto& ant_data = antenna->m_antenna_data;
-                if(ant_data.length() != rad_data->rad_data.length()){
-                    auto str = QString("%1 has invalid antenna data").arg(antenna->m_name);
-                    data.append(str);
-                } else {
-                    auto ant_rad_vect = antenna->radiationVector(rotation);
+//                auto& ant_data = antenna->m_antenna_data;
+//                if(ant_data.length() != rad_data->rad_data.length()){
+//                    auto str = QString("%1 has invalid antenna data").arg(antenna->m_name);
+//                    data.append(str);
+//                } else {
+                auto ant_rad_vect = antenna->radiationVector(rotation);
 
-                    auto ant_eff_str = QString("%1 Rad X:%3 Y:%4 Z:%5").
-                            arg(antenna->m_name,10)
-                            .arg(ant_rad_vect.x(),4,'f',2)
-                            .arg(ant_rad_vect.y(),4,'f',2)
-                            .arg(ant_rad_vect.z(),4,'f',2);
-                    data.append(ant_eff_str);
-
-                }
+                auto ant_eff_str = QString("%1 Rad X:%3 Y:%4 Z:%5").
+                        arg(antenna->m_name,10)
+                        .arg(ant_rad_vect.x(),4,'f',2)
+                        .arg(ant_rad_vect.y(),4,'f',2)
+                        .arg(ant_rad_vect.z(),4,'f',2);
+                data.append(ant_eff_str);
+//                }
             }
         }
 

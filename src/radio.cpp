@@ -10,9 +10,10 @@ Radio::Radio() : QObject(NULL)
     qRegisterMetaTypeStreamOperators<Radio>("Radio");
 }
 
-Radio::Radio(QObject *parent, QString name, QVector3D pos) : QObject(parent)
+Radio::Radio(QObject *parent, QString name, QVector3D pos, bool fixed) : QObject(parent)
   , m_name(name)
   , m_pos(pos)
+  , m_fixed(fixed)
 {
     qRegisterMetaType<Radio>();
     qRegisterMetaTypeStreamOperators<Radio>("Radio");
@@ -22,6 +23,7 @@ Radio::Radio(QObject *parent, QString name, QVector3D pos) : QObject(parent)
 Radio::Radio(QObject *parent, QJsonObject &json) : QObject(parent)
   , m_name("")
   , m_pos(0.0,0.0,0.0)
+  , m_fixed(false)
 {
     qRegisterMetaType<Radio>();
     qRegisterMetaTypeStreamOperators<Radio>("Radio");
@@ -52,6 +54,7 @@ Radio::Radio(const Radio& radio) : QObject(radio.parent())
     ,m_name(radio.m_name)
     ,m_pos(radio.m_pos)
     ,m_antennas(radio.m_antennas)
+    ,m_fixed(radio.m_fixed)
 {
     foreach(auto ant, radio.m_antennas){
         auto antenna = new Antenna(*ant);
@@ -70,6 +73,7 @@ Radio& Radio::operator=(const Radio& radio)
     m_name = radio.m_name;
     m_pos = radio.m_pos;
     m_antennas = radio.m_antennas;
+    m_fixed = radio.m_fixed;
 }
 
 

@@ -283,7 +283,7 @@ void Window::pattern_loaded()
 
 void Window::generate_default()
 {
-    auto aircraft = new Radio( (QObject*) this, QString("aircraft"), QVector3D(1000,0,0), false);
+    auto aircraft = new Radio( (QObject*) this, QString("aircraft"), QVector3D(0,1000.0,200.0), false);
 
     //Antenna just behind cockpit cover
     auto cp_antenna = new Antenna(this, QVector3D(0.00, 0.35, 0.05)

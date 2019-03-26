@@ -155,6 +155,9 @@ void RadioSimulation::run()
     QQuaternion rotation;
     RotationSegment segment;
 
+    //Frequency in GHz.  Distance in km
+    const double path_fspl_const = 20.0*log10(2.4) + 92.45;
+
     unsigned long step = 0;
     while(m_time < m_end_time){
         m_time += m_step_time;
@@ -164,11 +167,14 @@ void RadioSimulation::run()
         packstream << (quint64) step << m_time;
 
         foreach(auto pair, sim_results.m_antenna_pairs){
-            bool rad1fixed = sim_results.m_antenna_radio_map[pair.m_ant1]->m_fixed;
-            bool rad2fixed = sim_results.m_antenna_radio_map[pair.m_ant2]->m_fixed;
+            Radio* rad1 = sim_results.m_antenna_radio_map[pair.m_ant1];
+            Radio* rad2 = sim_results.m_antenna_radio_map[pair.m_ant2];
+            bool rad1fixed = rad1->m_fixed;
+            bool rad2fixed = rad2->m_fixed;
 
             auto rad_vect1 = QVector3D();
             auto rad_vect2 = QVector3D();
+
             if(rad1fixed){
                 rad_vect1 = pair.m_ant1->radiationVector(QQuaternion());
             } else {
@@ -178,7 +184,7 @@ void RadioSimulation::run()
                 rad_vect2 = pair.m_ant2->radiationVector(QQuaternion());
             } else {
                 rad_vect2 = pair.m_ant2->radiationVector(rotation);
-            }
+            }            
 
             rad_vect1[0] = fabs(rad_vect1[0]);
             rad_vect1[1] = fabs(rad_vect1[1]);
@@ -187,7 +193,16 @@ void RadioSimulation::run()
             rad_vect2[1] = fabs(rad_vect2[1]);
             rad_vect2[2] = fabs(rad_vect2[2]);
             auto ant_gain = QVector3D::dotProduct(rad_vect1, rad_vect2);
-            packstream << ant_gain;
+
+            auto ant_gain_dB = 20.0 * log10(ant_gain + 1E-12);
+
+            auto distvect = rad1->m_pos - rad2->m_pos;
+            auto dist_km = distvect.length() * 0.001;
+            auto chan_loss = path_fspl_const + 20.0*log10(dist_km);
+
+            auto link_gain = ant_gain_dB - chan_loss;
+
+            packstream << link_gain;
         }
 
 

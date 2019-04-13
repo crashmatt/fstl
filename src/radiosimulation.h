@@ -7,6 +7,7 @@
 #include <QMap>
 #include <QVector3D>
 #include <msgpackstream.h>
+#include <QQuaternion>
 
 class TestPattern;
 class Radios;
@@ -31,6 +32,7 @@ public:
     RadioSimResult(int size, double timestamp);
 
     double              m_timestamp;
+    QQuaternion         m_rotation;
     QVector<double>     m_rx_dBs;
 };
 
@@ -88,6 +90,8 @@ private:
     unsigned long   m_max_runtime_ms;
 
     void rotation_step(QQuaternion& rotation, RotationSegment& segment);
+
+    void make_rotations(RadioSimResults *results);
 };
 
 #endif // RADIOSIMULATION_H

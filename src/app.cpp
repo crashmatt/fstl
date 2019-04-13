@@ -44,7 +44,7 @@ App::App(int& argc, char *argv[]) :
 
     auto mono_config = ObjectConfig("rad_monopole" , "visi", QColor(255,0,0,200), 8);
 //    window->load_rad_pattern("../models/coax_monopole_15deg.csv", mono_config);
-    auto monopole_path = models_dir.filePath("coax_monopole_15deg.csv");
+    auto monopole_path = models_dir.filePath("coax_monopole.csv");
     Q_ASSERT(QFileInfo::exists(monopole_path));
     window->load_rad_pattern(monopole_path, mono_config);
 

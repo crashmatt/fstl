@@ -21,6 +21,7 @@ RotationSegment::RotationSegment()
 
 RadioSimResult::RadioSimResult(int size, double timestamp)
     : m_timestamp(timestamp)
+    , m_rotation()
 {
     m_rx_dBs.fill(0.0, size);
 }
@@ -152,6 +153,8 @@ void RadioSimulation::run()
     auto sim_results = RadioSimResults(m_radios);
     sim_results.pack(packstream);
 
+    make_rotations(&sim_results);
+
     QQuaternion rotation;
     RotationSegment segment;
 
@@ -159,12 +162,9 @@ void RadioSimulation::run()
     const double path_fspl_const = 20.0*log10(2.4) + 92.45;
 
     unsigned long step = 0;
-    while(m_time < m_end_time){
-        m_time += m_step_time;
-        rotation_step(rotation, segment);
-        step++;
-
-        packstream << (quint64) step << m_time;
+    foreach(auto& simresult, sim_results.m_sim_results){
+        packstream << (quint64) step << simresult.m_timestamp;
+        rotation = simresult.m_rotation;
 
         foreach(auto pair, sim_results.m_antenna_pairs){
             Radio* rad1 = sim_results.m_antenna_radio_map[pair.m_ant1];
@@ -205,7 +205,6 @@ void RadioSimulation::run()
             packstream << link_gain;
         }
 
-
         if(step%1000 == 0){
             auto now = QTime();
             auto runtime = start_time.msecsTo(now);
@@ -216,6 +215,7 @@ void RadioSimulation::run()
                 break;
             }
         }
+        step++;
     }
 
     packstream.setFlushWrites(true);
@@ -231,6 +231,34 @@ void RadioSimulation::run()
     qDebug("RadioSimulation complete");
 }
 
+void RadioSimulation::make_rotations(RadioSimResults *results)
+{
+    m_time = 0;
+    QTime start_time = QTime();
+    QTime stop_time = start_time;
+    stop_time.addMSecs(m_end_time);
+
+    m_time = 0;
+    ulong steps = (ulong) m_end_time / m_step_time;
+    auto &simresults = results->m_sim_results;
+    simresults.reserve(steps);
+
+    auto dbg_str  = QString("RadioSimulation has %1 steps to run").arg(steps);
+    qDebug(dbg_str.toLatin1());
+
+    QQuaternion rotation;
+    RotationSegment segment;
+
+    unsigned long step = 0;
+    while(m_time < m_end_time){
+        m_time += m_step_time;
+        rotation_step(rotation, segment);
+        auto result = RadioSimResult(0,m_time);
+        result.m_rotation = rotation;
+        simresults.append(result);
+        step++;
+    }
+}
 
 
 void RadioSimulation::rotation_step(QQuaternion& rotation, RotationSegment& segment)

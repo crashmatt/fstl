@@ -5,6 +5,8 @@
 #include <QTime>
 #include <QFile>
 #include <QQuaternion>
+#include <qtconcurrentmap.h>
+#include <QFuture>
 
 #include <math.h>
 #include <msgpack.h>
@@ -28,9 +30,11 @@ RadioSimResult::RadioSimResult(int size, double timestamp)
 
 
 
-AntennaPair::AntennaPair(Antenna* ant1, Antenna* ant2)
+AntennaPair::AntennaPair(Antenna* ant1, Antenna* ant2, Radio* rad1, Radio* rad2)
     :m_ant1(ant1)
     ,m_ant2(ant2)
+    ,m_rad1(rad1)
+    ,m_rad2(rad2)
 {
 }
 
@@ -52,7 +56,7 @@ void RadioSimResults::pack(MsgPackStream &s)
     s << m_antenna_pairs.size();
 
     foreach(auto pair, m_antenna_pairs){
-        pair.                              pack(s);
+        pair.pack(s);
     }
 }
 
@@ -67,10 +71,8 @@ int RadioSimResults::makeAntennaPairs(Radios* radios)
         for(int j=i+1; j<radcount; j++){
             auto rad2 = rads[j];
             foreach(auto ant1, rad1->m_antennas){
-                m_antenna_radio_map[ant1] = rad1;
                 foreach (auto ant2, rad2->m_antennas) {
-                    m_antenna_radio_map[ant2] = rad2;
-                    m_antenna_pairs.append(AntennaPair(ant1, ant2));
+                    m_antenna_pairs.append(AntennaPair(ant1, ant2, rad1, rad2));
                 }
             }
         }
@@ -86,7 +88,7 @@ RadioSimulation::RadioSimulation() : QObject(NULL)
     , m_filename("")
     , m_halt(false)
     , m_step_time(0.01)
-    , m_end_time(50.0)
+    , m_end_time(10.0)
     , m_time(0)
     , m_max_runtime_ms(1000)
 {
@@ -100,7 +102,7 @@ RadioSimulation::RadioSimulation(QObject *parent, Radios* radios, TestPattern* t
     , m_filename(filename)
     , m_halt(false)
     , m_step_time(0.01)
-    , m_end_time(50.0)
+    , m_end_time(40.0)
     , m_time(0)
     , m_max_runtime_ms(1000)
 {
@@ -219,55 +221,53 @@ void RadioSimulation::calc_results(RadioSimResults *results)
     const double path_fspl_const = 20.0*log10(2.4) + 92.45;
 
     unsigned long step = 0;
-    int pair_count =  results->m_antenna_pairs.size();
 
-    auto &pairs = results->m_antenna_pairs;
     auto &simresults = results->m_sim_results;
 
     for(auto& simresult : simresults){
-        rotation = simresult.m_rotation;
-        simresult.m_rx_dBs.clear();
+        calc_result(&simresult, results->m_antenna_pairs);
+//        rotation = simresult.m_rotation;
+//        simresult.m_rx_dBs.clear();
 
-        int index = 0;
-        foreach(auto pair, pairs){
-            Radio* rad1 = results->m_antenna_radio_map[pair.m_ant1];
-            Radio* rad2 = results->m_antenna_radio_map[pair.m_ant2];
-            bool rad1fixed = rad1->m_fixed;
-            bool rad2fixed = rad2->m_fixed;
+//        int index = 0;
+//        foreach(auto pair, pairs){
+//            Radio* rad1 = pair.m_rad1;
+//            Radio* rad2 = pair.m_rad2;
+//            bool rad1fixed = rad1->m_fixed;
+//            bool rad2fixed = rad2->m_fixed;
 
-            auto rad_vect1 = QVector3D();
-            auto rad_vect2 = QVector3D();
+//            auto rad_vect1 = QVector3D();
+//            auto rad_vect2 = QVector3D();
 
-            if(rad1fixed){
-                rad_vect1 = pair.m_ant1->radiationVector(QQuaternion());
-            } else {
-                rad_vect1 = pair.m_ant1->radiationVector(rotation);
-            }
-            if(rad2fixed){
-                rad_vect2 = pair.m_ant2->radiationVector(QQuaternion());
-            } else {
-                rad_vect2 = pair.m_ant2->radiationVector(rotation);
-            }
+//            if(rad1fixed){
+//                rad_vect1 = pair.m_ant1->radiationVector(QQuaternion());
+//            } else {
+//                rad_vect1 = pair.m_ant1->radiationVector(rotation);
+//            }
+//            if(rad2fixed){
+//                rad_vect2 = pair.m_ant2->radiationVector(QQuaternion());
+//            } else {
+//                rad_vect2 = pair.m_ant2->radiationVector(rotation);
+//            }
 
-            rad_vect1[0] = fabs(rad_vect1[0]);
-            rad_vect1[1] = fabs(rad_vect1[1]);
-            rad_vect1[2] = fabs(rad_vect1[2]);
-            rad_vect2[0] = fabs(rad_vect2[0]);
-            rad_vect2[1] = fabs(rad_vect2[1]);
-            rad_vect2[2] = fabs(rad_vect2[2]);
-            auto ant_gain = QVector3D::dotProduct(rad_vect1, rad_vect2);
+//            rad_vect1[0] = fabs(rad_vect1[0]);
+//            rad_vect1[1] = fabs(rad_vect1[1]);
+//            rad_vect1[2] = fabs(rad_vect1[2]);
+//            rad_vect2[0] = fabs(rad_vect2[0]);
+//            rad_vect2[1] = fabs(rad_vect2[1]);
+//            rad_vect2[2] = fabs(rad_vect2[2]);
+//            auto ant_gain = QVector3D::dotProduct(rad_vect1, rad_vect2);
 
-            auto ant_gain_dB = 20.0 * log10(ant_gain + 1E-12);
+//            auto ant_gain_dB = 20.0 * log10(ant_gain + 1E-12);
 
-            auto distvect = rad1->m_pos - rad2->m_pos;
-            auto dist_km = distvect.length() * 0.001;
-            auto chan_loss = path_fspl_const + 20.0*log10(dist_km);
+//            auto distvect = rad1->m_pos - rad2->m_pos;
+//            auto dist_km = distvect.length() * 0.001;
+//            auto chan_loss = path_fspl_const + 20.0*log10(dist_km);
 
-            auto link_gain = ant_gain_dB - chan_loss;
+//            auto link_gain = ant_gain_dB - chan_loss;
 
-            simresult.m_rx_dBs.append(link_gain);
-            index++;
-        }
+//            simresult.m_rx_dBs.append(link_gain);
+//            index++;
 
         if(step%1000 == 0){
             auto now = QTime();
@@ -276,10 +276,62 @@ void RadioSimulation::calc_results(RadioSimResults *results)
             qDebug(step_line.toLatin1());
             if(now > stop_time){
                 qDebug("RadioSimulation timeout");
-                break;
+                return;
             }
         }
         step++;
+    }
+}
+
+void RadioSimulation::calc_result(RadioSimResult *result, QList<AntennaPair>& pairs)
+{
+    QQuaternion rotation;
+
+    //Frequency in GHz.  Distance in km
+    const double path_fspl_const = 20.0*log10(2.4) + 92.45;
+
+    rotation = result->m_rotation;
+    result->m_rx_dBs.clear();
+
+    int index = 0;
+    foreach(auto pair, pairs){
+        Radio* rad1 = pair.m_rad1;
+        Radio* rad2 = pair.m_rad2;
+        bool rad1fixed = rad1->m_fixed;
+        bool rad2fixed = rad2->m_fixed;
+
+        auto rad_vect1 = QVector3D();
+        auto rad_vect2 = QVector3D();
+
+        if(rad1fixed){
+            rad_vect1 = pair.m_ant1->radiationVector(QQuaternion());
+        } else {
+            rad_vect1 = pair.m_ant1->radiationVector(rotation);
+        }
+        if(rad2fixed){
+            rad_vect2 = pair.m_ant2->radiationVector(QQuaternion());
+        } else {
+            rad_vect2 = pair.m_ant2->radiationVector(rotation);
+        }
+
+        rad_vect1[0] = fabs(rad_vect1[0]);
+        rad_vect1[1] = fabs(rad_vect1[1]);
+        rad_vect1[2] = fabs(rad_vect1[2]);
+        rad_vect2[0] = fabs(rad_vect2[0]);
+        rad_vect2[1] = fabs(rad_vect2[1]);
+        rad_vect2[2] = fabs(rad_vect2[2]);
+        auto ant_gain = QVector3D::dotProduct(rad_vect1, rad_vect2);
+
+        auto ant_gain_dB = 20.0 * log10(ant_gain + 1E-12);
+
+        auto distvect = rad1->m_pos - rad2->m_pos;
+        auto dist_km = distvect.length() * 0.001;
+        auto chan_loss = path_fspl_const + 20.0*log10(dist_km);
+
+        auto link_gain = ant_gain_dB - chan_loss;
+
+        result->m_rx_dBs.append(link_gain);
+        index++;
     }
 }
 

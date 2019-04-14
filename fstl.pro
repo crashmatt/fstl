@@ -1,7 +1,9 @@
-QT += core gui opengl widgets
+QT += core gui opengl widgets concurrent
 
 LIBS += -L/usr/local/lib -lqmsgpack
 INCLUDEPATH += /usr/local/include/qmsgpack
+
+#LIBS += -lQt5Concurrent
 
 TARGET = fstl
 TEMPLATE = app

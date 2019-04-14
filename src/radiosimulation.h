@@ -40,9 +40,11 @@ public:
 class AntennaPair
 {
 public:
-    AntennaPair(Antenna* ant1, Antenna* ant2);
+    AntennaPair(Antenna* ant1, Antenna* ant2, Radio* rad1, Radio* rad2);
     Antenna* m_ant1;
     Antenna* m_ant2;
+    Radio*  m_rad1;
+    Radio*  m_rad2;
 
     void pack(MsgPackStream &s);
 };
@@ -53,7 +55,7 @@ public:
     RadioSimResults(Radios* radios);
 
     QList<AntennaPair>      m_antenna_pairs;
-    QMap<Antenna*, Radio*>  m_antenna_radio_map;
+//    QMap<Antenna*, Radio*>  m_antenna_radio_map;
 
     QList<RadioSimResult>   m_sim_results;
 
@@ -93,6 +95,7 @@ private:
 
     void make_rotations(RadioSimResults *results);
     void calc_results(RadioSimResults *results);
+    void calc_result(RadioSimResult *result, QList<AntennaPair>& pairs);
 };
 
 #endif // RADIOSIMULATION_H

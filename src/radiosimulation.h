@@ -92,6 +92,7 @@ private:
     void rotation_step(QQuaternion& rotation, RotationSegment& segment);
 
     void make_rotations(RadioSimResults *results);
+    void calc_results(RadioSimResults *results);
 };
 
 #endif // RADIOSIMULATION_H

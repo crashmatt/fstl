@@ -26,15 +26,15 @@ public:
     QVector3D   m_direction;
 };
 
-class RadioSimResult
-{
-public:
-    RadioSimResult(int size, double timestamp);
+//class RadioSimResult
+//{
+//public:
+//    RadioSimResult(int size, double timestamp);
 
-    double              m_timestamp;
-    QQuaternion         m_rotation;
-    QVector<double>     m_rx_dBs;
-};
+//    double              m_timestamp;
+//    QQuaternion         m_rotation;
+//    QVector<double>     m_rx_dBs;
+//};
 
 
 class AntennaPair
@@ -55,9 +55,12 @@ public:
     RadioSimResults(Radios* radios);
 
     QList<AntennaPair>      m_antenna_pairs;
-//    QMap<Antenna*, Radio*>  m_antenna_radio_map;
 
-    QList<RadioSimResult>   m_sim_results;
+//    QList<RadioSimResult>   m_sim_results;
+
+    QList<double>           m_timestamps;
+    QList<QQuaternion>      m_rotations;
+    QList<QVector<double>>  m_rx_bBms;
 
     void pack(MsgPackStream &s);
 
@@ -95,7 +98,7 @@ private:
 
     void make_rotations(RadioSimResults *results);
     void calc_results(RadioSimResults *results);
-    void calc_result(RadioSimResult *result, QList<AntennaPair>& pairs);
+    static QList<QVector<double>> calc_result_block(const QList<QQuaternion> rotations, RadioSimResults* simresults);
 };
 
 #endif // RADIOSIMULATION_H

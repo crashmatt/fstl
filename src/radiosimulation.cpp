@@ -9,6 +9,8 @@
 #include <qtconcurrentrun.h>
 #include <QtConcurrentRun>
 #include <QFuture>
+#include <QStandardPaths>
+#include <QDir>
 
 #include <math.h>
 #include <msgpack.h>
@@ -171,9 +173,11 @@ void RadioSimulation::run()
 
     packstream.setFlushWrites(true);
     auto fname = m_filename + ".pack";
-    QFile file(fname);
+    auto dir = QDir(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+    auto filepath = dir.filePath(fname);
+    QFile file(dir.filePath(filepath));
     if (!file.open(QFile::WriteOnly)){
-        qDebug("RadioSimulation failed to open file for writing: ", fname);
+        qDebug("RadioSimulation failed to open file for writing: ", filepath);
         return;
     }
     file.write(bytes);
@@ -208,38 +212,38 @@ void RadioSimulation::calc_results(RadioSimResults *results)
     QTime stop_time = start_time;
     stop_time.addMSecs(m_end_time);
 
+    ulong rot_count = results->m_rotations.length();
+    ulong offset = 0;
 
-    results->m_rx_bBms = QtConcurrent::run(RadioSimulation::calc_result_block, results->m_rotations, results);
+    QList<QFuture<RadioSimResults::rxdBms_t>> futures;
+
+    while(offset < rot_count){
+        ulong end = offset + 1000;
+        if(end > rot_count){
+            end = rot_count;
+        }
+        futures.append(QtConcurrent::run(RadioSimulation::calc_result_block, offset, end-1, results));
+        offset = end;
+    }
+
+//    futures.append(QtConcurrent::run(RadioSimulation::calc_result_block, 0, rot_count-1, results));
+
+    for(auto &future : futures){
+        future.waitForFinished();
+    }
+
+    for(auto &future : futures){
+        results->m_rx_bBms.append(future);
+    }
 
 //    QFuture<double> future = QtConcurrent::run(RadioSimulation::calc_something, 1.0);
 //    QFuture<double> future = QtConcurrent::mapped<double>( results->m_rotations, [this] (QQuaternion const& rotation) {calc_result(rotation);} );
 //   QList<double> future = QtConcurrent::blockingMapped(results->m_rotations, [this] (QQuaternion const& rotation) {calc_result(rotation);});
 
     qDebug("Concurrent done");
-
-//    for(QVector<double> result : future){
-//        QVector<double> res = result;
-//        results->m_rx_bBms.append(res);
-//    }
-
-//    for(auto& simresult : simresults){
-//        calc_result(&simresult, results->m_antenna_pairs);
-
-//        if(step%1000 == 0){
-//            auto now = QTime();
-//            auto runtime = start_time.msecsTo(now);
-//            auto step_line = QString("Simulation runtime %1ms step:%2\r\n").arg(runtime).arg(step);
-//            qDebug(step_line.toLatin1());
-//            if(now > stop_time){
-//                qDebug("RadioSimulation timeout");
-//                return;
-//            }
-//        }
-//        step++;
-//    }
 }
 
-QList<QVector<double>> RadioSimulation::calc_result_block(const QList<QQuaternion> rotations, RadioSimResults* simresults)
+QList<QVector<double>> RadioSimulation::calc_result_block(ulong start, ulong end, RadioSimResults* simresults)
 {
     //Frequency in GHz.  Distance in km
     const double path_fspl_const = 20.0*log10(2.4) + 92.45;
@@ -247,8 +251,10 @@ QList<QVector<double>> RadioSimulation::calc_result_block(const QList<QQuaternio
     QList<QVector<double>> rx_dBms;
 
     auto& pairs = simresults->m_antenna_pairs;
+    auto& rotations = simresults->m_rotations;
 
-    for(auto rotation: rotations){
+    for(ulong index = start; index <= end; index++){
+        auto& rotation = rotations[index];
         QVector<double> dBms;
         foreach(auto pair, pairs){
             Radio* rad1 = pair.m_rad1;
@@ -289,6 +295,7 @@ QList<QVector<double>> RadioSimulation::calc_result_block(const QList<QQuaternio
             dBms.append(link_gain);
         }
         rx_dBms.append(dBms);
+        index++;
     }
     return rx_dBms;
 }

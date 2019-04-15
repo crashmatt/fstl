@@ -56,11 +56,11 @@ public:
 
     QList<AntennaPair>      m_antenna_pairs;
 
-//    QList<RadioSimResult>   m_sim_results;
-
     QList<double>           m_timestamps;
     QList<QQuaternion>      m_rotations;
-    QList<QVector<double>>  m_rx_bBms;
+
+    typedef QList<QVector<double>> rxdBms_t;
+    rxdBms_t  m_rx_bBms;
 
     void pack(MsgPackStream &s);
 
@@ -98,7 +98,7 @@ private:
 
     void make_rotations(RadioSimResults *results);
     void calc_results(RadioSimResults *results);
-    static QList<QVector<double>> calc_result_block(const QList<QQuaternion> rotations, RadioSimResults* simresults);
+    static QList<QVector<double>> calc_result_block(ulong start, ulong end, RadioSimResults* simresults);
 };
 
 #endif // RADIOSIMULATION_H

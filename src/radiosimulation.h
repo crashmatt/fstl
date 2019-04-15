@@ -8,6 +8,7 @@
 #include <QVector3D>
 #include <msgpackstream.h>
 #include <QQuaternion>
+#include <QMutex>
 
 class TestPattern;
 class Radios;
@@ -58,6 +59,8 @@ public:
 
     QList<double>           m_timestamps;
     QList<QQuaternion>      m_rotations;
+
+    QMutex                  m_mutex;
 
     typedef QList<QVector<double>> rxdBms_t;
     rxdBms_t  m_rx_bBms;

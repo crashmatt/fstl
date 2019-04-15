@@ -3,6 +3,7 @@
 #include "radio.h"
 //#include "antennadata.h"
 #include <QTime>
+#include <QElapsedTimer>
 #include <QFile>
 #include <QQuaternion>
 #include <qtconcurrentmap.h>
@@ -50,6 +51,8 @@ void AntennaPair::pack(MsgPackStream &s)
 
 
 RadioSimResults::RadioSimResults(Radios* radios)
+    : m_mutex(QMutex::NonRecursive)
+
 {
     makeAntennaPairs(radios);
 };
@@ -106,7 +109,7 @@ RadioSimulation::RadioSimulation(QObject *parent, Radios* radios, TestPattern* t
     , m_filename(filename)
     , m_halt(false)
     , m_step_time(0.01)
-    , m_end_time(40.0)
+    , m_end_time(500.0)
     , m_time(0)
     , m_max_runtime_ms(1000)
 {
@@ -134,21 +137,7 @@ RadioSimulation::~RadioSimulation()
 
 void RadioSimulation::run()
 {
-    m_time = 0;
-//    if (m_radios->length() < 2){
-//        qDebug("RadioSimulation does not have enough radios to simulate");
-//        return;
-//    }
     qDebug("RadioSimulation started");
-
-    QTime start_time = QTime();
-    QTime stop_time = start_time;
-    stop_time.addMSecs(m_end_time);
-
-//    m_time = 0;
-//    ulong steps = (ulong) m_end_time / m_step_time;
-//    auto dbg_str  = QString("RadioSimulation has %1 steps to run").arg(steps);
-//    qDebug(dbg_str.toLatin1());
 
     QByteArray bytes;
     MsgPackStream packstream(&bytes, QIODevice::WriteOnly);
@@ -156,7 +145,7 @@ void RadioSimulation::run()
     packstream << QString("Radio Simulation Results - MessagePack - V0_1");
     m_radios->pack(packstream);
 
-    auto sim_results = RadioSimResults(m_radios);
+    RadioSimResults sim_results(m_radios);
     sim_results.pack(packstream);
 
     make_rotations(&sim_results);
@@ -189,11 +178,6 @@ void RadioSimulation::run()
 void RadioSimulation::make_rotations(RadioSimResults *results)
 {
     m_time = 0;
-    QTime start_time = QTime();
-    QTime stop_time = start_time;
-    stop_time.addMSecs(m_end_time);
-
-    m_time = 0;
 
     QQuaternion rotation;
     RotationSegment segment;
@@ -208,14 +192,18 @@ void RadioSimulation::make_rotations(RadioSimResults *results)
 
 void RadioSimulation::calc_results(RadioSimResults *results)
 {
-    QTime start_time = QTime();
-    QTime stop_time = start_time;
-    stop_time.addMSecs(m_end_time);
+    QElapsedTimer timer;
+    timer.start();
 
     ulong rot_count = results->m_rotations.length();
     ulong offset = 0;
 
+    int max_thread_count = QThreadPool::globalInstance()->maxThreadCount();
+    qDebug() << "Max thread count: " << max_thread_count;
+
     QList<QFuture<RadioSimResults::rxdBms_t>> futures;
+
+    qDebug() << "Computation time started: " << timer.elapsed() << " ms";
 
     while(offset < rot_count){
         ulong end = offset + 1000;
@@ -228,9 +216,15 @@ void RadioSimulation::calc_results(RadioSimResults *results)
 
 //    futures.append(QtConcurrent::run(RadioSimulation::calc_result_block, 0, rot_count-1, results));
 
+
+    int index = 1;
     for(auto &future : futures){
         future.waitForFinished();
+        qDebug() << "Finished computation block " << index << " of " << futures.length() << " at " << timer.elapsed();
+        index++;
     }
+
+    qDebug() << "Computation time complete: " << timer.elapsed() << " ms";
 
     for(auto &future : futures){
         results->m_rx_bBms.append(future);
@@ -265,6 +259,7 @@ QList<QVector<double>> RadioSimulation::calc_result_block(ulong start, ulong end
             auto rad_vect1 = QVector3D();
             auto rad_vect2 = QVector3D();
 
+            simresults->m_mutex.lock();
             if(rad1fixed){
                 rad_vect1 = pair.m_ant1->radiationVector(QQuaternion());
             } else {
@@ -275,6 +270,7 @@ QList<QVector<double>> RadioSimulation::calc_result_block(ulong start, ulong end
             } else {
                 rad_vect2 = pair.m_ant2->radiationVector(rotation);
             }
+            simresults->m_mutex.unlock();
 
             rad_vect1[0] = fabs(rad_vect1[0]);
             rad_vect1[1] = fabs(rad_vect1[1]);

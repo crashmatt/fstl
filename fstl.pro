@@ -1,5 +1,7 @@
 QT += core gui opengl widgets concurrent
 
+LIBS += -L/usr/lib -lqmsgpack
+INCLUDEPATH += /usr/include/qmsgpack
 LIBS += -L/usr/local/lib -lqmsgpack
 INCLUDEPATH += /usr/local/include/qmsgpack
 

@@ -26,27 +26,13 @@ RotationSegment::RotationSegment()
 {
 }
 
-//RadioSimResult::RadioSimResult(int size, double timestamp)
-//    : m_timestamp(timestamp)
-//    , m_rotation()
-//{
-//    m_rx_dBs.fill(0.0, size);
-//}
 
-
-
-AntennaPair::AntennaPair(Antenna* ant1, Antenna* ant2, Radio* rad1, Radio* rad2)
+AntennaPair::AntennaPair(Radio* rad1, Radio* rad2, Antenna* ant1, Antenna* ant2)
     :m_ant1(ant1)
     ,m_ant2(ant2)
     ,m_rad1(rad1)
     ,m_rad2(rad2)
 {
-}
-
-void AntennaPair::pack(MsgPackStream &s)
-{
-    s << m_ant1->m_name;
-    s << m_ant2->m_name;
 }
 
 
@@ -55,33 +41,23 @@ RadioSimResults::RadioSimResults(Radios* radios)
 
 {
     makeAntennaPairs(radios);
-};
-
-
-void RadioSimResults::pack(MsgPackStream &s)
-{
-    s << m_antenna_pairs.size();
-
-    foreach(auto pair, m_antenna_pairs){
-        pair.pack(s);
-    }
 }
-
 
 int RadioSimResults::makeAntennaPairs(Radios* radios)
 {
     const auto &rads = radios->m_radios;
     int radcount = rads.size();
+    if(radcount < 2) return 0;
 
-    for(int i=0; i<radcount; i++){
-        auto rad1 = rads[i];
-        for(int j=i+1; j<radcount; j++){
-            auto rad2 = rads[j];
-            foreach(auto ant1, rad1->m_antennas){
-                foreach (auto ant2, rad2->m_antennas) {
-                    m_antenna_pairs.append(AntennaPair(ant1, ant2, rad1, rad2));
-                }
-            }
+    auto rad1 = rads[0];
+    auto rad2 = rads[1];
+    const auto rad1ant_count = rad1->m_antennas.length();
+    const auto rad2ant_count = rad2->m_antennas.length();
+    for(int ant1index=0; ant1index < rad1ant_count; ant1index++){
+        auto& ant1 = rad1->m_antennas[ant1index];
+        for(int ant2index=0; ant2index < rad2ant_count; ant2index++){
+            auto& ant2 = rad2->m_antennas[ant2index];
+            m_antenna_pairs.append(AntennaPair(rad1, rad2, ant1, ant2));
         }
     }
     return m_antenna_pairs.size();
@@ -142,11 +118,11 @@ void RadioSimulation::run()
     QByteArray bytes;
     MsgPackStream packstream(&bytes, QIODevice::WriteOnly);
 
-    packstream << QString("Radio Simulation Results - MessagePack - V0_1");
+    packstream << QString("Radio Simulation Results - MessagePack - V0_2");
     m_radios->pack(packstream);
 
     RadioSimResults sim_results(m_radios);
-    sim_results.pack(packstream);
+//    sim_results.pack(packstream);
 
     make_rotations(&sim_results);
     calc_results(&sim_results);
@@ -250,7 +226,7 @@ QList<QVector<double>> RadioSimulation::calc_result_block(ulong start, ulong end
     for(ulong index = start; index <= end; index++){
         auto& rotation = rotations[index];
         QVector<double> dBms;
-        foreach(auto pair, pairs){
+        foreach(auto pair, pairs){           
             Radio* rad1 = pair.m_rad1;
             Radio* rad2 = pair.m_rad2;
             bool rad1fixed = rad1->m_fixed;

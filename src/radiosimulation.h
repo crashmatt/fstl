@@ -27,25 +27,15 @@ public:
     QVector3D   m_direction;
 };
 
-//class RadioSimResult
-//{
-//public:
-//    RadioSimResult(int size, double timestamp);
-
-//    double              m_timestamp;
-//    QQuaternion         m_rotation;
-//    QVector<double>     m_rx_dBs;
-//};
-
 
 class AntennaPair
 {
 public:
-    AntennaPair(Antenna* ant1, Antenna* ant2, Radio* rad1, Radio* rad2);
-    Antenna* m_ant1;
-    Antenna* m_ant2;
-    Radio*  m_rad1;
-    Radio*  m_rad2;
+    AntennaPair(Radio* rad1, Radio* rad2, Antenna* ant1, Antenna* ant2);
+    Antenna*    m_ant1;
+    Antenna*    m_ant2;
+    Radio*      m_rad1;
+    Radio*      m_rad2;
 
     void pack(MsgPackStream &s);
 };

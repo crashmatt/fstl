@@ -5,6 +5,7 @@
 #include <QColor>
 #include <QVector>
 #include <QQuaternion>
+#include <QVector3D>
 #include <QMap>
 #include <QSharedData>
 #include <QExplicitlySharedDataPointer>
@@ -35,6 +36,7 @@ public:
     const float total;
     const int   index;
     QQuaternion rot;
+    QVector3D   rad_vect;
 };
 
 

@@ -19,6 +19,7 @@ RadPatternPoint::RadPatternPoint(int i, float t, float p, float v, float h, floa
 Vertex RadPatternPoint::make_vertex()
 {
     auto vect = rot.rotatedVector(QVector3D(0.0, 0.0, 1.0));
+    rad_vect = vect;
     vect *= get_amplitude();
     return Vertex(vect.x(), vect.y(), vect.z(), index);
 }
@@ -100,6 +101,7 @@ bool RadPatternSet::build_maps()
     return true;
 }
 
+
 RadPatternPoint* RadPatternSet::get_point(int phi, int theta)
 {
     const auto id = get_id(phi, theta);
@@ -123,20 +125,100 @@ RadPatternPoint* RadPatternSet::nearest_point(QQuaternion rot)
     if(rad_data.isEmpty()) return NULL;
     double nearest_dist = 1000;
     RadPatternPoint* nearest = rad_data[0];
+
+//    auto euler = rot.toEulerAngles();
+//    auto target_phi = (int) euler.y();
+//    auto target_theta = (int) euler.z();
+
+//    // Adjust legnths for raparound
+//    auto phi_count = phis.length() - 1;
+//    auto theta_count = thetas.length() - 1;
+
+//    float phi_step_angle = 360.0 / (float) phi_count;
+//    float theta_step_angle = 180.0 / (float) theta_count;
+
+//    auto phi_delta = (float) target_phi - phis[0];
+//    auto theta_delta = (float) target_theta - thetas[0];
+
+//    auto phi_step = (int) (phi_delta / phi_step_angle);
+//    phi_step += phi_count;
+//    phi_step = phi_step % phi_count;
+//    auto theta_step = (int) (theta_delta / theta_step_angle);
+//    theta_step = theta_step % (theta_count+1);
+
+//    auto phi = phis[phi_step];
+//    auto theta = thetas[theta_step];
+
+//    auto refpt = get_point(phi, theta);
+
+//    return refpt;
+
     const auto vect = rot.rotatedVector(QVector3D(0.0, 0.0, 1.0));
 
     foreach(RadPatternPoint* pt, rad_data){
-        auto ptvect = pt->rot.rotatedVector(QVector3D(0.0, 0.0, 1.0));
-//        auto rotdiff = rot * pt->rot.inverted();
-//        auto vectdiff = rotdiff.rotatedVector(QVector3D(0.0, 0.0, 1.0));
+        auto ptvect = pt->rad_vect;
         auto diffs = (ptvect - vect);
-        diffs *= diffs;
-        auto diff = diffs.length();
+        auto diff =fabs(diffs.length());
         if(diff < nearest_dist){
             nearest_dist = diff;
             nearest = pt;
         }
     }
+
+//    auto phi_low_est_idx = 0;
+//    auto phi_high_est_idx = phis.length() - 2;
+//    auto theta_low_est_idx = 0;
+//    auto theta_high_est_idx = thetas.length() - 1;
+
+
+//    auto phi_mid_idx = (phi_low_est_idx + phi_low_est_idx) / 2;
+//    auto phi_mid = phis[phi_mid_idx];
+//    for(auto it=0; it<thetas.length(); it++){
+//        auto theta_low = thetas[theta_low_est_idx];
+//        auto theta_high = thetas[theta_high_est_idx];
+//        auto theta_pt_low = get_point(phi_mid, theta_low);
+//        auto theta_pt_high = get_point(phi_mid, theta_high);
+//        float len_low = fabs((vect - theta_pt_low->rad_vect).length());
+//        float len_high = fabs((vect - theta_pt_high->rad_vect).length());
+//        if(len_high > len_low){
+//            theta_low_est_idx = (theta_high_est_idx+theta_low_est_idx) / 2.0;
+//        } else {
+//            theta_high_est_idx = (theta_high_est_idx+theta_low_est_idx) / 2.0;
+//        }
+//    }
+
+//    //If theta is at the ends then don't try to find theta since all the theta points are at the same position
+//    if(theta_low_est_idx == 0){
+//        phi_low_est_idx = 0;
+//        phi_high_est_idx = 0;
+//    } else if(theta_low_est_idx == (thetas.length() - 1)){
+//        phi_low_est_idx = 0;
+//        phi_high_est_idx = 0;
+//    }else {
+//        auto theta = thetas[theta_low_est_idx];
+//        for(auto it=0; it<phis.length(); it++){
+
+//            auto phi_low = phis[phi_low_est_idx];
+//            auto phi_high = phis[phi_high_est_idx];
+//            auto phi_pt_low = get_point(phi_low, theta);
+//            auto phi_pt_high = get_point(phi_high, theta);
+//            auto len_low = fabs((vect - phi_pt_low->rad_vect).length());
+//            auto len_high = fabs((vect - phi_pt_high->rad_vect).length());
+//            if(len_high > len_low){
+//                phi_low_est_idx = (phi_high_est_idx+phi_low_est_idx) / 2.0;
+//            } else {
+//                phi_high_est_idx = (phi_high_est_idx+phi_low_est_idx) / 2.0;
+//            }
+//        }
+//    }
+
+//    auto est_phi = phis[phi_low_est_idx];
+//    auto est_theta = phis[theta_low_est_idx];
+//    auto estpt = get_point(est_phi, est_theta);
+
+//    if(estpt != nearest){
+//        qWarning() << "Nearest point estimate does not agree. pt:" << estpt << " vs:" << nearest;
+//    }
 
     return nearest;
 }

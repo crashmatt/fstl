@@ -22,6 +22,7 @@ Window::Window(QWidget *parent) :
     load_action(new QAction("Load radios", this)),
     save_config_action(new QAction("Save config", this)),
     load_config_action(new QAction("Load config", this)),
+    show_editor_action(new QAction("Show editor", this)),
     quit_action(new QAction("Quit", this)),
     start_test(new QAction("Start test", this)),
     stop_test(new QAction("Sto&p test", this)),
@@ -107,6 +108,9 @@ Window::Window(QWidget *parent) :
     QObject::connect(about_action, &QAction::triggered,
                      this, &Window::on_about);
 
+    QObject::connect(show_editor_action, &QAction::triggered,
+                     this, &Window::show_editor);
+
     start_test->setShortcut(QKeySequence(Qt::Key_Space));
     QObject::connect(start_test, &QAction::triggered,
                      test_pattern, &TestPattern::start_pattern);
@@ -168,6 +172,9 @@ Window::Window(QWidget *parent) :
 
     auto view_menu = menuBar()->addMenu("&View");
 
+    view_menu->addAction(show_editor_action);
+    view_menu->addSeparator();
+
 //    solid_visible->setShortcut(QKeySequence(Qt::Key_S));
     QObject::connect(solid_visible, &QAction::toggled,
                      this, &Window::solid_visibile);
@@ -213,6 +220,13 @@ void Window::on_about()
         "<p>© 2014-2017 Matthew Keeter<br>"
         "<a href=\"mailto:matt.j.keeter@gmail.com\""
         "   style=\"color: #93a1a1;\">matt.j.keeter@gmail.com</a></p>");
+}
+
+void Window::show_editor()
+{
+    if(m_editDialog != NULL){
+        m_editDialog->show();
+    }
 }
 
 void Window::on_bad_stl()
@@ -272,13 +286,13 @@ void Window::pattern_loaded()
         if(!loaded){
             generate_default();
         }
-    }
 
-    m_editDialog = new ConfigEditDialog(this);
-    m_editDialog->setModal(false);
-    Q_ASSERT(m_editDialog != NULL);
-    m_editDialog->updateRadios(radios);
-    m_editDialog->show();
+        m_editDialog = new ConfigEditDialog(this);
+        m_editDialog->setModal(false);
+        Q_ASSERT(m_editDialog != NULL);
+        m_editDialog->updateRadios(radios);
+        m_editDialog->show();
+    }
 }
 
 void Window::generate_default()

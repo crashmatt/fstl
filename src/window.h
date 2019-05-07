@@ -52,6 +52,7 @@ public slots:
     void object_visible(QAction* a);
     void add_object(ObjectConfig &obj);
     void remove_object(ObjectConfig &obj);
+    void show_editor();
 
 signals:
     void set_object_visible(QString& obj_name, bool visible);
@@ -88,6 +89,7 @@ private:
     QAction* const visibility_visible;
     QAction* const rad_pattern_visible;
     QAction* const effective_visible;
+    QAction* const show_editor_action;
 
     Canvas*        canvas;
     Radios*        radios;

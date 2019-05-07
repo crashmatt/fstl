@@ -85,7 +85,7 @@ RadioSimulation::RadioSimulation(QObject *parent, Radios* radios, TestPattern* t
     , m_filename(filename)
     , m_halt(false)
     , m_step_time(0.01)
-    , m_end_time(500.0)
+    , m_end_time(50.0)
     , m_time(0)
     , m_max_runtime_ms(1000)
 {
@@ -173,38 +173,52 @@ void RadioSimulation::calc_results(RadioSimResults *results)
 
     ulong rot_count = results->m_rotations.length();
     ulong offset = 0;
-
-    int max_thread_count = QThreadPool::globalInstance()->maxThreadCount();
-    qDebug() << "Max thread count: " << max_thread_count;
-
-    QList<QFuture<RadioSimResults::rxdBms_t>> futures;
-
-    qDebug() << "Computation time started: " << timer.elapsed() << " ms";
+    int count = 0;
 
     while(offset < rot_count){
         ulong end = offset + 1000;
         if(end > rot_count){
             end = rot_count;
         }
-        futures.append(QtConcurrent::run(RadioSimulation::calc_result_block, offset, end-1, results));
+        RadioSimulation::calc_result_block(offset, end-1, results);
+        qDebug() << "Result block :" << count << " compelete at: "  << timer.elapsed() << " ms";
+
         offset = end;
+        count++;
     }
 
-//    futures.append(QtConcurrent::run(RadioSimulation::calc_result_block, 0, rot_count-1, results));
+
+//    int max_thread_count = QThreadPool::globalInstance()->maxThreadCount();
+//    qDebug() << "Max thread count: " << max_thread_count;
+
+//    QList<QFuture<RadioSimResults::rxdBms_t>> futures;
+
+//    qDebug() << "Computation time started: " << timer.elapsed() << " ms";
+
+//    while(offset < rot_count){
+//        ulong end = offset + 1000;
+//        if(end > rot_count){
+//            end = rot_count;
+//        }
+//        futures.append(QtConcurrent::run(RadioSimulation::calc_result_block, offset, end-1, results));
+//        offset = end;
+//    }
+
+////    futures.append(QtConcurrent::run(RadioSimulation::calc_result_block, 0, rot_count-1, results));
 
 
-    int index = 1;
-    for(auto &future : futures){
-        future.waitForFinished();
-        qDebug() << "Finished computation block " << index << " of " << futures.length() << " at " << timer.elapsed();
-        index++;
-    }
+//    int index = 1;
+//    for(auto &future : futures){
+//        future.waitForFinished();
+//        qDebug() << "Finished computation block " << index << " of " << futures.length() << " at " << timer.elapsed();
+//        index++;
+//    }
 
-    qDebug() << "Computation time complete: " << timer.elapsed() << " ms";
+//    qDebug() << "Computation time complete: " << timer.elapsed() << " ms";
 
-    for(auto &future : futures){
-        results->m_rx_bBms.append(future);
-    }
+//    for(auto &future : futures){
+//        results->m_rx_bBms.append(future);
+//    }
 
 //    QFuture<double> future = QtConcurrent::run(RadioSimulation::calc_something, 1.0);
 //    QFuture<double> future = QtConcurrent::mapped<double>( results->m_rotations, [this] (QQuaternion const& rotation) {calc_result(rotation);} );

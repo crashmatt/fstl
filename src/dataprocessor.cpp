@@ -39,7 +39,7 @@ void DataProcessor::process_data(Radio *radio)
 
         build_antenna_visibility_object(antenna);
         build_antenna_effective_object(antenna);
-        export_antenna_files(antenna);
+//        export_antenna_files(antenna);
     }
 }
 

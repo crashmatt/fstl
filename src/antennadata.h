@@ -68,6 +68,7 @@ public:
 
     void write_config(QJsonObject &json) const;
     void pack(MsgPackStream &s);
+    void pack_all(MsgPackStream &s);
 
     void addRotation(QVector3D axis, float angle);
 
@@ -87,7 +88,7 @@ public:
 };
 
 
-MsgPackStream &operator<<(MsgPackStream &s, const Antenna &antenna);
+//MsgPackStream &operator<<(MsgPackStream &s, const Antenna &antenna);
 QDataStream &operator<<(QDataStream &, const Antenna &);
 QDataStream &operator>>(QDataStream &, Antenna &);
 

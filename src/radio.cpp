@@ -157,6 +157,17 @@ void Radio::pack(MsgPackStream &s)
     }
 }
 
+void Radio::pack_all(MsgPackStream &s)
+{
+    s << (uint) Radio::RADIO_VERSION;
+    s << m_name;
+    s << m_antennas.size();
+
+    foreach(auto antenna, m_antennas){
+        antenna->pack_all(s);
+    }
+}
+
 
 QDataStream &operator<<(QDataStream &out, const Radio &radio)
 {
@@ -203,15 +214,15 @@ QDataStream &operator>>(QDataStream &in, Radio &radio)
     return in;
 }
 
-MsgPackStream &operator<<(MsgPackStream &s, const Radio &radio)
-{
-    s << radio.m_antennas.size();
+//MsgPackStream &operator<<(MsgPackStream &s, const Radio &radio)
+//{
+//    s << radio.m_antennas.size();
 
-    foreach(auto antenna, radio.m_antennas){
-        s << antenna;
-    }
-    return s;
-}
+//    foreach(auto antenna, radio.m_antennas){
+//        s << antenna;
+//    }
+//    return s;
+//}
 
 
 
@@ -329,6 +340,15 @@ void Radios::pack(MsgPackStream &s)
     }
 }
 
+void Radios::pack_all(MsgPackStream &s)
+{
+    s << m_radios.size();
+
+    foreach(auto radio, m_radios){
+        radio->pack_all(s);
+    }
+}
+
 
 QDataStream &operator>>(QDataStream &in, Radios &radios)
 {
@@ -350,13 +370,13 @@ QDataStream &operator>>(QDataStream &in, Radios &radios)
     }
 }
 
-MsgPackStream &operator<<(MsgPackStream &s, const Radios & radios)
-{
-    s << radios.m_radios.size();
+//MsgPackStream &operator<<(MsgPackStream &s, const Radios & radios)
+//{
+//    s << radios.m_radios.size();
 
-    foreach(auto radio, radios.m_radios){
-        s << radio;
-    }
-    return s;
-}
+//    foreach(auto radio, radios.m_radios){
+//        s << radio;
+//    }
+//    return s;
+//}
 

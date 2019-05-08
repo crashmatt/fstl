@@ -22,6 +22,7 @@ Window::Window(QWidget *parent) :
     load_action(new QAction("Load radios", this)),
     save_config_action(new QAction("Save config", this)),
     load_config_action(new QAction("Load config", this)),
+    export_radios_action(new QAction("Export radios", this)),
     show_editor_action(new QAction("Show editor", this)),
     quit_action(new QAction("Quit", this)),
     start_test(new QAction("Start test", this)),
@@ -105,6 +106,9 @@ Window::Window(QWidget *parent) :
     QObject::connect(load_config_action, &QAction::triggered,
                      this, &Window::load_config);
 
+    QObject::connect(export_radios_action, &QAction::triggered,
+                     this, &Window::export_radios);
+
     QObject::connect(about_action, &QAction::triggered,
                      this, &Window::on_about);
 
@@ -151,6 +155,8 @@ Window::Window(QWidget *parent) :
     file_menu->addAction(load_config_action);
     file_menu->addSeparator();
     file_menu->addAction(save_config_action);
+    file_menu->addSeparator();
+    file_menu->addAction(export_radios_action);
     file_menu->addSeparator();
     file_menu->addAction(quit_action);
 
@@ -220,13 +226,6 @@ void Window::on_about()
         "<p>© 2014-2017 Matthew Keeter<br>"
         "<a href=\"mailto:matt.j.keeter@gmail.com\""
         "   style=\"color: #93a1a1;\">matt.j.keeter@gmail.com</a></p>");
-}
-
-void Window::show_editor()
-{
-    if(m_editDialog != NULL){
-        m_editDialog->show();
-    }
 }
 
 void Window::on_bad_stl()
@@ -551,6 +550,43 @@ void Window::load_config()
     if(filename == "") return;
 
     load(filename);
+}
+
+void Window::show_editor()
+{
+    if(m_editDialog != NULL){
+        m_editDialog->show();
+    }
+}
+
+void Window::export_radios()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export Radios Data"),
+                                                    "radios.mpk",
+                                                    tr("Radio msgpack (*.mpk)"));
+    if(fileName == "") return;
+
+    QByteArray bytes;
+    MsgPackStream packstream(&bytes, QIODevice::WriteOnly);
+    packstream << QString("Antenna Simulation Results - MessagePack - V0_1");
+    radios->pack_all(packstream);
+
+    packstream.setFlushWrites(true);
+
+//    auto fname = m_filename + ".pack";
+//    auto dir = QDir(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+//    auto filepath = dir.filePath(fname);
+//    QFile file(dir.filePath(filepath));
+
+    QFile file(fileName);
+    if (!file.open(QFile::WriteOnly)){
+        qDebug("Radio antenna data export failed to open file for writing: ", fileName);
+        return;
+    }
+    file.write(bytes);
+    file.close();
+
+    qDebug("Radio antenna export complete");
 }
 
 void Window::start_random_rotations()

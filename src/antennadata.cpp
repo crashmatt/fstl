@@ -212,6 +212,14 @@ void Antenna::pack(MsgPackStream &s)
     s << m_name;
 }
 
+void Antenna::pack_all(MsgPackStream &s)
+{
+    s << m_name;
+    s << m_rotation.x();
+    s << m_rotation.y();
+    s << m_rotation.z();
+    s << m_rotation.scalar();
+}
 
 
 QDataStream &operator<<(QDataStream &out, const Antenna &antenna)
@@ -295,6 +303,7 @@ AntennaDataPoint& AntennaDataPoint::operator=(const AntennaDataPoint& antenna)
     m_visibility = antenna.m_visibility;
 }
 
+
 QDataStream &operator<<(QDataStream &out, const AntennaDataPoint &datapt)
 {
     out << datapt.m_rot << datapt.m_center_color
@@ -318,11 +327,11 @@ QDataStream &operator>>(QDataStream &in, AntennaDataPoint &datapt)
 }
 
 
-MsgPackStream &operator<<(MsgPackStream &s, const Antenna &antenna)
-{
-    s << antenna.m_name;
-    return s;
-}
+//MsgPackStream &operator<<(MsgPackStream &s, const Antenna &antenna)
+//{
+//    s << antenna.m_name;
+//    return s;
+//}
 
 
 ////////////////////////////////////////////////////////////////////////////////

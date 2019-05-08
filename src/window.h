@@ -52,7 +52,6 @@ public slots:
     void object_visible(QAction* a);
     void add_object(ObjectConfig &obj);
     void remove_object(ObjectConfig &obj);
-    void show_editor();
 
 signals:
     void set_object_visible(QString& obj_name, bool visible);
@@ -62,6 +61,8 @@ private slots:
     void load_radios();
     void save_config();
     void load_config();
+    void show_editor();
+    void export_radios();
     void start_random_rotations();
     void start_radio_simulation();
 
@@ -74,6 +75,7 @@ private:
     QAction* const load_action;
     QAction* const save_config_action;
     QAction* const load_config_action;
+    QAction* const export_radios_action;
     QAction* const quit_action;
     QAction* const start_test;
     QAction* const stop_test;

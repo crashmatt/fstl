@@ -111,8 +111,12 @@ RadioSimulation::~RadioSimulation()
 
 }
 
-void RadioSimulation::run()
+void RadioSimulation::run(QString filename)
 {
+    if(!loadPathFile(filename)){
+        return;
+    }
+
     qDebug("RadioSimulation started");
 
     QByteArray bytes;
@@ -124,8 +128,8 @@ void RadioSimulation::run()
     RadioSimResults sim_results(m_radios);
 //    sim_results.pack(packstream);
 
-    make_rotations(&sim_results);
-    calc_results(&sim_results);
+    makeRotations(&sim_results);
+    calcResults(&sim_results);
 
     unsigned long step = 0;
     for(auto& rxdBms : sim_results.m_rx_bBms){
@@ -151,7 +155,39 @@ void RadioSimulation::run()
     qDebug("RadioSimulation complete");
 }
 
-void RadioSimulation::make_rotations(RadioSimResults *results)
+bool RadioSimulation::loadPathFile(QString filename)
+{
+    QFile loadFile(filename);
+
+    if (!loadFile.open(QIODevice::ReadOnly)) {
+        qWarning("Couldn't open file to load.");
+        return false;
+    }
+
+    QByteArray bytes = loadFile.readAll();
+    MsgPackStream packstream(&bytes, QIODevice::ReadOnly);
+
+    quint32 rotations_length;
+    packstream >> rotations_length;
+
+    QList<QQuaternion> rot_list;
+
+    double x,y,z,w = 0;
+    for(auto i=0; i<rotations_length; i++){
+        packstream >> w;
+        packstream >> x;
+        packstream >> y;
+        packstream >> z;
+        rot_list.append(QQuaternion(w,x,y,z));
+    }
+
+    loadFile.close();
+
+    return true;
+}
+
+
+void RadioSimulation::makeRotations(RadioSimResults *results)
 {
     m_time = 0;
 
@@ -160,13 +196,13 @@ void RadioSimulation::make_rotations(RadioSimResults *results)
 
     while(m_time < m_end_time){
         m_time += m_step_time;
-        rotation_step(rotation, segment);
+        rotationStep(rotation, segment);
         results->m_rotations.append(rotation);
         results->m_timestamps.append(m_time);
     }
 }
 
-void RadioSimulation::calc_results(RadioSimResults *results)
+void RadioSimulation::calcResults(RadioSimResults *results)
 {
     QElapsedTimer timer;
     timer.start();
@@ -180,7 +216,7 @@ void RadioSimulation::calc_results(RadioSimResults *results)
         if(end > rot_count){
             end = rot_count;
         }
-        RadioSimulation::calc_result_block(offset, end-1, results);
+        RadioSimulation::calcResultBlock(offset, end-1, results);
         qDebug() << "Result block :" << count << " compelete at: "  << timer.elapsed() << " ms";
 
         offset = end;
@@ -227,7 +263,7 @@ void RadioSimulation::calc_results(RadioSimResults *results)
     qDebug("Concurrent done");
 }
 
-QList<QVector<double>> RadioSimulation::calc_result_block(ulong start, ulong end, RadioSimResults* simresults)
+QList<QVector<double>> RadioSimulation::calcResultBlock(ulong start, ulong end, RadioSimResults* simresults)
 {
     //Frequency in GHz.  Distance in km
     const double path_fspl_const = 20.0*log10(2.4) + 92.45;
@@ -287,7 +323,7 @@ QList<QVector<double>> RadioSimulation::calc_result_block(ulong start, ulong end
 }
 
 
-void RadioSimulation::rotation_step(QQuaternion& rotation, RotationSegment& segment)
+void RadioSimulation::rotationStep(QQuaternion& rotation, RotationSegment& segment)
 {
     const auto now = m_time;
     while(segment.m_end_time < now){

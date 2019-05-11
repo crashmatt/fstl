@@ -69,7 +69,7 @@ public:
     explicit RadioSimulation(QObject *parent, Radios* radios, TestPattern* test_pattern, QString filename);
     RadioSimulation(const RadioSimulation&);
     ~RadioSimulation();
-    void run();
+    void run(QString filename);
 
 signals:
 //    float percentage_done();
@@ -87,11 +87,11 @@ private:
     double          m_time;
     unsigned long   m_max_runtime_ms;
 
-    void rotation_step(QQuaternion& rotation, RotationSegment& segment);
-
-    void make_rotations(RadioSimResults *results);
-    void calc_results(RadioSimResults *results);
-    static QList<QVector<double>> calc_result_block(ulong start, ulong end, RadioSimResults* simresults);
+    void rotationStep(QQuaternion& rotation, RotationSegment& segment);
+    void makeRotations(RadioSimResults *results);
+    void calcResults(RadioSimResults *results);
+    bool loadPathFile(QString filename);
+    static QList<QVector<double>> calcResultBlock(ulong start, ulong end, RadioSimResults* simresults);
 };
 
 #endif // RADIOSIMULATION_H

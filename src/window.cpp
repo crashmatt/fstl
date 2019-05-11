@@ -600,19 +600,13 @@ void Window::start_random_rotations()
 
 void Window::start_radio_simulation()
 {
-//    if (rad_sim != NULL){
-//        if(rad_sim->isFinished()){
-//            rad_sim->deleteLater();
-//        } else {
-//            qDebug("Radio simulation running, can't start another until complete");
-//            return;
-//        }
-//        rad_sim = NULL;
-//    }
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open path file"),
+                                                    "path.pack",
+                                                    tr("Path file (*.pack)"));
+    if(filename == "") return;
+
     auto radsim = RadioSimulation(qobject_cast<QObject*>(this), this->radios, this->test_pattern, "output");
-    radsim.run();
-//    rad_sim->run();
-//    QThread::msleep(500);
+    radsim.run(filename);
 }
 
 bool Window::load_radios_file(QString &filename)

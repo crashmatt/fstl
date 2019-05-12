@@ -601,7 +601,7 @@ void Window::start_random_rotations()
 void Window::start_radio_simulation()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open path file"),
-                                                    "path.pack",
+                                                    "../path_generator/path.pack",
                                                     tr("Path file (*.pack)"));
     if(filename == "") return;
 

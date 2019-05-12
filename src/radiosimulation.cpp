@@ -17,16 +17,6 @@
 #include <msgpack.h>
 #include <msgpackstream.h>
 
-RotationSegment::RotationSegment()
-    :m_start_time(0.0)
-    ,m_end_time(0.0)
-    ,m_last_time(0.0)
-    ,m_rate(0.0)
-    ,m_direction(0.0, 0.0, 0.0)
-{
-}
-
-
 AntennaPair::AntennaPair(Radio* rad1, Radio* rad2, Antenna* ant1, Antenna* ant2)
     :m_ant1(ant1)
     ,m_ant2(ant2)
@@ -35,9 +25,7 @@ AntennaPair::AntennaPair(Radio* rad1, Radio* rad2, Antenna* ant1, Antenna* ant2)
 {
 }
 
-
 RadioSimResults::RadioSimResults(Radios* radios)
-    : m_mutex(QMutex::NonRecursive)
 
 {
     makeAntennaPairs(radios);
@@ -61,6 +49,60 @@ int RadioSimResults::makeAntennaPairs(Radios* radios)
         }
     }
     return m_antenna_pairs.size();
+}
+
+
+
+bool RadioSimResults::loadPathFile(QString filename)
+{
+    QFile loadFile(filename);
+
+    if (!loadFile.open(QIODevice::ReadOnly)) {
+        qWarning("Couldn't open file to load.");
+        return false;
+    }
+
+    QByteArray bytes = loadFile.readAll();
+    MsgPackStream packstream(&bytes, QIODevice::ReadOnly);
+
+    double x,y,z,w = 0;
+
+    m_rotations.clear();
+    quint32 length;
+    packstream >> length;
+    m_rotations.reserve(length);
+    for(auto i=0; i<length; i++){
+        packstream >> w;
+        packstream >> x;
+        packstream >> y;
+        packstream >> z;
+        m_rotations.append(QQuaternion(w,x,y,z));
+    }
+
+    m_positions.clear();
+    packstream >> length;
+    m_positions.reserve(length);
+    for(auto i=0; i<length; i++){
+        packstream >> x;
+        packstream >> y;
+        packstream >> z;
+        m_positions.append(QQuaternion(w,x,y,z));
+    }
+
+    m_pos_rotations.clear();
+    packstream >> length;
+    m_pos_rotations.reserve(length);
+    for(auto i=0; i<length; i++){
+        packstream >> w;
+        packstream >> x;
+        packstream >> y;
+        packstream >> z;
+        m_pos_rotations.append(QQuaternion(w,x,y,z));
+    }
+
+    loadFile.close();
+
+    return true;
 }
 
 
@@ -113,7 +155,10 @@ RadioSimulation::~RadioSimulation()
 
 void RadioSimulation::run(QString filename)
 {
-    if(!loadPathFile(filename)){
+    RadioSimResults sim_results(m_radios);
+
+    if(!sim_results.loadPathFile(filename)){
+        qDebug() << "Failed to load file : " << filename;
         return;
     }
 
@@ -125,16 +170,12 @@ void RadioSimulation::run(QString filename)
     packstream << QString("Radio Simulation Results - MessagePack - V0_2");
     m_radios->pack(packstream);
 
-    RadioSimResults sim_results(m_radios);
 //    sim_results.pack(packstream);
 
-    makeRotations(&sim_results);
     calcResults(&sim_results);
 
     unsigned long step = 0;
     for(auto& rxdBms : sim_results.m_rx_bBms){
-        packstream << (quint64) step << sim_results.m_timestamps[step];
-
         for(auto& rxdBm : rxdBms){
             packstream << rxdBm;
         }
@@ -155,126 +196,24 @@ void RadioSimulation::run(QString filename)
     qDebug("RadioSimulation complete");
 }
 
-bool RadioSimulation::loadPathFile(QString filename)
-{
-    QFile loadFile(filename);
-
-    if (!loadFile.open(QIODevice::ReadOnly)) {
-        qWarning("Couldn't open file to load.");
-        return false;
-    }
-
-    QByteArray bytes = loadFile.readAll();
-    MsgPackStream packstream(&bytes, QIODevice::ReadOnly);
-
-    quint32 rotations_length;
-    packstream >> rotations_length;
-
-    QList<QQuaternion> rot_list;
-
-    double x,y,z,w = 0;
-    for(auto i=0; i<rotations_length; i++){
-        packstream >> w;
-        packstream >> x;
-        packstream >> y;
-        packstream >> z;
-        rot_list.append(QQuaternion(w,x,y,z));
-    }
-
-    loadFile.close();
-
-    return true;
-}
 
 
-void RadioSimulation::makeRotations(RadioSimResults *results)
-{
-    m_time = 0;
 
-    QQuaternion rotation;
-    RotationSegment segment;
-
-    while(m_time < m_end_time){
-        m_time += m_step_time;
-        rotationStep(rotation, segment);
-        results->m_rotations.append(rotation);
-        results->m_timestamps.append(m_time);
-    }
-}
-
-void RadioSimulation::calcResults(RadioSimResults *results)
-{
-    QElapsedTimer timer;
-    timer.start();
-
-    ulong rot_count = results->m_rotations.length();
-    ulong offset = 0;
-    int count = 0;
-
-    while(offset < rot_count){
-        ulong end = offset + 1000;
-        if(end > rot_count){
-            end = rot_count;
-        }
-        RadioSimulation::calcResultBlock(offset, end-1, results);
-        qDebug() << "Result block :" << count << " compelete at: "  << timer.elapsed() << " ms";
-
-        offset = end;
-        count++;
-    }
-
-
-//    int max_thread_count = QThreadPool::globalInstance()->maxThreadCount();
-//    qDebug() << "Max thread count: " << max_thread_count;
-
-//    QList<QFuture<RadioSimResults::rxdBms_t>> futures;
-
-//    qDebug() << "Computation time started: " << timer.elapsed() << " ms";
-
-//    while(offset < rot_count){
-//        ulong end = offset + 1000;
-//        if(end > rot_count){
-//            end = rot_count;
-//        }
-//        futures.append(QtConcurrent::run(RadioSimulation::calc_result_block, offset, end-1, results));
-//        offset = end;
-//    }
-
-////    futures.append(QtConcurrent::run(RadioSimulation::calc_result_block, 0, rot_count-1, results));
-
-
-//    int index = 1;
-//    for(auto &future : futures){
-//        future.waitForFinished();
-//        qDebug() << "Finished computation block " << index << " of " << futures.length() << " at " << timer.elapsed();
-//        index++;
-//    }
-
-//    qDebug() << "Computation time complete: " << timer.elapsed() << " ms";
-
-//    for(auto &future : futures){
-//        results->m_rx_bBms.append(future);
-//    }
-
-//    QFuture<double> future = QtConcurrent::run(RadioSimulation::calc_something, 1.0);
-//    QFuture<double> future = QtConcurrent::mapped<double>( results->m_rotations, [this] (QQuaternion const& rotation) {calc_result(rotation);} );
-//   QList<double> future = QtConcurrent::blockingMapped(results->m_rotations, [this] (QQuaternion const& rotation) {calc_result(rotation);});
-
-    qDebug("Concurrent done");
-}
-
-QList<QVector<double>> RadioSimulation::calcResultBlock(ulong start, ulong end, RadioSimResults* simresults)
+void RadioSimulation::calcResults(RadioSimResults* simresults)
 {
     //Frequency in GHz.  Distance in km
     const double path_fspl_const = 20.0*log10(2.4) + 92.45;
 
-    QList<QVector<double>> rx_dBms;
+    QElapsedTimer timer;
+    timer.start();
+
+    int index = 0;
 
     auto& pairs = simresults->m_antenna_pairs;
     auto& rotations = simresults->m_rotations;
+    auto& rx_dBms = simresults->m_rx_bBms;
 
-    for(ulong index = start; index <= end; index++){
-        auto& rotation = rotations[index];
+    foreach(auto rotation, rotations){
         QVector<double> dBms;
         foreach(auto pair, pairs){           
             Radio* rad1 = pair.m_rad1;
@@ -285,7 +224,6 @@ QList<QVector<double>> RadioSimulation::calcResultBlock(ulong start, ulong end, 
             auto rad_vect1 = QVector3D();
             auto rad_vect2 = QVector3D();
 
-            simresults->m_mutex.lock();
             if(rad1fixed){
                 rad_vect1 = pair.m_ant1->radiationVector(QQuaternion());
             } else {
@@ -296,7 +234,6 @@ QList<QVector<double>> RadioSimulation::calcResultBlock(ulong start, ulong end, 
             } else {
                 rad_vect2 = pair.m_ant2->radiationVector(rotation);
             }
-            simresults->m_mutex.unlock();
 
             rad_vect1[0] = fabs(rad_vect1[0]);
             rad_vect1[1] = fabs(rad_vect1[1]);
@@ -318,65 +255,67 @@ QList<QVector<double>> RadioSimulation::calcResultBlock(ulong start, ulong end, 
         }
         rx_dBms.append(dBms);
         index++;
+        if( (index % 1000) == 0){
+            qDebug() << "Sim result:" << index << " done at:" << timer.elapsed();
+        }
     }
-    return rx_dBms;
 }
 
 
-void RadioSimulation::rotationStep(QQuaternion& rotation, RotationSegment& segment)
-{
-    const auto now = m_time;
-    while(segment.m_end_time < now){
-        //Complete the remaining rotation for this segment
-        double delta_time = segment.m_end_time - segment.m_last_time;
-        double delta_angle = delta_time * segment.m_rate;
-        //Rotation axis is a 90deg rotation. Scale it to a 360deg/s
-        QQuaternion rot = QQuaternion::fromAxisAndAngle(segment.m_direction, delta_angle);
-        rotation = rotation * rot;
-        segment.m_last_time = segment.m_end_time;
+//void RadioSimulation::rotationStep(QQuaternion& rotation, RotationSegment& segment)
+//{
+//    const auto now = m_time;
+//    while(segment.m_end_time < now){
+//        //Complete the remaining rotation for this segment
+//        double delta_time = segment.m_end_time - segment.m_last_time;
+//        double delta_angle = delta_time * segment.m_rate;
+//        //Rotation axis is a 90deg rotation. Scale it to a 360deg/s
+//        QQuaternion rot = QQuaternion::fromAxisAndAngle(segment.m_direction, delta_angle);
+//        rotation = rotation * rot;
+//        segment.m_last_time = segment.m_end_time;
 
-        double angle_ratio = (double) rand() / (double) RAND_MAX;
-        angle_ratio = pow(angle_ratio, 3);
-        const double angle = angle_ratio * 720.0;
+//        double angle_ratio = (double) rand() / (double) RAND_MAX;
+//        angle_ratio = pow(angle_ratio, 3);
+//        const double angle = angle_ratio * 720.0;
 
-        const double max_angle_max_time = 6.0;
-        const double max_angle_min_time = 3.0;
-        const double min_angle_max_time = 1.0;
-        const double min_angle_min_time = 0.25;
+//        const double max_angle_max_time = 6.0;
+//        const double max_angle_min_time = 3.0;
+//        const double min_angle_max_time = 1.0;
+//        const double min_angle_min_time = 0.25;
 
-        const double min_angle_time_range = min_angle_max_time - min_angle_min_time;
-        const double max_angle_time_range = max_angle_max_time - max_angle_min_time;
+//        const double min_angle_time_range = min_angle_max_time - min_angle_min_time;
+//        const double max_angle_time_range = max_angle_max_time - max_angle_min_time;
 
-        const double angle_time_range = ((1-angle_ratio)*min_angle_time_range) + (angle_ratio*max_angle_time_range);
-        const double angle_time_offset = ((1-angle_ratio)*min_angle_min_time) + (angle_ratio*max_angle_min_time);
+//        const double angle_time_range = ((1-angle_ratio)*min_angle_time_range) + (angle_ratio*max_angle_time_range);
+//        const double angle_time_offset = ((1-angle_ratio)*min_angle_min_time) + (angle_ratio*max_angle_min_time);
 
-        const double time_ratio = (double) rand() / (double) RAND_MAX;
-        const double time = (time_ratio * angle_time_range) + angle_time_offset;
+//        const double time_ratio = (double) rand() / (double) RAND_MAX;
+//        const double time = (time_ratio * angle_time_range) + angle_time_offset;
 
-        const double rate = angle / time;
-        segment.m_rate = rate;
+//        const double rate = angle / time;
+//        segment.m_rate = rate;
 
-        segment.m_start_time = segment.m_end_time;
-        segment.m_end_time += time;
+//        segment.m_start_time = segment.m_end_time;
+//        segment.m_end_time += time;
 
-        //New direction
-        do{
-            double dx = ((double) rand() / (double) RAND_MAX) - 0.5;
-            double dy = ((double) rand() / (double) RAND_MAX) - 0.5;
-            double dz = ((double) rand() / (double) RAND_MAX) - 0.5;
-            QVector3D vect(dx, dy, dz);
-            if(vect.length() > 0.1){
-                vect.normalize();
-                segment.m_direction = vect;
-            }
-        } while (segment.m_direction.length() < 0.1);
-    }
-    double delta = now - segment.m_last_time;
-    double angle = (double) delta * segment.m_rate;
-    //Rotation axis is a 90deg rotation. Scale it to a 360deg/s
-    QQuaternion rot = QQuaternion::fromAxisAndAngle(segment.m_direction, angle);
-    rotation = rotation * rot;
+//        //New direction
+//        do{
+//            double dx = ((double) rand() / (double) RAND_MAX) - 0.5;
+//            double dy = ((double) rand() / (double) RAND_MAX) - 0.5;
+//            double dz = ((double) rand() / (double) RAND_MAX) - 0.5;
+//            QVector3D vect(dx, dy, dz);
+//            if(vect.length() > 0.1){
+//                vect.normalize();
+//                segment.m_direction = vect;
+//            }
+//        } while (segment.m_direction.length() < 0.1);
+//    }
+//    double delta = now - segment.m_last_time;
+//    double angle = (double) delta * segment.m_rate;
+//    //Rotation axis is a 90deg rotation. Scale it to a 360deg/s
+//    QQuaternion rot = QQuaternion::fromAxisAndAngle(segment.m_direction, angle);
+//    rotation = rotation * rot;
 
-    segment.m_last_time = now;
-}
+//    segment.m_last_time = now;
+//}
 

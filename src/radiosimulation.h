@@ -40,9 +40,9 @@ public:
     typedef QList<QVector<double>> rxdBms_t;
     rxdBms_t  m_rx_bBms;
 
-    QList<QQuaternion> m_rotations;
-    QList<QQuaternion> m_positions;
-    QList<QQuaternion> m_pos_rotations;
+    QList<QList<QQuaternion>>  m_rotation_sets;
+    QList<QVector3D>    m_positions;
+    QList<QQuaternion>  m_pos_rotations;
 
 protected:
     int makeAntennaPairs(Radios* radios);

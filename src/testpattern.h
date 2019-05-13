@@ -14,38 +14,31 @@
 class Radios;
 class Radio;
 class RadPatternData;
+class RadioSimResults;
 
 class TestPattern : public QObject
 {
     Q_OBJECT
 public:    
-    typedef struct {
-        double      start_time;
-        double      end_time;
-        double      rate;
-        QVector3D   direction;
-    } rotation_segment;
-
     explicit TestPattern(QObject *parent, Radios *radios);
     ~TestPattern();
 
 protected:
     Radios*             m_radios;
+    RadioSimResults*    m_sim_results;
+
     bool                m_pattern_running;
 
     int                 m_ant_pos_index;
     int                 m_test_index;
     bool                m_high_speed;
 
-    rotation_segment    m_rotation_segment;
-    double              m_last_rotation_time;
-    double              m_rotation_timeout;
     bool                m_rotations_running;
-    QQuaternion         m_rotation;
+    int                 m_step_index;
 
     bool set_antenna_pos_to_index(int index);
     void reset();
-    void rotation_step(double delta_time_ms);
+//    void rotation_step(double delta_time_ms);
 
 signals:
     void set_rotation(QQuaternion rotation, int index);
@@ -66,8 +59,7 @@ public slots:
     void stop_pattern(void);
     void step_antenna_pos(void);
     void set_speed(bool high_speed);
-    void start_rotations(const double timeout);
-
+    void start_rotations(QString filename);
 };
 
 

@@ -591,11 +591,17 @@ void Window::export_radios()
 
 void Window::start_random_rotations()
 {
+
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open path file"),
+                                                    "../path_generator/path.pack",
+                                                    tr("Path file (*.pack)"));
+    if(filename == "") return;
+
     //Hide radiation patterns for better visibility
     QString vis_pattern = "rad_*";
     emit set_object_visible(vis_pattern, false);
 
-    test_pattern->start_rotations(10.0);
+    test_pattern->start_rotations(filename);
 }
 
 void Window::start_radio_simulation()

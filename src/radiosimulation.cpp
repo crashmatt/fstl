@@ -67,16 +67,23 @@ bool RadioSimResults::loadPathFile(QString filename)
 
     double x,y,z,w = 0;
 
-    m_rotations.clear();
+    m_rotation_sets.clear();
+    quint32 set_count;
     quint32 length;
-    packstream >> length;
-    m_rotations.reserve(length);
-    for(auto i=0; i<length; i++){
-        packstream >> w;
-        packstream >> x;
-        packstream >> y;
-        packstream >> z;
-        m_rotations.append(QQuaternion(w,x,y,z));
+    packstream >> set_count;
+    m_rotation_sets.reserve(set_count);
+    for(auto set=0; set<set_count; set++){
+        packstream >> length;
+        QList<QQuaternion> rotations;
+        rotations.reserve(length);
+        for(auto i=0; i<length; i++){
+            packstream >> w;
+            packstream >> x;
+            packstream >> y;
+            packstream >> z;
+            rotations.append(QQuaternion(w,x,y,z));
+        }
+        m_rotation_sets.append(rotations);
     }
 
     m_positions.clear();
@@ -86,7 +93,7 @@ bool RadioSimResults::loadPathFile(QString filename)
         packstream >> x;
         packstream >> y;
         packstream >> z;
-        m_positions.append(QQuaternion(w,x,y,z));
+        m_positions.append(QVector3D(x,y,z));
     }
 
     m_pos_rotations.clear();
@@ -210,7 +217,7 @@ void RadioSimulation::calcResults(RadioSimResults* simresults)
     int index = 0;
 
     auto& pairs = simresults->m_antenna_pairs;
-    auto& rotations = simresults->m_rotations;
+    auto& rotations = simresults->m_rotation_sets[0];
     auto& rx_dBms = simresults->m_rx_bBms;
 
     foreach(auto rotation, rotations){

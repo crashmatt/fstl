@@ -9,6 +9,7 @@
 #include <msgpackstream.h>
 #include <QQuaternion>
 #include <QMutex>
+#include <QMap>
 
 class TestPattern;
 class Radios;
@@ -41,8 +42,8 @@ public:
     rxdBms_t  m_rx_bBms;
 
     QList<QList<QQuaternion>>  m_rotation_sets;
-    QList<QVector3D>    m_positions;
-    QList<QQuaternion>  m_pos_rotations;
+    QList<QVector3D>    m_position_sets;
+    QMap<int, QMap<int, QList<QQuaternion>>>  m_pos_rotations;
 
 protected:
     int makeAntennaPairs(Radios* radios);

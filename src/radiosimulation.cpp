@@ -104,6 +104,7 @@ bool RadioSimResults::loadPathFile(QString filename)
         m_position_sets.append(positions);
     }
 
+    //Unpack rotations between object positions
     quint32 src_radio, sink_radio;
     do{
         packstream >> src_radio;
@@ -121,6 +122,9 @@ bool RadioSimResults::loadPathFile(QString filename)
             m_pos_rotations[x][y] = pos_rotations;
         }
     } while(length > 0);
+
+    QStringList names;
+    packstream >> names;
 
     loadFile.close();
 

@@ -64,7 +64,6 @@ private slots:
     void show_editor();
     void export_radios();
     void start_random_rotations();
-    void start_radio_simulation();
 
 private:
 //    bool load_antennas_file(QString &filename);
@@ -84,7 +83,6 @@ private:
     QAction* const reset_rotation;
     QAction* const fast_mode;
     QAction* const start_rotations;
-    QAction* const start_simulation;
 
     QAction* const solid_visible;
     QAction* const transparent_visible;

@@ -34,7 +34,6 @@ Window::Window(QWidget *parent) :
     reset_rotation(new QAction("Reset rotation", this)),
     fast_mode(new QAction("Fast mode", this)),
     start_rotations(new QAction("&Start Rotations", this)),
-    start_simulation(new QAction("Start Si&mulation", this)),
     solid_visible(new QAction("&Soild", this)),
     transparent_visible(new QAction("&Transparent", this)),
     visibility_visible(new QAction("&Visibility", this)),
@@ -138,10 +137,6 @@ Window::Window(QWidget *parent) :
     QObject::connect(start_rotations, &QAction::triggered,
                      this, &Window::start_random_rotations);
 
-    start_simulation->setShortcut(QKeySequence(Qt::Key_M));
-    QObject::connect(start_simulation, &QAction::triggered,
-                     this, &Window::start_radio_simulation);
-
     fast_mode->setShortcut(QKeySequence(Qt::Key_F));
     QObject::connect(fast_mode, &QAction::toggled,
                      test_pattern, &TestPattern::set_speed);
@@ -165,7 +160,6 @@ Window::Window(QWidget *parent) :
     auto test_menu = menuBar()->addMenu("Test");
     test_menu->addAction(start_test);
     test_menu->addAction(start_rotations);
-    test_menu->addAction(start_simulation);
     test_menu->addAction(stop_test);
     test_menu->addSeparator();
     test_menu->addAction(step_antenna);
@@ -602,17 +596,6 @@ void Window::start_random_rotations()
     emit set_object_visible(vis_pattern, false);
 
     test_pattern->start_rotations(filename);
-}
-
-void Window::start_radio_simulation()
-{
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open path file"),
-                                                    "../path_generator/path.pack",
-                                                    tr("Path file (*.pack)"));
-    if(filename == "") return;
-
-    auto radsim = RadioSimulation(qobject_cast<QObject*>(this), this->radios, this->test_pattern, "output");
-    radsim.run(filename);
 }
 
 bool Window::load_radios_file(QString &filename)

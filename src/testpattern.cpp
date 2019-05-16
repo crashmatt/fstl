@@ -6,7 +6,7 @@
 #include <QTime>
 #include "time.h"
 #include "radio.h"
-#include "radiosimulation.h"
+#include "radiosimresults.h"
 
 TestPattern::TestPattern(QObject *parent, Radios *radios) : QObject(parent)
   , m_radios(radios)

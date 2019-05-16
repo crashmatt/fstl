@@ -32,8 +32,8 @@ SOURCES += \
     src/radpatterndata.cpp \
     src/glradpatternmesh.cpp \
     src/radio.cpp \
-    src/radiosimulation.cpp \
-    src/configeditdialog.cpp
+    src/configeditdialog.cpp \
+    src/radiosimresults.cpp
 
 HEADERS  += \
     src/app.h\
@@ -53,7 +53,7 @@ HEADERS  += \
     src/radio.h \
     src/antennadata.h \
     src/configeditdialog.h \
-    src/radiosimulation.h
+    src/radiosimresults.h
 
 CONFIG += c++11
 

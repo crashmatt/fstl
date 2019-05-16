@@ -28,26 +28,7 @@ public:
     void pack(MsgPackStream &s);
 };
 
-class RadioSimResults
-{
-public:
-    RadioSimResults(Radios* radios);
 
-    void pack(MsgPackStream &s);
-    bool loadPathFile(QString filename);
-
-    QList<AntennaPair>      m_antenna_pairs;
-
-    typedef QList<QVector<double>> rxdBms_t;
-    rxdBms_t  m_rx_bBms;
-
-    QList<QList<QQuaternion>>  m_rotation_sets;
-    QList<QVector3D>    m_position_sets;
-    QMap<int, QMap<int, QList<QQuaternion>>>  m_pos_rotations;
-
-protected:
-    int makeAntennaPairs(Radios* radios);
-};
 
 class RadioSimulation : public QObject
 {
